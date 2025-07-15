@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_extensionName__",
+  "version": "1.4.4",
+  "description": "__MSG_extensionDescription__",
+  "default_locale": "en",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": ["*://*.hilan.co.il/*", "*://payroll.malam.com/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "__MSG_defaultTitle__",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.hilan.co.il/*", "*://payroll.malam.com/*"],
+      "js": [
+        "shared/common.js",
+        "shared/status-manager.js",
+        "i18n.js",
+        "content/analytics-tracker.js",
+        "content/hilan-operations.js",
+        "content/malam-operations.js",
+        "content/content.js"
+      ]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["_locales/*/messages.json"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

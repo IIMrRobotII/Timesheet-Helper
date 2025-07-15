@@ -1,0 +1,81 @@
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: opacity var(--transition-fast);
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+/* Modal Content */
+.modal-content {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  max-width: 320px;
+  width: 90%;
+  animation: modalSlideIn var(--transition-fast);
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-xl) var(--space-xl) var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--border-default);
+  text-align: start; /* Logical property for RTL */
+}
+
+.modal-icon {
+  font-size: 18px;
+}
+
+.modal-title {
+  font: var(--font-weight-semibold) var(--font-size-lg) /
+    var(--line-height-tight) inherit;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Modal Body */
+.modal-body {
+  padding: var(--space-lg) var(--space-xl);
+  text-align: start; /* Logical property for RTL */
+}
+
+.modal-message {
+  font: var(--font-size-base) / var(--line-height-relaxed) inherit;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-xl) var(--space-xl) var(--space-xl);
+}
+
+/* Modal Animation */
+@keyframes modalSlideIn {
+  from {
+    transform: scale(0.9) translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}

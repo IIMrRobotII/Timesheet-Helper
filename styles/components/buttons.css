@@ -1,0 +1,313 @@
+/* Base Button */
+.btn {
+  --btn-bg: var(--surface-primary);
+  --btn-color: var(--text-primary);
+  --btn-border: var(--border-default);
+  --btn-hover-bg: var(--surface-secondary);
+  --btn-hover-color: var(--text-primary);
+  --btn-padding-y: var(--space-md);
+  --btn-padding-x: var(--space-lg);
+  --btn-font-size: var(--font-size-md);
+  --btn-gap: var(--space-sm);
+
+  /* Base Styles */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--btn-gap);
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  border: 1px solid var(--btn-border);
+  border-radius: var(--radius-md);
+  background: var(--btn-bg);
+  color: var(--btn-color);
+  font-size: var(--btn-font-size);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-fast);
+}
+
+/* Button States */
+.btn:hover:not(:disabled) {
+  background: var(--btn-hover-bg);
+  color: var(--btn-hover-color);
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn:disabled:hover {
+  background: var(--btn-bg);
+  color: var(--btn-color);
+  border-color: var(--btn-border);
+}
+
+.btn:focus {
+  outline: 2px solid var(--action-primary);
+  outline-offset: 2px;
+}
+
+/* Primary Button */
+.btn--primary {
+  --btn-bg: var(--action-primary);
+  --btn-color: var(--action-primary-text);
+  --btn-border: var(--action-primary);
+  --btn-hover-bg: var(--action-primary-hover);
+  --btn-hover-color: var(--action-primary-text);
+
+  width: 100%;
+}
+
+/* Danger Button */
+.btn--danger {
+  --btn-bg: transparent;
+  --btn-color: var(--action-danger);
+  --btn-border: var(--action-danger);
+  --btn-hover-bg: var(--action-danger);
+  --btn-hover-color: var(--action-primary-text);
+  --btn-padding-y: var(--space-sm);
+  --btn-font-size: var(--font-size-sm);
+  --btn-gap: var(--space-xs);
+}
+
+.btn--danger:focus {
+  outline-color: var(--action-danger);
+}
+
+/* Full Width Danger Button */
+.btn--danger-full {
+  --btn-bg: transparent;
+  --btn-color: var(--action-danger);
+  --btn-border: var(--action-danger);
+  --btn-hover-bg: var(--action-danger);
+  --btn-hover-color: var(--action-primary-text);
+  --btn-padding-y: var(--space-sm);
+  --btn-font-size: var(--font-size-sm);
+  --btn-gap: var(--space-xs);
+
+  width: 100%;
+  margin-top: var(--space-md);
+}
+
+.btn--danger-full:focus {
+  outline-color: var(--action-danger);
+}
+
+/* Modal Buttons */
+.btn--modal {
+  --btn-padding-y: var(--space-md);
+  --btn-padding-x: var(--space-xl);
+  --btn-font-size: var(--font-size-sm);
+
+  flex: 1;
+}
+
+.btn--modal-cancel {
+  --btn-bg: transparent;
+  --btn-color: var(--text-secondary);
+  --btn-border: var(--border-default);
+  --btn-hover-bg: var(--surface-secondary);
+  --btn-hover-color: var(--text-primary);
+}
+
+.btn--modal-confirm {
+  --btn-bg: var(--action-danger);
+  --btn-color: var(--action-primary-text);
+  --btn-border: var(--action-danger);
+  --btn-hover-bg: var(--action-danger-hover);
+  --btn-hover-color: var(--action-primary-text);
+}
+
+/* Button Text and Icon Layout */
+.btn__text {
+  flex: 1;
+}
+
+.btn__icon {
+  font-size: var(--font-size-base);
+  opacity: 0.8;
+}
+
+/* RTL Icon Handling */
+[dir="rtl"] .btn__icon {
+  transform: scaleX(-1);
+}
+
+/* Action Button */
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--action-primary);
+  border-radius: var(--radius-md);
+  background: var(--action-primary);
+  color: var(--action-primary-text);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-fast);
+  width: 100%;
+}
+
+.action-button:hover:not(:disabled) {
+  background: var(--action-primary-hover);
+  transform: translateY(-1px);
+}
+
+.action-button:active {
+  transform: translateY(0);
+}
+
+.action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.action-button:focus {
+  outline: 2px solid var(--action-primary);
+  outline-offset: 2px;
+}
+
+.btn-danger,
+.clear-data-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-lg);
+  border: 1px solid var(--action-danger);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--action-danger);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-fast);
+}
+
+.btn-danger:hover:not(:disabled),
+.clear-data-button:hover:not(:disabled) {
+  background: var(--action-danger);
+  color: var(--action-primary-text);
+  transform: translateY(-1px);
+}
+
+.btn-danger:disabled:hover,
+.clear-data-button:disabled:hover {
+  background: transparent;
+  color: var(--action-danger);
+}
+
+.btn-danger:active,
+.clear-data-button:active {
+  transform: translateY(0);
+}
+
+.btn-danger:disabled,
+.clear-data-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-danger:focus,
+.clear-data-button:focus {
+  outline: 2px solid var(--action-danger);
+  outline-offset: 2px;
+}
+
+.clear-data-button {
+  width: 100%;
+  margin-top: var(--space-md);
+}
+
+.modal-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md) var(--space-xl);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-fast);
+  flex: 1;
+}
+
+.modal-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.modal-btn:active {
+  transform: translateY(0);
+}
+
+.modal-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.modal-btn:focus {
+  outline: 2px solid var(--action-primary);
+  outline-offset: 2px;
+}
+
+.modal-btn-cancel {
+  background: transparent;
+  border-color: var(--border-default);
+  color: var(--text-secondary);
+}
+
+.modal-btn-cancel:hover:not(:disabled) {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+}
+
+.modal-btn-confirm {
+  background: var(--action-danger);
+  border-color: var(--action-danger);
+  color: var(--action-primary-text);
+}
+
+.modal-btn-confirm:hover:not(:disabled) {
+  background: var(--action-danger-hover);
+  border-color: var(--action-danger-hover);
+}
+
+.button-text {
+  flex: 1;
+}
+
+.button-icon {
+  font-size: var(--font-size-base);
+  opacity: 0.8;
+}
+
+.clear-icon {
+  font-size: var(--font-size-base);
+}
+
+.clear-text {
+  font: var(--font-weight-medium) var(--font-size-xs) / var(--line-height-tight)
+    inherit;
+}

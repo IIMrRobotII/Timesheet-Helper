@@ -1,0 +1,22 @@
+/* Modular CSS Architecture */
+
+/* 1. Design */
+@import "components/variables.css";
+
+/* 2. Base */
+@import "components/base.css";
+
+/* 3. Buttons */
+@import "components/buttons.css";
+
+/* 4. Layout */
+@import "components/layout.css";
+
+/* 5. Forms */
+@import "components/forms.css";
+
+/* 6. Modal */
+@import "components/modal.css";
+
+/* 7. Utilities */
+@import "components/utilities.css";

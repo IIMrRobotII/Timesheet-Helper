@@ -1,0 +1,50 @@
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+/* Body & Document */
+body {
+  font: var(--font-size-lg) / var(--line-height-relaxed) var(--font-family-base);
+  margin: 0;
+  padding: 0;
+  width: var(--popup-width-collapsed);
+  min-width: var(--popup-width-collapsed);
+  min-height: var(--popup-height-min);
+  max-height: var(--popup-height-max);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  transition: width var(--transition-smooth);
+  direction: var(--direction);
+  overflow: hidden;
+}
+
+/* Typography */
+h1 {
+  font: var(--font-weight-semibold) var(--font-size-xl) /
+    var(--line-height-tight) inherit;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+/* Text Elements */
+.guidance-text {
+  font-size: var(--font-size-base);
+  margin-bottom: var(--space-lg);
+  color: var(--text-secondary);
+  line-height: var(--line-height-normal);
+}
+
+.footer-text {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+/* Load State - Disable Transitions */
+.no-transition,
+.no-transition *,
+body:has(.no-transition) {
+  transition: none !important;
+  animation: none !important;
+}
