@@ -4,7 +4,7 @@
     "description": "Extension name displayed in Chrome"
   },
   "extensionDescription": {
-    "message": "העתקת שעות עבודה מדוח הנוכחות של הילן למערכת השכר של מלם",
+    "message": "העתקת שעות עבודה מדוח הנוכחות של חילן למערכת השכר של מלם",
     "description": "Extension description displayed in Chrome"
   },
   "defaultTitle": {
@@ -19,20 +19,8 @@
     "message": "אתר לא מזוהה",
     "description": "Badge text for unknown website"
   },
-  "extensionEnabled": {
-    "message": "תוסף מופעל",
-    "description": "Toggle label for extension enabled state"
-  },
-  "extensionDisabled": {
-    "message": "תוסף כבוי",
-    "description": "Toggle label for extension disabled state"
-  },
-  "statistics": {
-    "message": "סטטיסטיקות",
-    "description": "Statistics section title and toggle label"
-  },
   "guidanceTextDefault": {
-    "message": "אנא נווט לאתר דוח הנוכחות של הילן או מערכת השכר של מלם.",
+    "message": "אנא נווט לאתר דוח הנוכחות של חילן או מערכת השכר של מלם.",
     "description": "Default guidance text for unknown websites"
   },
   "guidanceTextSource": {
@@ -60,16 +48,16 @@
     "description": "Paste hours button text for Malam"
   },
   "contextHilan": {
-    "message": "דוח נוכחות הילן",
-    "description": "Context name for Hilan timesheet"
+    "message": "חילן",
+    "description": "Context name for general Hilan website pages"
+  },
+  "contextHilanTimesheet": {
+    "message": "דוח נוכחות חילן",
+    "description": "Context name for Hilan timesheet pages where operations are enabled"
   },
   "contextMalam": {
     "message": "מערכת שכר מלם",
     "description": "Context name for Malam payroll"
-  },
-  "analyticsTitle": {
-    "message": "סטטיסטיקות",
-    "description": "Analytics section title"
   },
   "statLastCopied": {
     "message": "העתקה אחרונה:",
@@ -99,26 +87,6 @@
     "message": "נקה את כל הנתונים",
     "description": "Clear data button text"
   },
-  "modalTitle": {
-    "message": "למחוק את כל נתוני התוסף?",
-    "description": "Confirmation modal title"
-  },
-  "modalMessage": {
-    "message": "פעולה זו תמחק את כל הסטטיסטיקות, נתוני דוח הנוכחות וההגדרות לצמיתות.",
-    "description": "Confirmation modal message"
-  },
-  "modalCancel": {
-    "message": "ביטול",
-    "description": "Modal cancel button text"
-  },
-  "modalConfirm": {
-    "message": "מחק נתונים",
-    "description": "Modal confirm button text"
-  },
-  "languageToggle": {
-    "message": "שפה",
-    "description": "Language toggle button text"
-  },
   "languageEnglish": {
     "message": "English",
     "description": "English language option"
@@ -143,39 +111,13 @@
     "message": "פעולה אחרת מתבצעת כעת. אנא המתן.",
     "description": "Error message when operation is in progress"
   },
-  "successCopied": {
-    "message": "הועתקו בהצלחה $COUNT$ רשומות מדוח הנוכחות של הילן",
-    "description": "Success message for copy operation",
-    "placeholders": {
-      "count": {
-        "content": "$1",
-        "example": "5"
-      }
-    }
+  "errorNoTimeBoxes": {
+    "message": "לא נמצאו תיבות זמן לחיצות. ודא שאתה בעמוד יומן הנוכחות של חילן.",
+    "description": "Error when no time boxes found for auto-click"
   },
-  "successPasted": {
-    "message": "הודבקו בהצלחה $COUNT$ רשומות למערכת השכר של מלם",
-    "description": "Success message for paste operation",
-    "placeholders": {
-      "count": {
-        "content": "$1",
-        "example": "5"
-      }
-    }
-  },
-  "successAutoClick": {
-    "message": "נלחצו בהצלחה $COUNT$ מתוך $TOTAL$ תיבות זמן",
-    "description": "Success message for auto-click operation",
-    "placeholders": {
-      "count": {
-        "content": "$1",
-        "example": "12"
-      },
-      "total": {
-        "content": "$2",
-        "example": "15"
-      }
-    }
+  "errorUnknownAction": {
+    "message": "התבקשה פעולה לא מוכרת",
+    "description": "Error for unknown action"
   },
   "workingCopying": {
     "message": "מעתיק נתוני דוח נוכחות...",
@@ -197,167 +139,33 @@
     "message": "כל נתוני התוסף נמחקו בהצלחה.",
     "description": "Success message for clear data operation"
   },
-  "logStartingAutoClick": {
-    "message": "מתחיל פעולת לחיצה אוטומטית...",
-    "description": "Console log for starting auto-click"
+  "successAllBoxesSelected": {
+    "message": "כל תיבות הזמן כבר נבחרו.",
+    "description": "Success message when all time boxes are already clicked"
   },
-  "logFoundTimeBoxes": {
-    "message": "נמצאו $COUNT$ תיבות זמן לחיצות",
-    "description": "Console log for found time boxes",
-    "placeholders": {
-      "count": {
-        "content": "$1",
-        "example": "15"
-      }
-    }
+  "errorClearDataFailed": {
+    "message": "מחיקת הנתונים נכשלה",
+    "description": "Error message when clearing data fails"
   },
-  "logClickedTimeBox": {
-    "message": "נלחצה תיבת זמן $CURRENT$ מתוך $TOTAL$",
-    "description": "Console log for clicked time box progress",
-    "placeholders": {
-      "current": {
-        "content": "$1",
-        "example": "3"
-      },
-      "total": {
-        "content": "$2",
-        "example": "15"
-      }
-    }
+  "successLanguageChanged": {
+    "message": "השפה שונתה",
+    "description": "Success message when language is switched"
   },
-  "logStartingCopy": {
-    "message": "מתחיל להעתיק נתוני דוח נוכחות מהילן...",
-    "description": "Console log for starting copy operation"
+  "errorLanguageSwitchFailed": {
+    "message": "שינוי השפה נכשל",
+    "description": "Error message when language switch fails"
   },
-  "logScanningRows": {
-    "message": "סורק $COUNT$ שורות טבלה לנתוני דוח נוכחות",
-    "description": "Console log for scanning rows",
-    "placeholders": {
-      "count": {
-        "content": "$1",
-        "example": "50"
-      }
-    }
+  "errorOperationTimedOut": {
+    "message": "הפעולה פגה - אנא נסה שוב",
+    "description": "Error message when operation times out"
   },
-  "logFoundShift": {
-    "message": "נמצאה משמרת עבור $DATE$: $START$ - $END$",
-    "description": "Console log for found shift data",
-    "placeholders": {
-      "date": {
-        "content": "$1",
-        "example": "15/03"
-      },
-      "start": {
-        "content": "$2",
-        "example": "08:00"
-      },
-      "end": {
-        "content": "$3",
-        "example": "17:00"
-      }
-    }
+  "errorCommunicationIssue": {
+    "message": "בעיית תקשורת - הפעולה אולי הצליחה",
+    "description": "Error message when communication fails but operation might have succeeded"
   },
-  "logSavedEntries": {
-    "message": "נשמרו בהצלחה $COUNT$ רשומות דוח נוכחות",
-    "description": "Console log for saved entries",
-    "placeholders": {
-      "count": {
-        "content": "$1",
-        "example": "5"
-      }
-    }
-  },
-  "logStartingPaste": {
-    "message": "מתחיל להדביק נתוני דוח נוכחות למלם...",
-    "description": "Console log for starting paste operation"
-  },
-  "logFoundMalamRows": {
-    "message": "נמצאו $COUNT$ שורות בדוח הנוכחות של מלם",
-    "description": "Console log for found Malam rows",
-    "placeholders": {
-      "count": {
-        "content": "$1",
-        "example": "30"
-      }
-    }
-  },
-  "logFilledEntry": {
-    "message": "מולא $DATE$: $START$ - $END$",
-    "description": "Console log for filled timesheet entry",
-    "placeholders": {
-      "date": {
-        "content": "$1",
-        "example": "15/03/2024"
-      },
-      "start": {
-        "content": "$2",
-        "example": "08:00"
-      },
-      "end": {
-        "content": "$3",
-        "example": "17:00"
-      }
-    }
-  },
-  "logExtensionInitialized": {
-    "message": "עוזר דוח הנוכחות אותחל באתר $SITE$",
-    "description": "Console log for extension initialization",
-    "placeholders": {
-      "site": {
-        "content": "$1",
-        "example": "דוח נוכחות הילן"
-      }
-    }
-  },
-  "logUnknownSite": {
-    "message": "אתר לא מזוהה",
-    "description": "Text for unknown site in initialization log"
-  },
-  "errorNoTimeBoxes": {
-    "message": "לא נמצאו תיבות זמן לחיצות. ודא שאתה בעמוד יומן הנוכחות של הילן.",
-    "description": "Error when no time boxes found for auto-click"
-  },
-  "errorNoTimesheetData": {
-    "message": "לא נמצאו רשומות דוח נוכחות. ודא שאתה בעמוד הנכון של דוח הנוכחות של הילן עם שעות עבודה גלויות.",
-    "description": "Error when no timesheet data found during copy"
-  },
-  "errorNoDataToPaste": {
-    "message": "לא נמצאו נתוני דוח נוכחות להדבקה. אנא העתק מהילן תחילה.",
-    "description": "Error when no data available for pasting"
-  },
-  "errorNoMatchingDates": {
-    "message": "לא נמצאו תאריכים תואמים בדוח הנוכחות של מלם. אנא ודא שנתוני דוח הנוכחות תואמים.",
-    "description": "Error when no matching dates found during paste"
-  },
-  "errorInvalidSiteAction": {
-    "message": "פעולת אתר לא חוקית",
-    "description": "Error for invalid site action"
-  },
-  "errorUnknownAction": {
-    "message": "התבקשה פעולה לא מוכרת",
-    "description": "Error for unknown action"
-  },
-  "errorAutoClickWrongSite": {
-    "message": "לחיצה אוטומטית זמינה רק בעמודי דוח הנוכחות של הילן",
-    "description": "Error when auto-click attempted on wrong site"
-  },
-  "errorOperationNotSupported": {
-    "message": "פעולה זו אינה נתמכת באתר זה",
-    "description": "Error when operation not supported on current site"
-  },
-  "errorMessageProcessing": {
-    "message": "שגיאה בעיבוד הודעה:",
-    "description": "Console error prefix for message processing errors"
-  },
-  "warnFailedTimeBoxClick": {
-    "message": "נכשל בלחיצה על תיבת זמן $INDEX$:",
-    "description": "Console warning for failed time box click",
-    "placeholders": {
-      "index": {
-        "content": "$1",
-        "example": "3"
-      }
-    }
+  "errorOperationFailed": {
+    "message": "הפעולה נכשלה",
+    "description": "Generic error message prefix for failed operations"
   },
   "timeFormatJustNow": {
     "message": "עכשיו",
@@ -391,36 +199,78 @@
     "message": "כישלונות",
     "description": "Plural form of 'fails' in statistics"
   },
-  "errorOperationTimedOut": {
-    "message": "הפעולה פגה - אנא נסה שוב",
-    "description": "Error message when operation times out"
-  },
-  "errorCommunicationIssue": {
-    "message": "בעיית תקשורת - הפעולה אולי הצליחה",
-    "description": "Error message when communication fails but operation might have succeeded"
-  },
-  "errorOperationFailed": {
-    "message": "הפעולה נכשלה",
-    "description": "Generic error message prefix for failed operations"
-  },
-  "successLanguageChanged": {
-    "message": "השפה שונתה",
-    "description": "Success message when language is switched"
-  },
-  "errorLanguageSwitchFailed": {
-    "message": "שינוי השפה נכשל",
-    "description": "Error message when language switch fails"
-  },
-  "errorClearDataFailed": {
-    "message": "מחיקת הנתונים נכשלה",
-    "description": "Error message when clearing data fails"
-  },
-  "errorNoActiveTab": {
-    "message": "לא נמצא טאב פעיל",
-    "description": "Error when no active tab is found for communication"
-  },
   "footerMadeBy": {
     "message": "נוצר על ידי שגב לוינשטיין",
     "description": "Footer text showing the extension creator"
+  },
+  "extensionEnabled": {
+    "message": "תוסף מופעל",
+    "description": "Toggle label for extension enabled state"
+  },
+  "extensionDisabled": {
+    "message": "תוסף כבוי",
+    "description": "Toggle label for extension disabled state"
+  },
+  "statistics": {
+    "message": "סטטיסטיקות",
+    "description": "Statistics section title and toggle label"
+  },
+  "analyticsTitle": {
+    "message": "סטטיסטיקות",
+    "description": "Analytics section title"
+  },
+  "modalTitle": {
+    "message": "למחוק את כל נתוני התוסף?",
+    "description": "Confirmation modal title"
+  },
+  "modalMessage": {
+    "message": "פעולה זו תמחק את כל הסטטיסטיקות, נתוני דוח הנוכחות וההגדרות לצמיתות.",
+    "description": "Confirmation modal message"
+  },
+  "modalCancel": {
+    "message": "ביטול",
+    "description": "Modal cancel button text"
+  },
+  "modalConfirm": {
+    "message": "מחק נתונים",
+    "description": "Modal confirm button text"
+  },
+  "languageToggle": {
+    "message": "שפה",
+    "description": "Language toggle button text"
+  },
+  "successCopied": {
+    "message": "הועתקו בהצלחה $COUNT$ רשומות מדוח הנוכחות של חילן",
+    "description": "Success message for copy operation",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "successPasted": {
+    "message": "הודבקו בהצלחה $COUNT$ רשומות למערכת השכר של מלם",
+    "description": "Success message for paste operation",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "successAutoClick": {
+    "message": "נלחצו בהצלחה $COUNT$ מתוך $TOTAL$ תיבות זמן",
+    "description": "Success message for auto-click operation",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      },
+      "total": {
+        "content": "$2",
+        "example": "15"
+      }
+    }
   }
 }

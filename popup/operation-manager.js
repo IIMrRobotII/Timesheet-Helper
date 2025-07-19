@@ -56,25 +56,28 @@ class OperationManager {
           this.i18n
         );
         this.uiManager.showStatus(`✅ ${message}`, "success");
+        await this.controller.analyticsDisplay.loadAnalytics();
       } else {
         this.uiManager.showStatus(
           `❌ ${this.StatusManager.getErrorMessage(response, this.i18n)}`,
           "error"
         );
+        await this.controller.analyticsDisplay.loadAnalytics();
       }
-      await this.controller.analyticsDisplay.loadAnalytics();
     } catch (error) {
       this.uiManager.showStatus(
         this.StatusManager.getErrorFromException(error, this.i18n),
         "error"
       );
+      // For communication failures, retry after delay; otherwise load immediately
       if (error.message.includes("Communication failed")) {
         setTimeout(
           () => this.controller.analyticsDisplay.loadAnalytics(),
-          1000
+          window.TimesheetCommon.TIMING.ANALYTICS_RETRY_DELAY
         );
+      } else {
+        await this.controller.analyticsDisplay.loadAnalytics();
       }
-      await this.controller.analyticsDisplay.loadAnalytics();
     } finally {
       this.uiManager.setButtonText(button, defaultText);
       this.setOperationInProgress(false);
@@ -83,19 +86,14 @@ class OperationManager {
 
   //Send message to content script
   async sendMessage(message) {
-    try {
-      const [tab] = await this.tabs.query({
-        active: true,
-        currentWindow: true,
-      });
-      if (!tab) {
-        throw new Error("No active tab found");
-      }
-      return await this.tabs.sendMessage(tab.id, message);
-    } catch (error) {
-      console.error("Message sending failed:", error);
-      throw error;
+    const [tab] = await this.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+    if (!tab) {
+      throw new Error("No active tab found");
     }
+    return await this.tabs.sendMessage(tab.id, message);
   }
 
   //Set operation in progress state

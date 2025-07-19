@@ -15,10 +15,13 @@ class LanguageManager {
       );
     });
 
-    const langName =
-      currentLang === "he"
-        ? this.i18n.getMessage("languageHebrew")
-        : this.i18n.getMessage("languageEnglish");
+    const supportedLanguages = this.i18n.getSupportedLanguages();
+    const currentLanguageInfo = supportedLanguages.find(
+      (lang) => lang.code === currentLang
+    );
+    const langName = currentLanguageInfo
+      ? currentLanguageInfo.name
+      : this.i18n.getMessage("languageEnglish");
     const languageText = document.querySelector(".language-text");
     if (languageText) {
       languageText.textContent = `${this.i18n.getMessage(
@@ -73,7 +76,7 @@ class LanguageManager {
 
   //Switch to different language
   async switchLanguage(language) {
-    if (!["en", "he"].includes(language)) return;
+    if (!this.i18n.supportedLanguages.includes(language)) return;
 
     try {
       await this.i18n.switchLanguage(language);
@@ -84,7 +87,6 @@ class LanguageManager {
         "success"
       );
     } catch (error) {
-      console.error("Error switching language:", error);
       this.uiManager.showStatus(
         `❌ ${this.i18n.getMessage("errorLanguageSwitchFailed")}`,
         "error"

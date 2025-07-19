@@ -35,7 +35,7 @@
   gap: var(--space-md);
   padding: var(--space-xl) var(--space-xl) var(--space-lg) var(--space-xl);
   border-bottom: 1px solid var(--border-default);
-  text-align: start; /* Logical property for RTL */
+  text-align: start;
 }
 
 .modal-icon {
@@ -52,7 +52,7 @@
 /* Modal Body */
 .modal-body {
   padding: var(--space-lg) var(--space-xl);
-  text-align: start; /* Logical property for RTL */
+  text-align: start;
 }
 
 .modal-message {
@@ -68,7 +68,7 @@
   padding: var(--space-lg) var(--space-xl) var(--space-xl) var(--space-xl);
 }
 
-/* Modal Animation */
+/* Modal Animation - Slide In */
 @keyframes modalSlideIn {
   from {
     transform: scale(0.9) translateY(-10px);

@@ -28,6 +28,11 @@ window.TimesheetCommon = {
   SITES: {
     HILAN: {
       domain: "hilan.co.il",
+      paths: [],
+      action: "copy",
+    },
+    HILAN_TIMESHEET: {
+      domain: "hilan.co.il",
       paths: ["/Hilannetv2/Attendance/", "/Hilannetv2/attendance/"],
       action: "copy",
     },
@@ -75,8 +80,23 @@ window.TimesheetCommon = {
     NO_DATA: "NO_DATA",
     OPERATION_IN_PROGRESS: "OPERATION_IN_PROGRESS",
     NO_TIME_BOXES: "NO_TIME_BOXES",
+    ALL_BOXES_SELECTED: "ALL_BOXES_SELECTED",
     COPY_FAILED: "COPY_FAILED",
     PASTE_FAILED: "PASTE_FAILED",
+  },
+
+  // Timing constants
+  TIMING: {
+    OPERATION_DELAY: 100,
+    ANALYTICS_RETRY_DELAY: 1000,
+    COMMUNICATION_TIMEOUT: 10000,
+    MILLISECONDS_PER_MINUTE: 60000,
+    MILLISECONDS_PER_HOUR: 3600000,
+    MILLISECONDS_PER_DAY: 86400000,
+    TIME_THRESHOLD_JUST_NOW: 1,
+    TIME_THRESHOLD_MINUTES_TO_HOURS: 60,
+    TIME_THRESHOLD_HOURS_TO_DAYS: 24,
+    TIME_THRESHOLD_DAYS_TO_WEEKS: 7,
   },
 
   // Default settings
@@ -96,11 +116,11 @@ window.TimesheetCommon = {
     successRate: 0,
   },
 
-  // UI Contexts
   CONTEXTS: {
-    HILAN: { name: "contextHilan", type: "source", primaryAction: "copy" },
-    MALAM: { name: "contextMalam", type: "target", primaryAction: "paste" },
-    UNKNOWN: { name: "unknownWebsite", type: "unknown", primaryAction: null },
+    HILAN: "HILAN",
+    HILAN_TIMESHEET: "HILAN_TIMESHEET",
+    MALAM: "MALAM",
+    UNKNOWN: "UNKNOWN",
   },
 
   // Utility Functions
@@ -119,11 +139,6 @@ window.TimesheetCommon = {
         el.dispatchEvent(new Event(type, { bubbles: true, cancelable: true }))
       ),
 
-    // DOM selector helpers
-    $: (s) => document.querySelector(s),
-    $$: (s) => document.querySelectorAll(s),
-    byId: (id) => document.getElementById(id),
-
     // Response formatting
     formatResponse: (success, data = {}) => ({
       success,
@@ -131,17 +146,34 @@ window.TimesheetCommon = {
       ...(success ? data : { error: data }),
     }),
 
-    // Site detection
+    // Site detection with priority for timesheet pages
     detectSite: (url = location.href) => {
       const lowerUrl = url.toLowerCase();
+
+      // Check for timesheet pages first (higher priority)
       for (const [name, site] of Object.entries(TimesheetCommon.SITES)) {
-        if (
-          lowerUrl.includes(site.domain) &&
-          site.paths.some((path) => lowerUrl.includes(path.toLowerCase()))
-        ) {
-          return { name, ...site };
+        if (name === "HILAN_TIMESHEET" && lowerUrl.includes(site.domain)) {
+          if (
+            site.paths.length === 0 ||
+            site.paths.some((path) => lowerUrl.includes(path.toLowerCase()))
+          ) {
+            return { name, ...site };
+          }
         }
       }
+
+      // Then check for general site matches
+      for (const [name, site] of Object.entries(TimesheetCommon.SITES)) {
+        if (name !== "HILAN_TIMESHEET" && lowerUrl.includes(site.domain)) {
+          if (
+            site.paths.length === 0 ||
+            site.paths.some((path) => lowerUrl.includes(path.toLowerCase()))
+          ) {
+            return { name, ...site };
+          }
+        }
+      }
+
       return null;
     },
 
@@ -152,7 +184,7 @@ window.TimesheetCommon = {
         new Promise((resolve, reject) => {
           const timeout = setTimeout(
             () => reject(new Error("COMMUNICATION_TIMEOUT")),
-            30000
+            TimesheetCommon.TIMING.COMMUNICATION_TIMEOUT
           );
           chrome.tabs.sendMessage(tabId, message, (response) => {
             clearTimeout(timeout);

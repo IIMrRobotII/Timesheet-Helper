@@ -1,5 +1,4 @@
 window.StatusManager = {
-  //Show status message in popup
   showStatus(statusElement, message, type = "message") {
     if (!statusElement) return;
 
@@ -16,15 +15,6 @@ window.StatusManager = {
     statusElement.textContent = message;
     statusElement.className = `visible status-${type}`;
     statusElement.style.display = "block";
-  },
-
-  //Format response for content script
-  formatResponse(success, data = {}) {
-    return {
-      success,
-      timestamp: new Date().toISOString(),
-      ...(success ? data : { error: data }),
-    };
   },
 
   //Get error message from response
@@ -62,6 +52,9 @@ window.StatusManager = {
   //Format success message with count
   formatSuccessMessage(action, response, context, i18n) {
     if (action === "autoClickTimeBoxes") {
+      if (response.alreadySelected) {
+        return i18n.getMessage("successAllBoxesSelected");
+      }
       return i18n.formatSuccessMessage(
         "successAutoClick",
         response.clickedCount || 0,
@@ -72,15 +65,5 @@ window.StatusManager = {
         context.primaryAction === "copy" ? "successCopied" : "successPasted";
       return i18n.formatSuccessMessage(messageKey, response.count || 0);
     }
-  },
-
-  //Status display types
-  TYPES: {
-    MESSAGE: "message",
-    SUCCESS: "success",
-    ERROR: "error",
-    WARNING: "warning",
-    WORKING: "working",
-    INFO: "info",
   },
 };

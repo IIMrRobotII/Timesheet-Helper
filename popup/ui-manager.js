@@ -2,14 +2,103 @@ class UIManager {
   constructor(controller) {
     this.controller = controller;
     this.elements = {};
-    this.UI_CONFIG = window.UIConfig;
     this.StatusManager = window.StatusManager;
     this.i18n = controller.i18n;
+
+    // DOM element selectors
+    this.ELEMENTS = {
+      container: ".container",
+      contextBadge: ".context-badge",
+      toggleLabel: ".toggle-label",
+      guidanceText: ".guidance-text",
+      statusDiv: "#status",
+      analyticsSection: ".analytics-section",
+      confirmModal: "#confirmModal",
+      extensionToggle: "#extensionToggle",
+      statisticsToggle: "#statisticsToggle",
+      autoClickButton: "#autoClickButton",
+      copyHours: "#copyHours",
+      languageToggle: "#languageToggle",
+      languageDropdown: "#languageDropdown",
+    };
+
+    // Event listener configurations
+    this.EVENT_CONFIGS = [
+      {
+        selector: "#extensionToggle",
+        event: "change",
+        handler: "handleExtensionToggle",
+        context: "popup",
+      },
+      {
+        selector: "#statisticsToggle",
+        event: "change",
+        handler: "handleStatisticsToggle",
+        context: "popup",
+      },
+      {
+        selector: "#autoClickButton",
+        event: "click",
+        handler: "handleAutoClickOperation",
+        context: "popup",
+      },
+      {
+        selector: "#copyHours",
+        event: "click",
+        handler: "handlePrimaryOperation",
+        context: "popup",
+      },
+      {
+        selector: "#languageToggle",
+        event: "click",
+        handler: "handleLanguageToggle",
+        context: "language",
+        preventDefault: true,
+        stopPropagation: true,
+      },
+      {
+        selector: document,
+        event: "click",
+        handler: "handleDocumentClick",
+        context: "language",
+      },
+      {
+        selector: document,
+        event: "keydown",
+        handler: "handleEscapeKey",
+        context: "modal",
+      },
+      {
+        selector: ".language-option",
+        event: "click",
+        handler: "handleLanguageOption",
+        context: "language",
+        multiple: true,
+      },
+      {
+        selector: "#modalCancel",
+        event: "click",
+        handler: "handleModalCancel",
+        context: "modal",
+      },
+      {
+        selector: "#modalConfirm",
+        event: "click",
+        handler: "handleModalConfirm",
+        context: "modal",
+      },
+      {
+        selector: "#confirmModal",
+        event: "click",
+        handler: "handleModalBackdrop",
+        context: "modal",
+      },
+    ];
   }
 
   //Cache DOM elements for efficient access
   cacheElements() {
-    Object.entries(this.UI_CONFIG.ELEMENTS).forEach(([key, selector]) => {
+    Object.entries(this.ELEMENTS).forEach(([key, selector]) => {
       if (selector === document) {
         this.elements[key] = document;
       } else {
@@ -23,7 +112,7 @@ class UIManager {
 
   //Set up event listeners using configuration
   setupEventListeners() {
-    this.UI_CONFIG.EVENT_CONFIGS.forEach((config) => {
+    this.EVENT_CONFIGS.forEach((config) => {
       if (config.multiple) {
         // Handle multiple elements (like language options)
         document.querySelectorAll(config.selector).forEach((element) => {
@@ -89,7 +178,10 @@ class UIManager {
       this.elements.contextBadge.className = `context-badge ${currentContext.type}`;
     }
 
-    const contextMessages = this.i18n.getContextMessages(currentContext.type);
+    const contextMessages = WebsiteContextManager.getContextMessages(
+      currentContext.websiteName,
+      this.i18n
+    );
     if (this.elements.guidanceText) {
       this.elements.guidanceText.textContent = contextMessages.guidance;
     }
@@ -116,7 +208,9 @@ class UIManager {
     this.elements.container.classList.toggle("collapsed", !isEnabled);
     this.elements.container.classList.toggle("expanded", isEnabled);
 
-    document.body.style.width = isEnabled ? "270px" : "180px";
+    document.body.style.width = isEnabled
+      ? "var(--popup-width-expanded)"
+      : "var(--popup-width-collapsed)";
     if (this.elements.toggleLabel) {
       this.elements.toggleLabel.textContent = this.i18n.getMessage(
         isEnabled ? "extensionEnabled" : "extensionDisabled"
@@ -133,28 +227,23 @@ class UIManager {
     );
   }
 
-  //Update button availability based on state
+  //Update button availability based on state using WebsiteContextManager
   updateButtonAvailability(currentContext, isOperationInProgress) {
     const isEnabled = this.elements.extensionToggle?.checked;
-    const isValidContext = currentContext.type !== "unknown";
 
-    this.setButtonState(
-      this.elements.autoClickButton,
-      !isEnabled ||
-        currentContext.primaryAction !== "copy" ||
-        isOperationInProgress
+    // Get button availability from WebsiteContextManager
+    const buttonStates = WebsiteContextManager.getButtonAvailability(
+      currentContext.websiteName,
+      isEnabled,
+      isOperationInProgress
     );
-    this.setButtonState(
-      this.elements.copyHours,
-      !isEnabled || !isValidContext || isOperationInProgress
-    );
+
+    this.setButtonState(this.elements.autoClickButton, !buttonStates.autoClick);
+    this.setButtonState(this.elements.copyHours, !buttonStates.copyHours);
 
     const clearButton =
       this.elements.analyticsSection?.querySelector("#clearDataButton");
-    if (clearButton) {
-      clearButton.disabled = isOperationInProgress;
-      clearButton.style.opacity = isOperationInProgress ? "0.5" : "1";
-    }
+    this.setButtonState(clearButton, !buttonStates.clearData);
   }
 
   //Set button state (enabled/disabled)

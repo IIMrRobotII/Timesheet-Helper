@@ -60,19 +60,6 @@
   margin-inline-end: var(--space-sm);
 }
 
-/* Content Sections */
-.section {
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid var(--border-default);
-  transition: all var(--transition-smooth);
-}
-
-.section:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-}
-
 /* Toggle Section Specific */
 .toggle-section {
   margin-bottom: var(--space-lg);
@@ -233,13 +220,6 @@
 
 #status.visible {
   display: block;
-}
-
-.status-message,
-.status-info {
-  background: var(--surface-secondary);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-default);
 }
 
 .status-success {

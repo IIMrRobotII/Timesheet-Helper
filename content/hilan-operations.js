@@ -13,10 +13,19 @@ class HilanOperations {
 
   //Perform auto-click operation on time boxes
   async performAutoClick() {
-    const timeBoxes = this.findClickableTimeBoxes();
+    // First check if any time boxes exist at all
+    const allTimeBoxes = Array.from(
+      document.querySelectorAll(this.SELECTORS.HILAN_TIME_BOXES)
+    );
 
-    if (timeBoxes.length === 0) {
+    if (allTimeBoxes.length === 0) {
       throw new Error(this.ERROR_CODES.NO_TIME_BOXES);
+    }
+
+    // Check if all boxes are already selected
+    const timeBoxes = this.findClickableTimeBoxes();
+    if (timeBoxes.length === 0 && allTimeBoxes.length > 0) {
+      throw new Error(this.ERROR_CODES.ALL_BOXES_SELECTED);
     }
 
     let clickedCount = 0;
@@ -30,7 +39,8 @@ class HilanOperations {
           })
         );
         clickedCount++;
-        if (i < timeBoxes.length - 1) await this.delay(100);
+        if (i < timeBoxes.length - 1)
+          await this.delay(window.TimesheetCommon.TIMING.OPERATION_DELAY);
       } catch (error) {
         // Skip failed clicks silently - they're often due to invalid elements
       }
@@ -59,10 +69,21 @@ class HilanOperations {
     });
   }
 
+  //Extract year from Hilan calendar display
+  extractYearFromHilan() {
+    const monthSpan = document.querySelector("#ctl00_mp_calendar_monthChanged");
+    if (monthSpan) {
+      const match = monthSpan.textContent.match(/\d{4}/);
+      if (match) return match[0];
+    }
+    return new Date().getFullYear().toString();
+  }
+
   //Copy timesheet data from Hilan
   async copyTimesheetData() {
     const timesheetData = {};
     const rows = document.querySelectorAll("tr");
+    const currentYear = this.extractYearFromHilan();
 
     rows.forEach((row) => {
       const dateCell = row.querySelector(this.SELECTORS.HILAN_DATE_CELL);
@@ -89,7 +110,7 @@ class HilanOperations {
         return;
 
       const malamDate = hilanDate.includes("/")
-        ? `${hilanDate}/${new Date().getFullYear()}`
+        ? `${hilanDate}/${currentYear}`
         : null;
       if (!malamDate) return;
 

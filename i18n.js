@@ -41,7 +41,6 @@ class I18nManager {
         await this.saveCurrentLanguage();
       }
     } catch (error) {
-      console.error("Error loading language:", error);
       this.currentLanguage = "en";
     }
   }
@@ -54,7 +53,7 @@ class I18nManager {
         this.currentLanguage
       );
     } catch (error) {
-      console.error("Error saving language:", error);
+      // Silent fail - not critical
     }
   }
 
@@ -72,7 +71,6 @@ class I18nManager {
         this.messages[key] = value.message || key;
       }
     } catch (error) {
-      console.error("Error loading messages:", error);
       // Fall back to Chrome's i18n API
       this.messages = {};
     }
@@ -115,24 +113,13 @@ class I18nManager {
       // Fall back to Chrome's i18n API
       return chrome.i18n.getMessage(key, substitutions) || key;
     } catch (error) {
-      console.error(`Error getting message for key: ${key}`, error);
       return key;
     }
-  }
-
-  //Get multiple messages at once
-  getMessages(keys) {
-    const messages = {};
-    keys.forEach((key) => {
-      messages[key] = this.getMessage(key);
-    });
-    return messages;
   }
 
   //Switch to a different language
   async switchLanguage(language) {
     if (!this.supportedLanguages.includes(language)) {
-      console.error(`Unsupported language: ${language}`);
       return false;
     }
 
@@ -163,28 +150,28 @@ class I18nManager {
     return this.isRtl() ? "rtl" : "ltr";
   }
 
-  //Set document direction based on current language
+  //Set document direction based on current language (popup only)
   setDocumentDirection() {
-    if (typeof document !== "undefined") {
+    // Only apply RTL to popup context, NEVER to content scripts or website pages
+    // Check for popup-specific indicators and that we're in extension context
+    if (
+      typeof document !== "undefined" &&
+      typeof chrome !== "undefined" &&
+      chrome.runtime &&
+      chrome.runtime.getURL &&
+      document.querySelector(".container") &&
+      document.querySelector("#extensionToggle") &&
+      (location.href.includes(chrome.runtime.getURL("")) ||
+        location.protocol === "chrome-extension:")
+    ) {
       const direction = this.getTextDirection();
       document.documentElement.dir = direction;
       document.documentElement.lang = this.currentLanguage;
 
-      // Add/remove RTL class to body for CSS targeting
+      // Add/remove RTL class to body for CSS targeting (popup only)
       document.body.classList.toggle("rtl", this.isRtl());
       document.body.classList.toggle("ltr", !this.isRtl());
     }
-  }
-
-  //Get CSS logical properties for current direction
-  getLogicalProperties() {
-    const isRtl = this.isRtl();
-    return {
-      start: isRtl ? "right" : "left",
-      end: isRtl ? "left" : "right",
-      startEdge: isRtl ? "right" : "left",
-      endEdge: isRtl ? "left" : "right",
-    };
   }
 
   //Format a success message with count
@@ -205,52 +192,6 @@ class I18nManager {
       },
       { code: "he", name: this.getMessage("languageHebrew"), native: "עברית" },
     ];
-  }
-
-  //Get context-specific messages
-  getContextMessages(contextType) {
-    const messages = {
-      source: {
-        name: this.getMessage("contextHilan"),
-        guidance: this.getMessage("guidanceTextSource"),
-        buttonText: this.getMessage("copyHours"),
-      },
-      target: {
-        name: this.getMessage("contextMalam"),
-        guidance: this.getMessage("guidanceTextTarget"),
-        buttonText: this.getMessage("pasteHours"),
-      },
-      unknown: {
-        name: this.getMessage("unknownWebsite"),
-        guidance: this.getMessage("guidanceTextDefault"),
-        buttonText: this.getMessage("syncHours"),
-      },
-    };
-
-    return messages[contextType] || messages.unknown;
-  }
-
-  //Get all UI messages needed for the popup
-  getPopupMessages() {
-    return {
-      pageTitle: this.getMessage("pageTitle"),
-      extensionEnabled: this.getMessage("extensionEnabled"),
-      statistics: this.getMessage("statistics"),
-      autoClickButton: this.getMessage("autoClickButton"),
-      languageToggle: this.getMessage("languageToggle"),
-      clearAllData: this.getMessage("clearAllData"),
-      modalTitle: this.getMessage("modalTitle"),
-      modalMessage: this.getMessage("modalMessage"),
-      modalCancel: this.getMessage("modalCancel"),
-      modalConfirm: this.getMessage("modalConfirm"),
-      analyticsTitle: this.getMessage("analyticsTitle"),
-      statLastCopied: this.getMessage("statLastCopied"),
-      statLastPasted: this.getMessage("statLastPasted"),
-      statLastAutoClick: this.getMessage("statLastAutoClick"),
-      statTotalOperations: this.getMessage("statTotalOperations"),
-      statSuccessRate: this.getMessage("statSuccessRate"),
-      statNever: this.getMessage("statNever"),
-    };
   }
 
   //Get all error messages
@@ -281,17 +222,19 @@ class I18nManager {
   formatTimestamp(timestamp) {
     if (!timestamp) return this.getMessage("statNever");
 
+    const TIMING = window.TimesheetCommon.TIMING;
     const diffMs = Date.now() - new Date(timestamp).getTime();
-    const diffMinutes = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
+    const diffMinutes = Math.floor(diffMs / TIMING.MILLISECONDS_PER_MINUTE);
+    const diffHours = Math.floor(diffMs / TIMING.MILLISECONDS_PER_HOUR);
+    const diffDays = Math.floor(diffMs / TIMING.MILLISECONDS_PER_DAY);
 
-    if (diffMinutes < 1) return this.getMessage("timeFormatJustNow");
-    if (diffMinutes < 60)
+    if (diffMinutes < TIMING.TIME_THRESHOLD_JUST_NOW)
+      return this.getMessage("timeFormatJustNow");
+    if (diffMinutes < TIMING.TIME_THRESHOLD_MINUTES_TO_HOURS)
       return `${diffMinutes}${this.getMessage("timeFormatMinutesAgo")}`;
-    if (diffHours < 24)
+    if (diffHours < TIMING.TIME_THRESHOLD_HOURS_TO_DAYS)
       return `${diffHours}${this.getMessage("timeFormatHoursAgo")}`;
-    if (diffDays < 7)
+    if (diffDays < TIMING.TIME_THRESHOLD_DAYS_TO_WEEKS)
       return `${diffDays}${this.getMessage("timeFormatDaysAgo")}`;
 
     return new Date(timestamp).toLocaleDateString(this.getCurrentLanguage());
