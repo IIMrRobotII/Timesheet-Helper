@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extensionName__",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "__MSG_extensionDescription__",
   "default_locale": "en",
   "icons": {
@@ -26,7 +26,6 @@
       "js": [
         "shared/common.js",
         "shared/status-manager.js",
-        "i18n.js",
         "content/analytics-tracker.js",
         "content/hilan-operations.js",
         "content/malam-operations.js",
@@ -40,7 +39,7 @@
   "web_accessible_resources": [
     {
       "resources": ["_locales/*/messages.json"],
-      "matches": ["<all_urls>"]
+      "matches": ["*://*.hilan.co.il/*", "*://payroll.malam.com/*"]
     }
   ]
 }

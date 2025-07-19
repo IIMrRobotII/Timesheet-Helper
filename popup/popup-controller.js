@@ -1,18 +1,5 @@
-const {
-  storage: sharedStorage,
-  DEFAULT_SETTINGS,
-  CONTEXTS,
-  utils,
-} = window.TimesheetCommon;
+const { storage, DEFAULT_SETTINGS, CONTEXTS, utils } = window.TimesheetCommon;
 const { detectSite, tabs } = utils;
-
-const storage = {
-  get: (keys) => sharedStorage.getBatch(keys),
-  set: (key, value) => sharedStorage.set(key, value),
-  clear: () => sharedStorage.clear(),
-};
-
-const DEFAULTS = DEFAULT_SETTINGS;
 
 class PopupController {
   constructor() {
@@ -21,7 +8,6 @@ class PopupController {
     this.modalResolve = null;
     this.i18n = window.i18nManager;
     this.storage = storage;
-    this.DEFAULTS = DEFAULTS;
 
     this.init();
   }
@@ -60,6 +46,8 @@ class PopupController {
       if (!tab) return this.createContext(CONTEXTS.UNKNOWN);
 
       const site = detectSite(tab.url);
+      if (site?.name === "HILAN_TIMESHEET")
+        return this.createContext(CONTEXTS.HILAN_TIMESHEET);
       if (site?.name === "HILAN") return this.createContext(CONTEXTS.HILAN);
       if (site?.name === "MALAM") return this.createContext(CONTEXTS.MALAM);
       return this.createContext(CONTEXTS.UNKNOWN);
@@ -68,18 +56,14 @@ class PopupController {
     }
   }
 
-  //Create context object
-  createContext(contextType) {
-    return {
-      name: this.i18n.getMessage(contextType.name),
-      type: contextType.type,
-      primaryAction: contextType.primaryAction,
-    };
+  //Create context object using WebsiteContextManager
+  createContext(websiteName) {
+    return WebsiteContextManager.createContext(websiteName, this.i18n);
   }
 
   //Load and apply settings from storage
   async loadAndApplySettings() {
-    const settings = await storage.get(DEFAULTS);
+    const settings = await storage.getBatch(DEFAULT_SETTINGS);
     this.uiManager.elements.extensionToggle.checked = settings.extensionEnabled;
     this.uiManager.elements.statisticsToggle.checked =
       settings.statisticsEnabled;

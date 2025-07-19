@@ -3,16 +3,12 @@ class AnalyticsDisplay {
     this.controller = controller;
     this.storage = controller.storage;
     this.i18n = controller.i18n;
-    this.DEFAULTS = controller.DEFAULTS;
+    this.DEFAULT_SETTINGS = window.TimesheetCommon.DEFAULT_SETTINGS;
   }
   async loadAnalytics() {
-    const data = await this.storage.get(this.DEFAULTS);
+    const data = await this.storage.getBatch(this.DEFAULT_SETTINGS);
     const analyticsSection = document.querySelector(".analytics-section");
     if (!analyticsSection) return;
-
-    // Format counter value function
-    const formatCounterValue = (timestamp, count, failures = 0) =>
-      this.i18n.formatCounterValue(timestamp, count, failures);
 
     // Create stat item function
     const createStatItem = (label, value) =>
@@ -35,7 +31,7 @@ class AnalyticsDisplay {
       <div class="analytics-stats">
         ${createStatItem(
           this.i18n.getMessage("statLastCopied"),
-          formatCounterValue(
+          this.i18n.formatCounterValue(
             data.lastCopyTime,
             data.totalCopies || 0,
             data.copyFailures || 0
@@ -43,7 +39,7 @@ class AnalyticsDisplay {
         )}
         ${createStatItem(
           this.i18n.getMessage("statLastPasted"),
-          formatCounterValue(
+          this.i18n.formatCounterValue(
             data.lastPasteTime,
             data.totalPastes || 0,
             data.pasteFailures || 0
@@ -51,7 +47,7 @@ class AnalyticsDisplay {
         )}
         ${createStatItem(
           this.i18n.getMessage("statLastAutoClick"),
-          formatCounterValue(
+          this.i18n.formatCounterValue(
             data.lastAutoClickTime,
             data.totalAutoClicks || 0,
             data.autoClickFailures || 0
@@ -100,14 +96,15 @@ class AnalyticsDisplay {
 
       await this.storage.clear();
 
-      const defaults = {
-        extensionEnabled: true,
-        statisticsEnabled: true,
-      };
+      // Restore essential defaults after clearing
       await Promise.all(
-        Object.entries(defaults).map(([key, value]) =>
-          this.storage.set(key, value)
-        )
+        Object.entries(this.DEFAULT_SETTINGS)
+          .map(([key, value]) => {
+            if (key === "extensionEnabled" || key === "statisticsEnabled") {
+              return this.storage.set(key, value);
+            }
+          })
+          .filter(Boolean)
       );
 
       const uiManager = this.controller.uiManager;

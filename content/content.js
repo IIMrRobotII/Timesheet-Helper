@@ -1,13 +1,11 @@
-const { storage, STORAGE_KEYS, ERROR_CODES, utils } = window.TimesheetCommon;
-const { delay, detectSite } = utils;
-
-const { formatResponse } = window.StatusManager;
+const { storage, STORAGE_KEYS, ERROR_CODES, TIMING, utils } =
+  window.TimesheetCommon;
+const { delay, detectSite, formatResponse } = utils;
 
 //Main Extension Handler - Coordinates operations and handles messages
 class TimesheetExtension {
   constructor() {
     this.isProcessing = false;
-    this.currentSite = detectSite();
 
     this.analytics = new window.AnalyticsTracker();
     this.hilanOps = new window.HilanOperations();
@@ -45,7 +43,6 @@ class TimesheetExtension {
         this.isProcessing = false;
       }
     } catch (error) {
-      console.error("Error in message processing:", error);
       sendResponse(
         formatResponse(false, {
           code: "UNEXPECTED_ERROR",
@@ -70,48 +67,59 @@ class TimesheetExtension {
 
   //Handle auto-click operation
   async handleAutoClick() {
-    if (!this.currentSite || this.currentSite.action !== "copy") {
+    const currentSite = detectSite();
+    if (!currentSite || currentSite.action !== "copy") {
       return formatResponse(false, { code: ERROR_CODES.WRONG_SITE });
     }
 
     try {
       const result = await this.hilanOps.performAutoClick();
       await this.analytics.track("autoClick", true, result);
-      await delay(100);
+      await delay(TIMING.OPERATION_DELAY);
       return formatResponse(true, result);
     } catch (error) {
+      // Handle "all boxes already selected" as success, not error
+      if (error.message === ERROR_CODES.ALL_BOXES_SELECTED) {
+        await this.analytics.track("autoClick", true, {
+          alreadySelected: true,
+        });
+        await delay(TIMING.OPERATION_DELAY);
+        return formatResponse(true, { alreadySelected: true });
+      }
+
       await this.analytics.track("autoClick", false, { error: error.message });
-      await delay(100);
+      await delay(TIMING.OPERATION_DELAY);
       return formatResponse(false, { code: ERROR_CODES.NO_TIME_BOXES });
     }
   }
 
   //Handle copy/paste operation
   async handleCopyPaste() {
-    if (!this.currentSite) {
+    const currentSite = detectSite();
+    if (!currentSite) {
       return formatResponse(false, { code: ERROR_CODES.WRONG_SITE });
     }
 
     try {
       let result;
-      if (this.currentSite.action === "copy") {
+      if (currentSite.action === "copy") {
         result = await this.hilanOps.copyTimesheetData();
         await this.analytics.track("copy", true, result);
-      } else if (this.currentSite.action === "paste") {
+      } else if (currentSite.action === "paste") {
         result = await this.malamOps.pasteTimesheetData();
         await this.analytics.track("paste", true, result);
       } else {
         throw new Error(ERROR_CODES.WRONG_SITE);
       }
 
-      await delay(100);
+      await delay(TIMING.OPERATION_DELAY);
       return formatResponse(true, result);
     } catch (error) {
-      const eventType = this.currentSite.action === "copy" ? "copy" : "paste";
+      const eventType = currentSite.action === "copy" ? "copy" : "paste";
       await this.analytics.track(eventType, false, { error: error.message });
-      await delay(100);
+      await delay(TIMING.OPERATION_DELAY);
       const errorCode =
-        this.currentSite.action === "copy"
+        currentSite.action === "copy"
           ? ERROR_CODES.COPY_FAILED
           : ERROR_CODES.PASTE_FAILED;
       return formatResponse(false, { code: errorCode });
