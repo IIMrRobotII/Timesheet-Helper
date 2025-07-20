@@ -227,7 +227,7 @@ The extension tracks local usage statistics to help improve your experience:
 ### Supported Data Formats
 
 - **Time Format**: HH:MM (24-hour format)
-- **Date Format**: DD/MM (Hilan) → DD/MM/YYYY (Malam)
+- **Date Format**: DD/MM/YYYY (Hilan) → DD/MM/YYYY (Malam)
 - **Encoding**: UTF-8 (supports Hebrew and English text)
 
 ## 📄 License
