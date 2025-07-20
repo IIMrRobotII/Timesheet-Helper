@@ -68,11 +68,11 @@ Click the button above to report bugs, request features, or ask questions.
 
 ### Core Functionality
 
-- **🔄 Smart Auto-Click**: Automatically clicks only valid time boxes, skips holidays and empty days
-- **🎯 Exact Times**: Copies your actual clock-in/out times (not calculated hours)
+- **🔄 Smart Auto-Click**: Automatically clicks only valid time boxes, skips empty days
+- **🎯 Exact Times**: Copies your actual clock-in/out times
 - **🌙 Night Shifts**: Handles shifts that cross midnight perfectly
-- **📅 Smart Dates**: Automatically converts date formats between systems (DD/MM to DD/MM/YYYY)
-- **📍 Saturday Support**: Includes Saturday shifts when they contain valid work times
+- **📅 Smart Dates**: Automatically converts date formats between systems
+- **📍 Saturday Support**: Includes Saturday and Holiday shifts when they contain valid work times
 
 ### User Experience
 
