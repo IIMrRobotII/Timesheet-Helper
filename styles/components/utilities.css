@@ -2,7 +2,6 @@
 .hidden {
   display: none;
 }
-
 .visible {
   display: block;
 }
@@ -10,7 +9,6 @@
 /* Accessibility - Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
   .action-button,
-  .btn-danger,
   .clear-data-button,
   .modal-btn,
   .container,
@@ -23,42 +21,8 @@
   }
 
   .action-button:hover:not(:disabled),
-  .btn-danger:hover:not(:disabled),
   .clear-data-button:hover:not(:disabled),
   .modal-btn:hover:not(:disabled) {
     transform: none !important;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes modalSlideIn {
-    from {
-      transform: scale(1) translateY(0);
-      opacity: 1;
-    }
-    to {
-      transform: scale(1) translateY(0);
-      opacity: 1;
-    }
-  }
-}
-
-/* High Contrast Mode Support */
-@media (prefers-contrast: high) {
-  :root {
-    --border-default: #000000;
-    --action-primary: #0000ff;
-    --action-danger: #ff0000;
-    --text-primary: #000000;
-    --text-secondary: #666666;
   }
 }
