@@ -24,7 +24,6 @@
   position: absolute;
   top: 2px;
   left: 2px;
-  right: auto;
   width: 16px;
   height: 16px;
   background: var(--action-primary-text);
@@ -135,9 +134,4 @@
 .language-option span {
   display: block;
   text-align: start;
-}
-
-/* RTL Support for Toggle */
-[dir="rtl"] .toggle-container input:checked + .toggle-slider::before {
-  transform: translateX(16px);
 }

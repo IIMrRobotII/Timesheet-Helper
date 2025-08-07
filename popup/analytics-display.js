@@ -10,9 +10,8 @@ class AnalyticsDisplay {
     const analyticsSection = document.querySelector(".analytics-section");
     if (!analyticsSection) return;
 
-    // Create stat item function
-    const createStatItem = (label, value) =>
-      `<div class="stat-item"><span class="stat-label">${label}</span><span class="stat-value">${value}</span></div>`;
+    // Clear existing content safely
+    analyticsSection.textContent = "";
 
     // Calculate total operations
     const totalOperations =
@@ -20,63 +19,129 @@ class AnalyticsDisplay {
       (data.totalPastes || 0) +
       (data.totalAutoClicks || 0);
 
-    // Generate analytics HTML
-    const analyticsHtml = `
-      <div class="analytics-header">
-        <span class="analytics-icon">📊</span>
-        <span class="analytics-title">${this.i18n.getMessage(
-          "analyticsTitle"
-        )}</span>
-      </div>
-      <div class="analytics-stats">
-        ${createStatItem(
-          this.i18n.getMessage("statLastCopied"),
-          this.i18n.formatCounterValue(
-            data.lastCopyTime,
-            data.totalCopies || 0,
-            data.copyFailures || 0
-          )
-        )}
-        ${createStatItem(
-          this.i18n.getMessage("statLastPasted"),
-          this.i18n.formatCounterValue(
-            data.lastPasteTime,
-            data.totalPastes || 0,
-            data.pasteFailures || 0
-          )
-        )}
-        ${createStatItem(
-          this.i18n.getMessage("statLastAutoClick"),
-          this.i18n.formatCounterValue(
-            data.lastAutoClickTime,
-            data.totalAutoClicks || 0,
-            data.autoClickFailures || 0
-          )
-        )}
-        ${createStatItem(
-          this.i18n.getMessage("statTotalOperations"),
-          totalOperations.toString()
-        )}
-        ${createStatItem(
-          this.i18n.getMessage("statSuccessRate"),
-          `${data.successRate || 0}%`
-        )}
-      </div>
-      <button id="clearDataButton" class="clear-data-button">
-        <span class="clear-icon">🗑️</span>
-        <span class="clear-text">${this.i18n.getMessage("clearAllData")}</span>
-      </button>
-    `;
+    // Create analytics header using DOM methods
+    const header = this.createAnalyticsHeader();
+    analyticsSection.appendChild(header);
 
-    analyticsSection.innerHTML = analyticsHtml;
+    // Create analytics stats using DOM methods
+    const statsContainer = this.createAnalyticsStats(data, totalOperations);
+    analyticsSection.appendChild(statsContainer);
+
+    // Create clear data button using DOM methods
+    const clearButton = this.createClearDataButton();
+    analyticsSection.appendChild(clearButton);
 
     // Set up clear data button event listener
-    const clearButton = document.getElementById("clearDataButton");
-    if (clearButton) {
-      clearButton.addEventListener("click", () =>
-        this.controller.handleClearData()
-      );
-    }
+    clearButton.addEventListener("click", () =>
+      this.controller.handleClearData()
+    );
+  }
+
+  // Secure DOM creation method for analytics header
+  createAnalyticsHeader() {
+    const header = document.createElement("div");
+    header.className = "analytics-header";
+
+    const icon = document.createElement("span");
+    icon.className = "analytics-icon";
+    icon.textContent = "📊";
+
+    const title = document.createElement("span");
+    title.className = "analytics-title";
+    title.textContent = this.i18n.getMessage("analyticsTitle");
+
+    header.appendChild(icon);
+    header.appendChild(title);
+
+    return header;
+  }
+
+  // Secure DOM creation method for analytics stats
+  createAnalyticsStats(data, totalOperations) {
+    const statsContainer = document.createElement("div");
+    statsContainer.className = "analytics-stats";
+
+    // Create stat items using secure DOM methods
+    const statItems = [
+      {
+        label: this.i18n.getMessage("statLastCopied"),
+        value: this.i18n.formatCounterValue(
+          data.lastCopyTime,
+          data.totalCopies || 0,
+          data.copyFailures || 0
+        ),
+      },
+      {
+        label: this.i18n.getMessage("statLastPasted"),
+        value: this.i18n.formatCounterValue(
+          data.lastPasteTime,
+          data.totalPastes || 0,
+          data.pasteFailures || 0
+        ),
+      },
+      {
+        label: this.i18n.getMessage("statLastAutoClick"),
+        value: this.i18n.formatCounterValue(
+          data.lastAutoClickTime,
+          data.totalAutoClicks || 0,
+          data.autoClickFailures || 0
+        ),
+      },
+      {
+        label: this.i18n.getMessage("statTotalOperations"),
+        value: totalOperations.toString(),
+      },
+      {
+        label: this.i18n.getMessage("statSuccessRate"),
+        value: `${data.successRate || 0}%`,
+      },
+    ];
+
+    statItems.forEach((item) => {
+      const statElement = this.createSecureStatItem(item.label, item.value);
+      statsContainer.appendChild(statElement);
+    });
+
+    return statsContainer;
+  }
+
+  // Secure DOM creation method for individual stat items
+  createSecureStatItem(label, value) {
+    const statItem = document.createElement("div");
+    statItem.className = "stat-item";
+
+    const statLabel = document.createElement("span");
+    statLabel.className = "stat-label";
+    statLabel.textContent = label;
+
+    const statValue = document.createElement("span");
+    statValue.className = "stat-value";
+    statValue.textContent = value;
+
+    statItem.appendChild(statLabel);
+    statItem.appendChild(statValue);
+
+    return statItem;
+  }
+
+  // Secure DOM creation method for clear data button
+  createClearDataButton() {
+    const button = document.createElement("button");
+    button.id = "clearDataButton";
+    button.className = "clear-data-button";
+
+    const icon = document.createElement("span");
+    icon.className = "clear-icon";
+    icon.textContent = "🗑️";
+
+    const text = document.createElement("span");
+    text.className = "clear-text";
+    text.textContent = this.i18n.getMessage("clearAllData");
+
+    button.appendChild(icon);
+    button.appendChild(text);
+
+    return button;
   }
 
   //Handle data clearing operation

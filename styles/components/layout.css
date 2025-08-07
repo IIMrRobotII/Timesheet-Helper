@@ -1,24 +1,21 @@
-/* Main Container */
+/* Container */
 .container {
   padding: var(--space-lg);
-  animation: fadeIn var(--transition-smooth);
   max-height: var(--container-height-max);
   overflow: hidden;
+  animation: fadeIn var(--transition-smooth);
 }
 
-/* Container States */
 .container.collapsed {
   padding: var(--space-md);
-  min-height: auto;
   width: 100%;
 }
 
 .container.expanded {
   width: 100%;
-  padding: var(--space-lg);
 }
 
-/* Header Section */
+/* Header */
 .header {
   display: flex;
   align-items: center;
@@ -26,7 +23,16 @@
   text-align: start;
 }
 
-/* Logo Component */
+.container.collapsed .header {
+  margin-bottom: var(--space-xs);
+}
+
+.container.collapsed .header h1 {
+  font-size: var(--font-size-base);
+  margin: 0;
+}
+
+/* Logo */
 .logo {
   width: 20px;
   height: 20px;
@@ -44,35 +50,58 @@
   content: "⏱️";
 }
 
-/* Collapsed State Adjustments */
-.container.collapsed .header {
-  margin-bottom: var(--space-xs);
-}
-
-.container.collapsed .header h1 {
-  font-size: var(--font-size-base);
-  margin: 0;
-}
-
 .container.collapsed .logo {
   width: 16px;
   height: 16px;
   margin-inline-end: var(--space-sm);
 }
 
-/* Toggle Section Specific */
+/* Context Badge */
+.context-badge {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-sm);
+  margin-inline-start: auto;
+  white-space: nowrap;
+}
+
+.context-badge.source {
+  background: var(--status-success);
+  color: var(--action-primary-text);
+}
+
+.context-badge.target {
+  background: var(--action-primary);
+  color: var(--action-primary-text);
+}
+
+.context-badge.unknown {
+  background: var(--text-secondary);
+  color: var(--action-primary-text);
+}
+
+.container.collapsed .context-badge {
+  display: none;
+}
+
+/* Toggle Sections */
 .toggle-section {
   margin-bottom: var(--space-lg);
   padding-bottom: var(--space-md);
   border-bottom: 1px solid var(--border-default);
   transition: all var(--transition-smooth);
+  opacity: 1 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  transform: none !important;
+  pointer-events: auto !important;
 }
 
 .statistics-toggle-section {
   margin: var(--space-lg) 0 var(--space-md) 0;
 }
 
-/* Collapsed State for Sections */
 .container.collapsed .toggle-section {
   margin-bottom: 0;
   padding-bottom: 0;
@@ -102,36 +131,15 @@
   transform: translateY(0);
   pointer-events: auto;
   display: block;
-  transition: all var(--transition-smooth);
 }
 
-/* Context Badge */
-.context-badge {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  padding: 2px var(--space-sm);
-  border-radius: var(--radius-sm);
-  margin-inline-start: auto;
-  white-space: nowrap;
+/* Language Section */
+.language-section {
+  margin-bottom: var(--space-md);
+  position: relative;
 }
 
-.context-badge.source {
-  background: var(--status-success);
-  color: var(--action-primary-text);
-}
-
-.context-badge.target {
-  background: var(--action-primary);
-  color: var(--action-primary-text);
-}
-
-.context-badge.unknown {
-  background: var(--text-secondary);
-  color: var(--action-primary-text);
-}
-
-/* Collapsed State for Badge */
-.container.collapsed .context-badge {
+.container.collapsed .language-section {
   display: none;
 }
 
@@ -183,17 +191,6 @@
   font-weight: var(--font-weight-medium);
 }
 
-/* Language Section */
-.language-section {
-  margin-bottom: var(--space-md);
-  position: relative;
-}
-
-/* Collapsed State for Language Section */
-.container.collapsed .language-section {
-  display: none;
-}
-
 /* Footer */
 .footer {
   margin-top: var(--space-lg);
@@ -202,7 +199,6 @@
   text-align: center;
 }
 
-/* Collapsed State for Footer */
 .container.collapsed .footer {
   display: none;
 }
@@ -240,18 +236,4 @@
 .status-working {
   background: var(--action-primary);
   color: var(--action-primary-text);
-}
-
-/* Utility Overrides for Toggle Sections */
-.toggle-section {
-  opacity: 1 !important;
-  max-height: none !important;
-  overflow: visible !important;
-  transform: none !important;
-  pointer-events: auto !important;
-}
-
-/* Special Utility for Auto-Click Button */
-#autoClickButton {
-  margin-bottom: var(--space-sm);
 }

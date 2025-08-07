@@ -68,7 +68,7 @@
   padding: var(--space-lg) var(--space-xl) var(--space-xl) var(--space-xl);
 }
 
-/* Modal Animation - Slide In */
+/* Modal Animation */
 @keyframes modalSlideIn {
   from {
     transform: scale(0.9) translateY(-10px);
@@ -77,5 +77,20 @@
   to {
     transform: scale(1) translateY(0);
     opacity: 1;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .modal-content {
+    animation: none;
+  }
+
+  @keyframes modalSlideIn {
+    from,
+    to {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
   }
 }
