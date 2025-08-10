@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="pageTitle">Timesheet Helper</title>
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
+  </head>
+  <body>
+    <div class="container collapsed no-transition">
+      <div class="header">
+        <div class="logo"></div>
+        <h1 data-i18n="pageTitle">Timesheet Helper</h1>
+        <span class="context-badge unknown" data-i18n="unknownWebsite"
+          >Unknown Website</span
+        >
+      </div>
+      <div class="toggle-section">
+        <label class="toggle-container">
+          <input type="checkbox" id="extensionToggle" />
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">Extension Enabled</span>
+        </label>
+      </div>
+      <div class="language-section">
+        <button id="languageToggle" class="language-button">
+          <span class="language-icon">🌐</span>
+          <span class="language-text" data-i18n="languageToggle">Language</span>
+          <span class="language-arrow">▼</span>
+        </button>
+        <div id="languageDropdown" class="language-dropdown hidden">
+          <div class="language-option" data-lang="en">
+            <span data-i18n="languageEnglish">English</span>
+          </div>
+          <div class="language-option" data-lang="he">
+            <span data-i18n="languageHebrew">עברית</span>
+          </div>
+        </div>
+      </div>
+      <div class="collapsible-content">
+        <p class="guidance-text" data-i18n="guidanceTextDefault">
+          Please navigate to Hilan timesheet or Malam payroll website.
+        </p>
+        <button id="autoClickButton" class="btn-base action-button">
+          <span class="button-icon">🔄</span>
+          <span class="button-text" data-i18n="autoClickButton"
+            >Auto-Click Time Boxes</span
+          >
+        </button>
+        <button id="copyHours" class="btn-base action-button">
+          <span class="button-icon">📋</span>
+          <span class="button-text" data-i18n="syncHours">Sync Hours</span>
+        </button>
+        <div id="status"></div>
+        <div class="toggle-section statistics-toggle-section">
+          <label class="toggle-container">
+            <input type="checkbox" id="statisticsToggle" />
+            <span class="toggle-slider"></span>
+            <span class="toggle-label" data-i18n="statistics">Statistics</span>
+          </label>
+        </div>
+        <div class="analytics-section">
+          <div class="analytics-header">
+            <span class="analytics-icon">📊</span>
+            <span class="analytics-title" data-i18n="statistics"
+              >Statistics</span
+            >
+          </div>
+          <div class="analytics-stats">
+            <div class="stat-item">
+              <span class="stat-label" data-i18n="statLastCopied"
+                >Last copied:</span
+              >
+              <span class="stat-value" data-i18n="statNever">Never</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label" data-i18n="statLastPasted"
+                >Last pasted:</span
+              >
+              <span class="stat-value" data-i18n="statNever">Never</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label" data-i18n="statLastAutoClick"
+                >Last auto-click:</span
+              >
+              <span class="stat-value" data-i18n="statNever">Never</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label" data-i18n="statTotalOperations"
+                >Total operations:</span
+              >
+              <span class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label" data-i18n="statSuccessRate"
+                >Success rate:</span
+              >
+              <span class="stat-value">0%</span>
+            </div>
+          </div>
+          <button id="clearDataButton" class="btn-base clear-data-button">
+            <span class="button-icon">🗑️</span>
+            <span class="clear-text" data-i18n="clearAllData"
+              >Clear All Data</span
+            >
+          </button>
+        </div>
+      </div>
+      <div class="footer">
+        <span class="footer-text" data-i18n="footerMadeBy"
+          >Made by Segev Levinshtein</span
+        >
+      </div>
+    </div>
+    <div id="confirmModal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="modal-icon">⚠️</span>
+          <h3 class="modal-title" data-i18n="modalTitle">
+            Clear All Extension Data?
+          </h3>
+        </div>
+        <div class="modal-body">
+          <p class="modal-message" data-i18n="modalMessage">
+            This will delete all statistics, timesheet data, and settings
+            permanently.
+          </p>
+        </div>
+        <div class="modal-actions">
+          <button
+            id="modalCancel"
+            class="btn-base modal-btn modal-btn-cancel"
+            data-i18n="modalCancel"
+          >
+            Cancel
+          </button>
+          <button
+            id="modalConfirm"
+            class="btn-base modal-btn modal-btn-confirm"
+            data-i18n="modalConfirm"
+          >
+            Clear Data
+          </button>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="i18n.ts"></script>
+    <script type="module" src="popup/popup-controller.ts"></script>
+  </body>
+</html>

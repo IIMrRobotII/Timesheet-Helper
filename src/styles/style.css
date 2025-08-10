@@ -1,0 +1,10 @@
+/* Consolidated CSS Architecture */
+
+/* 1. Foundation - Variables & Base Styles */
+@import 'components/foundation.css';
+
+/* 2. Controls - Buttons & Form Elements */
+@import 'components/controls.css';
+
+/* 3. Layout - Main Structure, Modal & Utilities */
+@import 'components/layout.css';

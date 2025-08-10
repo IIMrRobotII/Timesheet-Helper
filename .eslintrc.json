@@ -1,0 +1,57 @@
+{
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "webextensions": true
+  },
+  "extends": ["eslint:recommended", "prettier"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "prefer-const": "error",
+    "no-var": "error",
+    "eqeqeq": "error",
+
+    /* Security hardening */
+    "no-implied-eval": "error",
+    "no-new-func": "error",
+    "no-eval": "error",
+    "no-restricted-properties": [
+      "error",
+      {
+        "object": "Element",
+        "property": "innerHTML",
+        "message": "Use textContent or DOM API builders instead of innerHTML."
+      },
+      {
+        "object": "Element",
+        "property": "outerHTML",
+        "message": "Avoid outerHTML mutations; use DOM API instead."
+      },
+      {
+        "object": "Element",
+        "property": "insertAdjacentHTML",
+        "message": "Avoid insertAdjacentHTML; create elements and set textContent instead."
+      },
+      {
+        "object": "Document",
+        "property": "write",
+        "message": "document.write is forbidden."
+      }
+    ],
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "CallExpression[callee.object.name='Range'][callee.property.name='createContextualFragment']",
+        "message": "Avoid Range.createContextualFragment; use safer DOM creation methods."
+      }
+    ]
+  },
+  "ignorePatterns": ["dist/", "node_modules/", "**/*.js"]
+}

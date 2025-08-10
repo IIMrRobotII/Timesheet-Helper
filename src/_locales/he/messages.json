@@ -1,0 +1,268 @@
+{
+  "extensionName": {
+    "message": "עוזר דוח נוכחות",
+    "description": "Extension name displayed in Chrome"
+  },
+  "extensionDescription": {
+    "message": "העתקת שעות עבודה מדוח הנוכחות של חילן למערכת השכר של מלם",
+    "description": "Extension description displayed in Chrome"
+  },
+  "defaultTitle": {
+    "message": "סנכרון שעות נוכחות",
+    "description": "Default title for the extension action"
+  },
+  "pageTitle": {
+    "message": "עוזר דוח נוכחות",
+    "description": "Page title in popup"
+  },
+  "unknownWebsite": {
+    "message": "אתר לא מזוהה",
+    "description": "Badge text for unknown website"
+  },
+  "guidanceTextDefault": {
+    "message": "אנא נווט לאתר דוח הנוכחות של חילן או מערכת השכר של מלם.",
+    "description": "Default guidance text for unknown websites"
+  },
+  "guidanceTextSource": {
+    "message": "שלב 1: לחץ על \"לחיצה אוטומטית\" כדי לחשוף את תיבות הזמן, ואז \"העתק שעות\" כדי להעתיק נתונים.",
+    "description": "Guidance text for Hilan timesheet page"
+  },
+  "guidanceTextTarget": {
+    "message": "שלב 2: לחץ על \"הדבק שעות\" כדי לסנכרן את נתוני דוח הנוכחות שהועתקו.",
+    "description": "Guidance text for Malam payroll page"
+  },
+  "autoClickButton": {
+    "message": "לחיצה אוטומטית על תיבות זמן",
+    "description": "Auto-click button text"
+  },
+  "syncHours": {
+    "message": "סנכרון שעות",
+    "description": "Default sync button text"
+  },
+  "copyHours": {
+    "message": "העתק שעות",
+    "description": "Copy hours button text for Hilan"
+  },
+  "pasteHours": {
+    "message": "הדבק שעות",
+    "description": "Paste hours button text for Malam"
+  },
+  "contextHilan": {
+    "message": "חילן",
+    "description": "Context name for general Hilan website pages"
+  },
+  "contextHilanTimesheet": {
+    "message": "דוח נוכחות חילן",
+    "description": "Context name for Hilan timesheet pages where operations are enabled"
+  },
+  "contextMalam": {
+    "message": "מערכת שכר מלם",
+    "description": "Context name for Malam payroll"
+  },
+  "statLastCopied": {
+    "message": "העתקה אחרונה:",
+    "description": "Statistics label for last copied timestamp"
+  },
+  "statLastPasted": {
+    "message": "הדבקה אחרונה:",
+    "description": "Statistics label for last pasted timestamp"
+  },
+  "statLastAutoClick": {
+    "message": "לחיצה אוטומטית אחרונה:",
+    "description": "Statistics label for last auto-click timestamp"
+  },
+  "statTotalOperations": {
+    "message": "סה\"כ פעולות:",
+    "description": "Statistics label for total operations count"
+  },
+  "statSuccessRate": {
+    "message": "שיעור הצלחה:",
+    "description": "Statistics label for success rate percentage"
+  },
+  "statNever": {
+    "message": "אף פעם",
+    "description": "Statistics value for never performed operations"
+  },
+  "clearAllData": {
+    "message": "נקה את כל הנתונים",
+    "description": "Clear data button text"
+  },
+  "languageEnglish": {
+    "message": "English",
+    "description": "English language option"
+  },
+  "languageHebrew": {
+    "message": "עברית",
+    "description": "Hebrew language option"
+  },
+  "errorExtensionDisabled": {
+    "message": "התוסף כבוי. אנא הפעל אותו בחלונית התוסף.",
+    "description": "Error message when extension is disabled"
+  },
+  "errorWrongSite": {
+    "message": "תכונה זו אינה זמינה באתר הנוכחי.",
+    "description": "Error message for wrong website"
+  },
+  "errorNoData": {
+    "message": "לא נמצאו נתוני דוח נוכחות. אנא ודא שאתה בעמוד הנכון.",
+    "description": "Error message when no data is found"
+  },
+  "errorInProgress": {
+    "message": "פעולה אחרת מתבצעת כעת. אנא המתן.",
+    "description": "Error message when operation is in progress"
+  },
+  "errorNoTimeBoxes": {
+    "message": "לא נמצאו תיבות זמן לחיצות. ודא שאתה בעמוד יומן הנוכחות של חילן.",
+    "description": "Error when no time boxes found for auto-click"
+  },
+  "errorUnknownAction": {
+    "message": "התבקשה פעולה לא מוכרת",
+    "description": "Error for unknown action"
+  },
+  "workingCopying": {
+    "message": "מעתיק נתוני דוח נוכחות...",
+    "description": "Working message for copy operation"
+  },
+  "workingPasting": {
+    "message": "מדביק נתוני דוח נוכחות...",
+    "description": "Working message for paste operation"
+  },
+  "workingAutoClick": {
+    "message": "לוחץ אוטומטית על תיבות זמן...",
+    "description": "Working message for auto-click operation"
+  },
+  "workingClearing": {
+    "message": "מוחק נתוני תוסף...",
+    "description": "Working message for clear data operation"
+  },
+  "successCleared": {
+    "message": "כל נתוני התוסף נמחקו בהצלחה.",
+    "description": "Success message for clear data operation"
+  },
+  "errorClearDataFailed": {
+    "message": "מחיקת הנתונים נכשלה",
+    "description": "Error message when clearing data fails"
+  },
+  "successLanguageChanged": {
+    "message": "השפה שונתה",
+    "description": "Success message when language is switched"
+  },
+  "errorLanguageSwitchFailed": {
+    "message": "שינוי השפה נכשל",
+    "description": "Error message when language switch fails"
+  },
+  "errorOperationTimedOut": {
+    "message": "הפעולה פגה - אנא נסה שוב",
+    "description": "Error message when operation times out"
+  },
+  "errorCommunicationIssue": {
+    "message": "בעיית תקשורת - הפעולה אולי הצליחה",
+    "description": "Error message when communication fails but operation might have succeeded"
+  },
+  "errorOperationFailed": {
+    "message": "הפעולה נכשלה",
+    "description": "Generic error message prefix for failed operations"
+  },
+  "timeFormatJustNow": {
+    "message": "עכשיו",
+    "description": "Timestamp format for very recent actions"
+  },
+  "timeFormatMinutesAgo": {
+    "message": "דק׳",
+    "description": "Timestamp format for minutes ago"
+  },
+  "timeFormatHoursAgo": {
+    "message": "שע׳",
+    "description": "Timestamp format for hours ago"
+  },
+  "timeFormatDaysAgo": {
+    "message": "יום",
+    "description": "Timestamp format for days ago"
+  },
+  "timeFormatSingularTime": {
+    "message": "פעם",
+    "description": "Singular form of 'time' in statistics"
+  },
+  "timeFormatPluralTimes": {
+    "message": "פעמים",
+    "description": "Plural form of 'times' in statistics"
+  },
+  "timeFormatSingularFail": {
+    "message": "כישלון",
+    "description": "Singular form of 'fail' in statistics"
+  },
+  "timeFormatPluralFails": {
+    "message": "כישלונות",
+    "description": "Plural form of 'fails' in statistics"
+  },
+  "footerMadeBy": {
+    "message": "נוצר על ידי שגב לוינשטיין",
+    "description": "Footer text showing the extension creator"
+  },
+  "extensionEnabled": {
+    "message": "תוסף מופעל",
+    "description": "Toggle label for extension enabled state"
+  },
+  "extensionDisabled": {
+    "message": "תוסף כבוי",
+    "description": "Toggle label for extension disabled state"
+  },
+  "statistics": {
+    "message": "סטטיסטיקות",
+    "description": "Statistics section title and toggle label"
+  },
+  "modalTitle": {
+    "message": "למחוק את כל נתוני התוסף?",
+    "description": "Confirmation modal title"
+  },
+  "modalMessage": {
+    "message": "פעולה זו תמחק את כל הסטטיסטיקות, נתוני דוח הנוכחות וההגדרות לצמיתות.",
+    "description": "Confirmation modal message"
+  },
+  "modalCancel": {
+    "message": "ביטול",
+    "description": "Modal cancel button text"
+  },
+  "modalConfirm": {
+    "message": "מחק נתונים",
+    "description": "Modal confirm button text"
+  },
+  "languageToggle": {
+    "message": "שפה",
+    "description": "Language toggle button text"
+  },
+  "successCopied": {
+    "message": "הועתקו בהצלחה $COUNT$ רשומות מדוח הנוכחות של חילן",
+    "description": "Success message for copy operation",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "successPasted": {
+    "message": "הודבקו בהצלחה $COUNT$ רשומות למערכת השכר של מלם",
+    "description": "Success message for paste operation",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "successAutoClick": {
+    "message": "נלחצו בהצלחה $COUNT$ מתוך $TOTAL$ תיבות זמן",
+    "description": "Success message for auto-click operation",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      },
+      "total": {
+        "content": "$2",
+        "example": "15"
+      }
+    }
+  }
+}

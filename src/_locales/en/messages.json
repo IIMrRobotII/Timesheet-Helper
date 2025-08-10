@@ -1,0 +1,268 @@
+{
+  "extensionName": {
+    "message": "Timesheet Helper",
+    "description": "Extension name displayed in Chrome"
+  },
+  "extensionDescription": {
+    "message": "Copy work hours from Hilan timesheet to Malam payroll system",
+    "description": "Extension description displayed in Chrome"
+  },
+  "defaultTitle": {
+    "message": "Sync timesheet hours",
+    "description": "Default title for the extension action"
+  },
+  "pageTitle": {
+    "message": "Timesheet Helper",
+    "description": "Page title in popup"
+  },
+  "unknownWebsite": {
+    "message": "Unknown Website",
+    "description": "Badge text for unknown website"
+  },
+  "guidanceTextDefault": {
+    "message": "Please navigate to Hilan timesheet or Malam payroll website.",
+    "description": "Default guidance text for unknown websites"
+  },
+  "guidanceTextSource": {
+    "message": "Step 1: Click \"Auto-Click\" to reveal time boxes, then \"Copy Hours\" to copy data.",
+    "description": "Guidance text for Hilan timesheet page"
+  },
+  "guidanceTextTarget": {
+    "message": "Step 2: Click \"Paste Hours\" to sync your copied timesheet data.",
+    "description": "Guidance text for Malam payroll page"
+  },
+  "autoClickButton": {
+    "message": "Auto-Click Time Boxes",
+    "description": "Auto-click button text"
+  },
+  "syncHours": {
+    "message": "Sync Hours",
+    "description": "Default sync button text"
+  },
+  "copyHours": {
+    "message": "Copy Hours",
+    "description": "Copy hours button text for Hilan"
+  },
+  "pasteHours": {
+    "message": "Paste Hours",
+    "description": "Paste hours button text for Malam"
+  },
+  "contextHilan": {
+    "message": "Hilan",
+    "description": "Context name for general Hilan website pages"
+  },
+  "contextHilanTimesheet": {
+    "message": "Hilan Timesheet",
+    "description": "Context name for Hilan timesheet pages where operations are enabled"
+  },
+  "contextMalam": {
+    "message": "Malam Payroll",
+    "description": "Context name for Malam payroll"
+  },
+  "statLastCopied": {
+    "message": "Last copied:",
+    "description": "Statistics label for last copied timestamp"
+  },
+  "statLastPasted": {
+    "message": "Last pasted:",
+    "description": "Statistics label for last pasted timestamp"
+  },
+  "statLastAutoClick": {
+    "message": "Last auto-click:",
+    "description": "Statistics label for last auto-click timestamp"
+  },
+  "statTotalOperations": {
+    "message": "Total operations:",
+    "description": "Statistics label for total operations count"
+  },
+  "statSuccessRate": {
+    "message": "Success rate:",
+    "description": "Statistics label for success rate percentage"
+  },
+  "statNever": {
+    "message": "Never",
+    "description": "Statistics value for never performed operations"
+  },
+  "clearAllData": {
+    "message": "Clear All Data",
+    "description": "Clear data button text"
+  },
+  "languageEnglish": {
+    "message": "English",
+    "description": "English language option"
+  },
+  "languageHebrew": {
+    "message": "עברית",
+    "description": "Hebrew language option"
+  },
+  "errorExtensionDisabled": {
+    "message": "Extension is disabled. Please enable it in the extension popup.",
+    "description": "Error message when extension is disabled"
+  },
+  "errorWrongSite": {
+    "message": "This feature is not available on the current website.",
+    "description": "Error message for wrong website"
+  },
+  "errorNoData": {
+    "message": "No timesheet data found. Please ensure you are on the correct page.",
+    "description": "Error message when no data is found"
+  },
+  "errorInProgress": {
+    "message": "Another operation is in progress. Please wait.",
+    "description": "Error message when operation is in progress"
+  },
+  "errorNoTimeBoxes": {
+    "message": "No clickable time boxes found. Make sure you are on the Hilan timesheet calendar page.",
+    "description": "Error when no time boxes found for auto-click"
+  },
+  "errorUnknownAction": {
+    "message": "Unknown action requested",
+    "description": "Error for unknown action"
+  },
+  "workingCopying": {
+    "message": "Copying timesheet data...",
+    "description": "Working message for copy operation"
+  },
+  "workingPasting": {
+    "message": "Pasting timesheet data...",
+    "description": "Working message for paste operation"
+  },
+  "workingAutoClick": {
+    "message": "Auto-clicking time boxes...",
+    "description": "Working message for auto-click operation"
+  },
+  "workingClearing": {
+    "message": "Clearing extension data...",
+    "description": "Working message for clear data operation"
+  },
+  "successCleared": {
+    "message": "All extension data has been cleared successfully.",
+    "description": "Success message for clear data operation"
+  },
+  "errorClearDataFailed": {
+    "message": "Failed to clear data",
+    "description": "Error message when clearing data fails"
+  },
+  "successLanguageChanged": {
+    "message": "Language changed",
+    "description": "Success message when language is switched"
+  },
+  "errorLanguageSwitchFailed": {
+    "message": "Failed to switch language",
+    "description": "Error message when language switch fails"
+  },
+  "errorOperationTimedOut": {
+    "message": "Operation timed out - please try again",
+    "description": "Error message when operation times out"
+  },
+  "errorCommunicationIssue": {
+    "message": "Communication issue - operation may have succeeded",
+    "description": "Error message when communication fails but operation might have succeeded"
+  },
+  "errorOperationFailed": {
+    "message": "Operation failed",
+    "description": "Generic error message prefix for failed operations"
+  },
+  "timeFormatJustNow": {
+    "message": "Just now",
+    "description": "Timestamp format for very recent actions"
+  },
+  "timeFormatMinutesAgo": {
+    "message": "m ago",
+    "description": "Timestamp format for minutes ago"
+  },
+  "timeFormatHoursAgo": {
+    "message": "h ago",
+    "description": "Timestamp format for hours ago"
+  },
+  "timeFormatDaysAgo": {
+    "message": "d ago",
+    "description": "Timestamp format for days ago"
+  },
+  "timeFormatSingularTime": {
+    "message": "time",
+    "description": "Singular form of 'time' in statistics"
+  },
+  "timeFormatPluralTimes": {
+    "message": "times",
+    "description": "Plural form of 'times' in statistics"
+  },
+  "timeFormatSingularFail": {
+    "message": "fail",
+    "description": "Singular form of 'fail' in statistics"
+  },
+  "timeFormatPluralFails": {
+    "message": "fails",
+    "description": "Plural form of 'fails' in statistics"
+  },
+  "footerMadeBy": {
+    "message": "Made by Segev Levinshtein",
+    "description": "Footer text showing the extension creator"
+  },
+  "extensionEnabled": {
+    "message": "Extension Enabled",
+    "description": "Toggle label for extension enabled state"
+  },
+  "extensionDisabled": {
+    "message": "Extension Disabled",
+    "description": "Toggle label for extension disabled state"
+  },
+  "statistics": {
+    "message": "Statistics",
+    "description": "Statistics section title and toggle label"
+  },
+  "modalTitle": {
+    "message": "Clear All Extension Data?",
+    "description": "Confirmation modal title"
+  },
+  "modalMessage": {
+    "message": "This will delete all statistics, timesheet data, and settings permanently.",
+    "description": "Confirmation modal message"
+  },
+  "modalCancel": {
+    "message": "Cancel",
+    "description": "Modal cancel button text"
+  },
+  "modalConfirm": {
+    "message": "Clear Data",
+    "description": "Modal confirm button text"
+  },
+  "languageToggle": {
+    "message": "Language",
+    "description": "Language toggle button text"
+  },
+  "successCopied": {
+    "message": "Successfully copied $COUNT$ entries from Hilan timesheet",
+    "description": "Success message for copy operation",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "successPasted": {
+    "message": "Successfully pasted $COUNT$ entries to Malam timesheet",
+    "description": "Success message for paste operation",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "successAutoClick": {
+    "message": "Successfully clicked $COUNT$ of $TOTAL$ time boxes",
+    "description": "Success message for auto-click operation",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      },
+      "total": {
+        "content": "$2",
+        "example": "15"
+      }
+    }
+  }
+}
