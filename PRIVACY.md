@@ -2,7 +2,7 @@
 
 Last Updated: August 11, 2025
 
-This Privacy Policy explains what data the Timesheet Helper Chrome extension (the "Extension") processes, how it is used, and what choices you have. This policy is designed to meet Chrome Web Store requirements, including the Privacy Policy and Limited Use sections of the Program Policies. See Chrome’s policy for reference: [Chrome Web Store Program Policies — Privacy Policy](https://developer.chrome.com/docs/webstore/program-policies/policies#privacy_policy).
+This Privacy Policy explains what data the Timesheet Helper Chrome extension (the "Extension") processes, how it is used, and what choices you have. This policy is designed to meet Chrome Web Store requirements, including the Privacy Policy and Limited Use sections of the Program Policies. See Chrome’s policy for reference: [Chrome Web Store Program Policies - Privacy Policy](https://developer.chrome.com/docs/webstore/program-policies/policies#privacy_policy).
 
 ## Overview (Single Purpose)
 
@@ -77,7 +77,7 @@ Not applicable. The Extension does not transmit data off your device.
 
 ## Compliance with Chrome Web Store Policies (Limited Use)
 
-The Extension limits access and use of page content strictly to the user‑facing single purpose described above and does not collect or use web browsing activity beyond what is required to provide that purpose. See: [Chrome Web Store Program Policies — Privacy Policy](https://developer.chrome.com/docs/webstore/program-policies/policies#privacy_policy).
+The Extension limits access and use of page content strictly to the user‑facing single purpose described above and does not collect or use web browsing activity beyond what is required to provide that purpose. See: [Chrome Web Store Program Policies - Privacy Policy](https://developer.chrome.com/docs/webstore/program-policies/policies#privacy_policy).
 
 ## Changes to This Policy
 
