@@ -4,6 +4,8 @@ Chrome extension to copy work hours from Hilan to Malam.
 
 ![Extension Icon](src/icons/icon128.png)
 
+Install via Chrome Web Store: [Timesheet Helper](https://chromewebstore.google.com/detail/timesheet-helper/paoakhnbjhhefbnpkopaciggopfncnif).
+
 ### Features
 
 - **🔄 Auto-Click**: Reveal time boxes in Hilan
