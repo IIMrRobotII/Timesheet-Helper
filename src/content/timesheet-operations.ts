@@ -93,11 +93,9 @@ export class TimesheetOperations {
         continue;
       }
 
-      // Check if this is a holiday row (rowspan="2")
       const rowspan = dateCell.getAttribute('rowspan');
       const isHolidayRow = rowspan === '2';
 
-      // For holidays, time data is in the next sibling row
       const dataRow = isHolidayRow
         ? (row.nextElementSibling as HTMLElement)
         : row;
