@@ -93,8 +93,18 @@ export class TimesheetOperations {
         continue;
       }
 
-      const entryTimeCell = row.querySelector(SELECTORS.HILAN_ENTRY_TIME);
-      const exitTimeCell = row.querySelector(SELECTORS.HILAN_EXIT_TIME);
+      const rowspan = dateCell.getAttribute('rowspan');
+      const isHolidayRow = rowspan === '2';
+
+      const dataRow = isHolidayRow
+        ? (row.nextElementSibling as HTMLElement)
+        : row;
+      if (!dataRow) {
+        continue;
+      }
+
+      const entryTimeCell = dataRow.querySelector(SELECTORS.HILAN_ENTRY_TIME);
+      const exitTimeCell = dataRow.querySelector(SELECTORS.HILAN_EXIT_TIME);
       if (!entryTimeCell || !exitTimeCell) {
         continue;
       }
