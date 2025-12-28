@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extensionName__",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "__MSG_extensionDescription__",
   "default_locale": "en",
   "icons": {
@@ -35,6 +35,6 @@
     }
   ],
   "content_security_policy": {
-    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; connect-src 'self'; img-src 'self' data:; style-src 'self'; font-src 'self' data:; require-trusted-types-for 'script'; trusted-types default"
+    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; connect-src 'self'; img-src 'self' data:; style-src 'self'; font-src 'self' data: https://r2cdn.perplexity.ai; require-trusted-types-for 'script'; trusted-types default"
   }
 }

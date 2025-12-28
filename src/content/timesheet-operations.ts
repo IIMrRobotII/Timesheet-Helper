@@ -62,6 +62,13 @@ export class TimesheetOperations {
       }
 
       const title = cell.getAttribute('title');
+      const isVacation =
+        title?.includes('חופשה') || cell.textContent?.includes('חופשה');
+
+      if (isVacation) {
+        return true;
+      }
+
       if (title && utils.isValidTime(title.trim())) {
         return true;
       }
@@ -111,11 +118,22 @@ export class TimesheetOperations {
 
       const entryTime = utils.sanitizeTime(entryTimeCell.getAttribute('ov'));
       const exitTime = utils.sanitizeTime(exitTimeCell.getAttribute('ov'));
+
+      const symbolSelect = dataRow.querySelector(
+        SELECTORS.HILAN_SYMBOL
+      ) as HTMLSelectElement | null;
+      const isVacation =
+        symbolSelect?.value === '481' ||
+        symbolSelect?.options[symbolSelect.selectedIndex]?.text.includes(
+          'חופשה'
+        );
+
       if (
-        !entryTime ||
-        !exitTime ||
-        !utils.isValidTime(entryTime) ||
-        !utils.isValidTime(exitTime)
+        !isVacation &&
+        (!entryTime ||
+          !exitTime ||
+          !utils.isValidTime(entryTime) ||
+          !utils.isValidTime(exitTime))
       ) {
         continue;
       }
@@ -128,9 +146,10 @@ export class TimesheetOperations {
       }
 
       timesheetData[malamDate] = {
-        entryTime,
-        exitTime,
+        entryTime: entryTime || '',
+        exitTime: exitTime || '',
         originalHilanDate: hilanDate,
+        isVacation,
       };
     }
 
@@ -184,11 +203,22 @@ export class TimesheetOperations {
         continue;
       }
 
-      clockInInput.value = timesheetEntry.entryTime;
-      clockOutInput.value = timesheetEntry.exitTime;
+      if (timesheetEntry.isVacation) {
+        const workTypeSelect = row.querySelector(
+          SELECTORS.MALAM_WORK_TYPE
+        ) as HTMLSelectElement | null;
 
-      utils.triggerEvents(clockInInput);
-      utils.triggerEvents(clockOutInput);
+        if (workTypeSelect) {
+          workTypeSelect.value = '1_0'; // 1 Vacation
+          utils.triggerEvents(workTypeSelect);
+        }
+      } else {
+        clockInInput.value = timesheetEntry.entryTime;
+        clockOutInput.value = timesheetEntry.exitTime;
+
+        utils.triggerEvents(clockInInput);
+        utils.triggerEvents(clockOutInput);
+      }
 
       filledCount++;
     }
