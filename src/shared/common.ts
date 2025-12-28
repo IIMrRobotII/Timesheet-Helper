@@ -159,7 +159,7 @@ const SITES: Record<string, SiteConfig> = {
 
 const SELECTORS: Selectors = {
   HILAN_TIME_BOXES:
-    'td[class*="cDIES"], td[class*="cHD"], td[class*="cMAD"], td[class*="calendarAbcenseDay"]',
+    'td[class*="cDIES"], td[class*="cHD"], td[class*="cMAD"], td[class*="calendarAbcenseDay"], td[class*="calendarAbsenceDay"]',
   HILAN_DATE_CELL: 'td[id*="cellOf_ReportDate"]',
   HILAN_ENTRY_TIME: 'td[id*="cellOf_ManualEntry_EmployeeReports"]',
   HILAN_EXIT_TIME: 'td[id*="cellOf_ManualExit_EmployeeReports"]',
