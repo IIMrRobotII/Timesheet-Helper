@@ -1,8 +1,8 @@
-// Core domain types
 export interface TimesheetEntry {
   entryTime: string;
   exitTime: string;
   originalHilanDate: string;
+  isVacation?: boolean;
 }
 
 export interface TimesheetData {
@@ -95,12 +95,14 @@ export interface Selectors {
   HILAN_EXIT_TIME: string;
   HILAN_TIME_CONTENT: string;
   HILAN_CLICKED_CLASS: string;
+  HILAN_SYMBOL: string;
 
   // Malam selectors
   MALAM_ROWS: string;
   MALAM_DATE_INPUT: string;
   MALAM_CLOCK_IN: string;
   MALAM_CLOCK_OUT: string;
+  MALAM_WORK_TYPE: string;
 }
 
 // Error codes (strongly typed)

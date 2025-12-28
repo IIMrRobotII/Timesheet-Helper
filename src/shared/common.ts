@@ -158,16 +158,19 @@ const SITES: Record<string, SiteConfig> = {
 };
 
 const SELECTORS: Selectors = {
-  HILAN_TIME_BOXES: 'td[class*="cDIES"], td[class*="cHD"]',
+  HILAN_TIME_BOXES:
+    'td[class*="cDIES"], td[class*="cHD"], td[class*="cMAD"], td[class*="calendarAbcenseDay"], td[class*="calendarAbsenceDay"]',
   HILAN_DATE_CELL: 'td[id*="cellOf_ReportDate"]',
   HILAN_ENTRY_TIME: 'td[id*="cellOf_ManualEntry_EmployeeReports"]',
   HILAN_EXIT_TIME: 'td[id*="cellOf_ManualExit_EmployeeReports"]',
+  HILAN_SYMBOL: 'select[id*="Symbol"]',
   HILAN_TIME_CONTENT: '.cDM',
   HILAN_CLICKED_CLASS: 'CSD',
   MALAM_ROWS: '#pt1\\:dataTable tr[role="row"]',
   MALAM_DATE_INPUT: 'input[id*="clockInDate"][id*="content"]',
   MALAM_CLOCK_IN: 'input[id*="clockInTime"][id*="content"]',
   MALAM_CLOCK_OUT: 'input[id*="clockOutTime"][id*="content"]',
+  MALAM_WORK_TYPE: 'select[id*="workTypeSelect"]',
 };
 
 const ERROR_CODES: Record<string, ErrorCode> = {
