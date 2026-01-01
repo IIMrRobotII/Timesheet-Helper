@@ -138,9 +138,23 @@ export class TimesheetOperations {
         continue;
       }
 
-      const malamDate = hilanDate.includes('/')
-        ? `${hilanDate}/${new Date().getFullYear()}`
-        : null;
+      let malamDate: string | null = null;
+      if (hilanDate.includes('/')) {
+        const parts = hilanDate.split('/');
+        if (parts.length === 3) {
+          malamDate = hilanDate;
+        } else if (parts.length === 2) {
+          const monthStr = parts[1];
+          if (monthStr) {
+            const month = parseInt(monthStr, 10);
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear();
+            const year = month > currentMonth ? currentYear - 1 : currentYear;
+            malamDate = `${hilanDate}/${year}`;
+          }
+        }
+      }
       if (!malamDate) {
         continue;
       }
