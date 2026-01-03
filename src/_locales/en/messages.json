@@ -368,5 +368,13 @@
   "errorEnterHourlyRate": {
     "message": "Enter rate",
     "description": "Error when hourly rate is not entered"
+  },
+  "support": {
+    "message": "Support",
+    "description": "Support section title"
+  },
+  "viewOnGitHub": {
+    "message": "View on GitHub",
+    "description": "Link to view source code or open issues on GitHub"
   }
 }

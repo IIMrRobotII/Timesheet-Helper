@@ -77,6 +77,29 @@
   border-color: var(--action-danger);
 }
 
+.support-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--btn-gap);
+  width: 100%;
+  padding: var(--space-sm) var(--btn-padding-x);
+  border: 1px solid var(--action-primary);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--action-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.support-link:hover {
+  background: var(--action-primary);
+  color: var(--action-primary-text);
+}
+
 .modal-btn {
   padding: var(--btn-padding-y) var(--space-xl);
   font-size: var(--font-size-sm);
