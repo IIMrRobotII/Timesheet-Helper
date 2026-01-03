@@ -1,8 +1,36 @@
-import { storage, SELECTORS, ERROR_CODES, detectSite, delay, isValidTime, sanitizeTime, triggerEvents } from '../lib';
-import type { ExtensionMessage, ExtensionResponse, TimesheetData } from '../types';
+import {
+  storage,
+  SELECTORS,
+  ERROR_CODES,
+  detectSite,
+  delay,
+  isValidTime,
+  sanitizeTime,
+  triggerEvents,
+  DAY_MAP,
+  timeToDecimal,
+  calculateNightHours,
+  calculateOvertime,
+  CALC_CONSTANTS,
+} from '../lib';
+import type {
+  ExtensionMessage,
+  ExtensionResponse,
+  TimesheetData,
+  ParsedTimesheetRow,
+  CalculatorResult,
+} from '../types';
 
 let isProcessing = false;
 const currentSite = detectSite(location.href);
+
+const CALC_SELECTORS = {
+  DATE_CELL: 'td[id*="cellOf_ReportDate"]',
+  ENTRY_CELL: 'td[id*="cellOf_ManualEntry_EmployeeReports"]',
+  EXIT_CELL: 'td[id*="cellOf_ManualExit_EmployeeReports"]',
+  TOTAL_CELL: 'td[id*="cellOf_ManualTotal_EmployeeReports"]',
+  REPORT_TYPE: 'select[id*="Symbol.SymbolId"]',
+} as const;
 
 chrome.runtime.onMessage.addListener(
   (request: ExtensionMessage, _sender, sendResponse: (r: ExtensionResponse) => void) => {
@@ -28,7 +56,7 @@ async function handleMessage(request: ExtensionMessage, sendResponse: (r: Extens
         error: { code: ERROR_CODES.OPERATION_IN_PROGRESS },
       });
     isProcessing = true;
-    const result = await executeAction(request.action);
+    const result = await executeAction(request.action, request.hourlyRate);
     sendResponse(result);
   } catch (e) {
     sendResponse({
@@ -44,7 +72,7 @@ async function handleMessage(request: ExtensionMessage, sendResponse: (r: Extens
   }
 }
 
-async function executeAction(action: string): Promise<ExtensionResponse> {
+async function executeAction(action: string, hourlyRate?: number): Promise<ExtensionResponse> {
   const timestamp = new Date().toISOString();
   if (!currentSite)
     return {
@@ -52,6 +80,15 @@ async function executeAction(action: string): Promise<ExtensionResponse> {
       timestamp,
       error: { code: ERROR_CODES.WRONG_SITE },
     };
+
+  // Handle calculateSalary action
+  if (action === 'calculateSalary') {
+    if (currentSite.action !== 'copy') return { success: false, timestamp, error: { code: ERROR_CODES.WRONG_SITE } };
+    if (!hourlyRate || hourlyRate <= 0) return { success: false, timestamp, error: { code: 'INVALID_RATE' } };
+    const rows = parseTimesheetFromDOM();
+    if (rows.length === 0) return { success: false, timestamp, error: { code: ERROR_CODES.NO_DATA } };
+    return { success: true, timestamp, calculatorResult: calculateSalary(rows, hourlyRate) };
+  }
 
   try {
     let eventType: 'autoClick' | 'copy' | 'paste';
@@ -217,6 +254,150 @@ async function pasteTimesheetData() {
 
   if (filledCount === 0) throw new Error(ERROR_CODES.NO_DATA);
   return { count: filledCount };
+}
+
+// Parse timesheet from DOM for calculator
+function parseTimesheetFromDOM(): ParsedTimesheetRow[] {
+  const rows: ParsedTimesheetRow[] = [];
+  const processedDates = new Set<string>();
+
+  for (const dateCell of document.querySelectorAll(CALC_SELECTORS.DATE_CELL)) {
+    const ov = dateCell.getAttribute('ov');
+    if (!ov) continue;
+
+    // Normalize whitespace: replace non-breaking spaces (U+00A0) and multiple spaces
+    const normalizedOv = ov
+      .replace(/\u00A0/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    // Allow single or double digit day/month: D/MM, DD/MM, D/M, DD/M
+    const match = normalizedOv.match(/^(\d{1,2}\/\d{1,2})\s+(.+)$/);
+    if (!match) continue;
+    const [, date, dayName] = match;
+    if (!date || processedDates.has(date)) continue;
+    processedDates.add(date);
+
+    const row = dateCell.closest('tr');
+    if (!row) continue;
+
+    const isHoliday = dateCell.getAttribute('rowspan') === '2';
+    const dataRow = isHoliday ? (row.nextElementSibling as HTMLElement) : row;
+    if (!dataRow) continue;
+
+    // Clean day name: remove non-breaking spaces and normalize
+    const cleanDay =
+      dayName
+        ?.replace(/\u00A0/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim() ?? '';
+
+    // Try to find day in DAY_MAP - also try partial matches
+    let dayOfWeek = DAY_MAP[cleanDay] ?? -1;
+    if (dayOfWeek === -1) {
+      // Try partial match: check if cleanDay starts with any key in DAY_MAP
+      for (const [key, value] of Object.entries(DAY_MAP)) {
+        if (cleanDay.startsWith(key) || cleanDay.includes(key)) {
+          dayOfWeek = value;
+          break;
+        }
+      }
+    }
+    if (dayOfWeek === -1) continue;
+
+    const reportSelect = dataRow.querySelector(CALC_SELECTORS.REPORT_TYPE) as HTMLSelectElement | null;
+    const reportValue = reportSelect?.value ?? '0';
+    const isAbsence = reportSelect?.options[reportSelect.selectedIndex]?.getAttribute('isabsencesymbol') === 'true';
+
+    const reportType: 'regular' | 'vacation' | 'absence' =
+      reportValue === '481' ? 'vacation' : isAbsence ? 'absence' : 'regular';
+
+    const entryOv = dataRow.querySelector(CALC_SELECTORS.ENTRY_CELL)?.getAttribute('ov')?.trim() ?? '';
+    const exitOv = dataRow.querySelector(CALC_SELECTORS.EXIT_CELL)?.getAttribute('ov')?.trim() ?? '';
+    const totalOv = dataRow.querySelector(CALC_SELECTORS.TOTAL_CELL)?.getAttribute('ov')?.trim() ?? '';
+
+    const validTime = (t: string) => /^\d{1,2}:\d{2}$/.test(t);
+    const entryTime = validTime(entryOv) ? entryOv : '';
+    const exitTime = validTime(exitOv) ? exitOv : '';
+
+    let totalHours = 0;
+    if (validTime(totalOv)) {
+      totalHours = timeToDecimal(totalOv);
+    } else if (entryTime && exitTime) {
+      let e = timeToDecimal(exitTime);
+      if (e < timeToDecimal(entryTime)) e += 24;
+      totalHours = e - timeToDecimal(entryTime);
+    }
+
+    rows.push({ date, dayOfWeek, entryTime, exitTime, totalHours, reportType, isHoliday });
+  }
+  return rows;
+}
+
+// Calculate salary from parsed rows
+function calculateSalary(rows: ParsedTimesheetRow[], hourlyRate: number): CalculatorResult {
+  let regularHours = 0,
+    nightHours = 0,
+    vacationDays = 0,
+    workDays = 0;
+  let mealEligibleDays = 0,
+    ot125Hours = 0,
+    ot150Hours = 0;
+  let periodStart = '',
+    periodEnd = '';
+
+  for (const row of rows) {
+    if (!periodStart || row.date < periodStart) periodStart = row.date;
+    if (!periodEnd || row.date > periodEnd) periodEnd = row.date;
+
+    if (row.reportType === 'absence') continue;
+    if (row.reportType === 'vacation') {
+      vacationDays++;
+      continue;
+    }
+    if (row.totalHours <= 0) continue;
+
+    workDays++;
+    const night = calculateNightHours(row.entryTime, row.exitTime, row.dayOfWeek);
+    nightHours += night;
+    regularHours += row.totalHours - night;
+    if (row.totalHours >= CALC_CONSTANTS.MEAL_ELIGIBLE_HOURS) mealEligibleDays++;
+    const ot = calculateOvertime(row.totalHours);
+    ot125Hours += ot.ot125;
+    ot150Hours += ot.ot150;
+  }
+
+  const round = (n: number) => Math.round(n * 100) / 100;
+  const regularPay = hourlyRate * regularHours;
+  const nightPay = hourlyRate * CALC_CONSTANTS.NIGHT_MULTIPLIER * nightHours;
+  const vacationPay = hourlyRate * CALC_CONSTANTS.VACATION_HOURS_PER_DAY * vacationDays;
+  const workDaysPay = regularPay + nightPay;
+  const travelRefund = CALC_CONSTANTS.TRAVEL_REFUND_PER_DAY * workDays;
+  const mealRefund = CALC_CONSTANTS.MEAL_REFUND_PER_DAY * mealEligibleDays;
+  const ot125Pay = hourlyRate * 0.25 * ot125Hours;
+  const ot150Pay = hourlyRate * 0.5 * ot150Hours;
+  const totalPay = regularPay + nightPay + vacationPay + travelRefund + mealRefund + ot125Pay + ot150Pay;
+
+  return {
+    totalPay: round(totalPay),
+    regularHours: round(regularHours),
+    regularPay: round(regularPay),
+    nightHours: round(nightHours),
+    nightPay: round(nightPay),
+    vacationDays,
+    vacationPay: round(vacationPay),
+    workDays,
+    workDaysPay: round(workDaysPay),
+    travelRefund,
+    mealRefund,
+    mealEligibleDays,
+    overtime125Hours: round(ot125Hours),
+    overtime125Pay: round(ot125Pay),
+    overtime150Hours: round(ot150Hours),
+    overtime150Pay: round(ot150Pay),
+    periodStart,
+    periodEnd,
+  };
 }
 
 // Analytics tracking

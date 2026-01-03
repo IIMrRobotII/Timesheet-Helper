@@ -4,6 +4,39 @@ export interface TimesheetEntry {
   exitTime: string;
   originalHilanDate: string;
   isVacation?: boolean;
+  dayOfWeek?: number; // 0=Sunday, 6=Saturday
+  reportType?: string;
+}
+
+export interface ParsedTimesheetRow {
+  date: string;
+  dayOfWeek: number;
+  entryTime: string;
+  exitTime: string;
+  totalHours: number;
+  reportType: 'regular' | 'vacation' | 'absence';
+  isHoliday: boolean;
+}
+
+export interface CalculatorResult {
+  totalPay: number;
+  regularHours: number;
+  regularPay: number;
+  nightHours: number;
+  nightPay: number;
+  vacationDays: number;
+  vacationPay: number;
+  workDays: number;
+  workDaysPay: number;
+  travelRefund: number;
+  mealRefund: number;
+  mealEligibleDays: number;
+  overtime125Hours: number;
+  overtime125Pay: number;
+  overtime150Hours: number;
+  overtime150Pay: number;
+  periodStart: string;
+  periodEnd: string;
 }
 
 export interface TimesheetData {
@@ -12,7 +45,8 @@ export interface TimesheetData {
 
 // Chrome extension messaging
 export interface ExtensionMessage {
-  action: 'autoClickTimeBoxes' | 'copyHours';
+  action: 'autoClickTimeBoxes' | 'copyHours' | 'calculateSalary';
+  hourlyRate?: number;
 }
 
 export interface ExtensionResponse {
@@ -23,14 +57,18 @@ export interface ExtensionResponse {
   clickedCount?: number;
   totalBoxes?: number;
   skippedCount?: number;
+  calculatorResult?: CalculatorResult;
 }
 
 // Storage schema
 export interface StorageSchema {
   extensionEnabled: boolean;
+  calculatorEnabled: boolean;
   statisticsEnabled: boolean;
   currentLanguage: string;
+  currentTheme: 'system' | 'light' | 'dark';
   timesheetData: TimesheetData;
+  hourlyRate: number;
   analytics: {
     operations: {
       copy: AnalyticsOperation;

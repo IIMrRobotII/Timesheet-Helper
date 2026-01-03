@@ -300,5 +300,73 @@
         "example": "15"
       }
     }
+  },
+  "salaryCalculator": {
+    "message": "Salary Calculator",
+    "description": "Salary calculator toggle label"
+  },
+  "hourlyRate": {
+    "message": "Rate",
+    "description": "Hourly rate input label"
+  },
+  "calculate": {
+    "message": "Calculate",
+    "description": "Calculate button text"
+  },
+  "calculationResults": {
+    "message": "Results",
+    "description": "Calculator results header"
+  },
+  "resultTotalPay": {
+    "message": "Total Pay",
+    "description": "Total pay result label"
+  },
+  "resultRegularHours": {
+    "message": "Regular",
+    "description": "Regular hours result label"
+  },
+  "resultNightHours": {
+    "message": "Night/Weekend",
+    "description": "Night/Weekend hours result label"
+  },
+  "resultWorkDays": {
+    "message": "Work Days",
+    "description": "Work days result label"
+  },
+  "resultVacationDays": {
+    "message": "Vacation",
+    "description": "Vacation days result label"
+  },
+  "resultTravelRefund": {
+    "message": "Travel",
+    "description": "Travel refund result label"
+  },
+  "resultMealAllowance": {
+    "message": "Meals",
+    "description": "Meal allowance result label"
+  },
+  "resultOvertime125": {
+    "message": "OT 125%",
+    "description": "Overtime 125% result label"
+  },
+  "resultOvertime150": {
+    "message": "OT 150%",
+    "description": "Overtime 150% result label"
+  },
+  "workingCalculating": {
+    "message": "Calculating...",
+    "description": "Working message for calculate operation"
+  },
+  "successCalculated": {
+    "message": "Calculated!",
+    "description": "Success message for calculate operation"
+  },
+  "errorNoTimesheetData": {
+    "message": "No data. Click Auto-Click first.",
+    "description": "Error when no timesheet data found for calculation"
+  },
+  "errorEnterHourlyRate": {
+    "message": "Enter rate",
+    "description": "Error when hourly rate is not entered"
   }
 }

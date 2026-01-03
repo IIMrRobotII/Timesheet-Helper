@@ -36,6 +36,74 @@
           <span class="button-text" data-i18n="syncHours">Sync Hours</span>
         </button>
         <div id="status"></div>
+        <div class="toggle-section calculator-toggle-section">
+          <label class="toggle-container">
+            <input type="checkbox" id="calculatorToggle" />
+            <span class="toggle-slider"></span>
+            <span class="toggle-label" data-i18n="salaryCalculator">Salary Calculator</span>
+          </label>
+        </div>
+        <div class="calculator-section hidden">
+          <div class="calc-input-row">
+            <label class="calc-input-label" data-i18n="hourlyRate">Rate</label>
+            <div class="calc-input-arrows">
+              <button type="button" class="calc-arrow calc-arrow-up" tabindex="-1">▲</button>
+              <button type="button" class="calc-arrow calc-arrow-down" tabindex="-1">▼</button>
+            </div>
+            <div class="calc-input-wrapper" id="rateInputWrapper">
+              <input type="number" id="hourlyRateInput" min="1" step="1" placeholder="0" />
+              <span class="calc-input-suffix">₪</span>
+            </div>
+            <button id="calculateButton" class="btn-base calc-btn" disabled>
+              <span data-i18n="calculate">Calculate</span>
+            </button>
+          </div>
+
+          <div id="calculatorResults" class="calc-results hidden">
+            <div class="calc-header">
+              <span data-i18n="calculationResults">Results</span>
+              <span id="calcPeriod" class="calc-period"></span>
+            </div>
+            <div class="calc-total">
+              <span class="calc-total-label" data-i18n="resultTotalPay">Total Pay</span>
+              <span id="resultTotalPay" class="calc-total-value">₪0.00</span>
+            </div>
+            <div class="calc-grid">
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultRegularHours">Regular</span
+                ><span class="calc-box-value" id="resultRegular">₪0 (0h)</span>
+              </div>
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultNightHours">Night</span
+                ><span class="calc-box-value" id="resultNight">₪0 (0h)</span>
+              </div>
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultWorkDays">Work Days</span
+                ><span class="calc-box-value" id="resultWorkDays">₪0 (0d)</span>
+              </div>
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultVacationDays">Vacation</span
+                ><span class="calc-box-value" id="resultVacation">₪0 (0d)</span>
+              </div>
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultTravelRefund">Travel</span
+                ><span class="calc-box-value" id="resultTravel">₪0 (0d)</span>
+              </div>
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultMealAllowance">Meals</span
+                ><span class="calc-box-value" id="resultMeal">₪0 (0d)</span>
+              </div>
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultOvertime125">OT 125%</span
+                ><span class="calc-box-value" id="resultOT125">₪0 (0h)</span>
+              </div>
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultOvertime150">OT 150%</span
+                ><span class="calc-box-value" id="resultOT150">₪0 (0h)</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="footer">
         <span class="footer-text" data-i18n="footerMadeBy">Made by Segev Levinshtein</span>

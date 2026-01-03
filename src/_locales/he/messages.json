@@ -300,5 +300,73 @@
         "example": "15"
       }
     }
+  },
+  "salaryCalculator": {
+    "message": "מחשבון שכר",
+    "description": "Salary calculator toggle label"
+  },
+  "hourlyRate": {
+    "message": "תעריף",
+    "description": "Hourly rate input label"
+  },
+  "calculate": {
+    "message": "חשב",
+    "description": "Calculate button text"
+  },
+  "calculationResults": {
+    "message": "תוצאות",
+    "description": "Calculator results header"
+  },
+  "resultTotalPay": {
+    "message": "סה״כ",
+    "description": "Total pay result label"
+  },
+  "resultRegularHours": {
+    "message": "רגיל",
+    "description": "Regular hours result label"
+  },
+  "resultNightHours": {
+    "message": "לילה/סופ״ש",
+    "description": "Night/Weekend hours result label"
+  },
+  "resultWorkDays": {
+    "message": "ימי עבודה",
+    "description": "Work days result label"
+  },
+  "resultVacationDays": {
+    "message": "חופשה",
+    "description": "Vacation days result label"
+  },
+  "resultTravelRefund": {
+    "message": "נסיעות",
+    "description": "Travel refund result label"
+  },
+  "resultMealAllowance": {
+    "message": "ארוחות",
+    "description": "Meal allowance result label"
+  },
+  "resultOvertime125": {
+    "message": "נוספות 125%",
+    "description": "Overtime 125% result label"
+  },
+  "resultOvertime150": {
+    "message": "נוספות 150%",
+    "description": "Overtime 150% result label"
+  },
+  "workingCalculating": {
+    "message": "מחשב...",
+    "description": "Working message for calculate operation"
+  },
+  "successCalculated": {
+    "message": "חושב!",
+    "description": "Success message for calculate operation"
+  },
+  "errorNoTimesheetData": {
+    "message": "אין נתונים. לחץ לחיצה אוטומטית.",
+    "description": "Error when no timesheet data found for calculation"
+  },
+  "errorEnterHourlyRate": {
+    "message": "הזן תעריף",
+    "description": "Error when hourly rate is not entered"
   }
 }
