@@ -15,14 +15,18 @@ const el = {
   toggleLabel: $('.toggle-label'),
   guidanceText: $('.guidance-text'),
   statusDiv: $('#status'),
-  analyticsSection: $('.analytics-section'),
   confirmModal: $('#confirmModal'),
   extensionToggle: $('#extensionToggle') as HTMLInputElement | null,
   statisticsToggle: $('#statisticsToggle') as HTMLInputElement | null,
   autoClickButton: $('#autoClickButton') as HTMLButtonElement | null,
   copyHours: $('#copyHours') as HTMLButtonElement | null,
-  languageToggle: $('#languageToggle'),
-  languageDropdown: $('#languageDropdown'),
+  settingsContainer: $('.settings-container'),
+  settingsButton: $('#settingsButton'),
+  backButton: $('#backButton'),
+  themeSelect: $('#themeSelect') as HTMLSelectElement | null,
+  languageSelect: $('#languageSelect') as HTMLSelectElement | null,
+  statisticsContent: $('#statisticsContent'),
+  clearDataButtonSettings: $('#clearDataButtonSettings') as HTMLButtonElement | null,
 };
 
 // Initialize
@@ -32,7 +36,6 @@ async function init() {
   setupEventListeners();
   await loadSettings();
   updateAllText();
-  updateLanguageDropdown();
   el.container?.classList.remove('no-transition');
   updateInterface();
   updateUIState(el.extensionToggle?.checked ?? false, true);
@@ -88,30 +91,29 @@ function setupEventListeners() {
   el.statisticsToggle?.addEventListener('change', handleStatisticsToggle);
   el.autoClickButton?.addEventListener('click', handleAutoClick);
   el.copyHours?.addEventListener('click', handlePrimaryOperation);
-  el.languageToggle?.addEventListener('click', e => {
-    e.stopPropagation();
-    toggleDropdown();
-  });
-  document.addEventListener('click', () => closeDropdown());
+  el.settingsButton?.addEventListener('click', () => showView('settings'));
+  el.backButton?.addEventListener('click', () => showView('main'));
+  el.themeSelect?.addEventListener('change', handleThemeChange);
+  el.languageSelect?.addEventListener('change', handleLanguageSelect);
+  el.clearDataButtonSettings?.addEventListener('click', handleClearData);
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && !el.confirmModal?.classList.contains('hidden')) handleModal(false);
   });
-  document
-    .querySelectorAll('.language-option')
-    .forEach(opt => opt.addEventListener('click', e => handleLanguageOption(e)));
   $('#modalCancel')?.addEventListener('click', () => handleModal(false));
   $('#modalConfirm')?.addEventListener('click', () => handleModal(true));
   el.confirmModal?.addEventListener('click', e => {
     if (e.target === el.confirmModal) handleModal(false);
   });
-  el.analyticsSection?.querySelector('#clearDataButton')?.addEventListener('click', handleClearData);
 }
 
 async function loadSettings() {
   const settings = await storage.get();
   if (el.extensionToggle) el.extensionToggle.checked = settings.extensionEnabled;
   if (el.statisticsToggle) el.statisticsToggle.checked = settings.statisticsEnabled;
+  if (el.themeSelect) el.themeSelect.value = settings.currentTheme;
+  if (el.languageSelect) el.languageSelect.value = settings.currentLanguage;
   updateUIState(settings.extensionEnabled, true);
+  applyTheme(settings.currentTheme);
   updateStatisticsVisibility(settings.statisticsEnabled);
 }
 
@@ -173,12 +175,11 @@ function updateButtonAvailability() {
     el.autoClickButton.disabled = !enabled || !isHilanTimesheet || isOperationInProgress || isHilanHome;
   if (el.copyHours)
     el.copyHours.disabled = !enabled || context.type === 'unknown' || isOperationInProgress || isHilanHome;
-  const clearBtn = el.analyticsSection?.querySelector('#clearDataButton') as HTMLButtonElement | null;
-  if (clearBtn) clearBtn.disabled = isOperationInProgress;
+  if (el.clearDataButtonSettings) el.clearDataButtonSettings.disabled = isOperationInProgress;
 }
 
 function updateStatisticsVisibility(visible: boolean) {
-  el.analyticsSection?.classList.toggle('hidden', !visible);
+  el.statisticsContent?.classList.toggle('hidden', !visible);
 }
 
 // Event handlers
@@ -227,6 +228,14 @@ async function handleClearData() {
     await storage.set({ extensionEnabled: true, statisticsEnabled: true });
     if (el.extensionToggle) el.extensionToggle.checked = true;
     if (el.statisticsToggle) el.statisticsToggle.checked = true;
+    // Reset language and theme to system defaults
+    await i18n.switchLanguage('system');
+    if (el.languageSelect) el.languageSelect.value = 'system';
+    if (el.themeSelect) el.themeSelect.value = 'system';
+    applyTheme('system');
+    updateAllText();
+    context = await detectContext();
+    updateInterface();
     updateUIState(true);
     updateStatisticsVisibility(true);
     await loadAnalytics();
@@ -316,44 +325,31 @@ function handleModal(confirmed: boolean) {
   modalResolve = null;
 }
 
-// Language
-function toggleDropdown() {
-  const hidden = el.languageDropdown?.classList.contains('hidden');
-  el.languageDropdown?.classList.toggle('hidden', !hidden);
-  el.languageToggle?.classList.toggle('active', hidden);
+// Settings & Navigation
+function showView(view: 'main' | 'settings') {
+  el.container?.classList.toggle('hidden', view !== 'main');
+  el.settingsContainer?.classList.toggle('hidden', view !== 'settings');
+  if (view === 'settings') loadAnalytics();
 }
 
-function closeDropdown() {
-  el.languageDropdown?.classList.add('hidden');
-  el.languageToggle?.classList.remove('active');
+function applyTheme(theme: 'system' | 'light' | 'dark') {
+  document.documentElement.removeAttribute('data-theme');
+  if (theme !== 'system') document.documentElement.setAttribute('data-theme', theme);
 }
 
-function updateLanguageDropdown() {
-  const lang = i18n.getCurrentLanguage();
-  document
-    .querySelectorAll('.language-option')
-    .forEach(o => o.classList.toggle('active', o.getAttribute('data-lang') === lang));
-  const langName = lang === 'he' ? i18n.getMessage('languageHebrew') : i18n.getMessage('languageEnglish');
-  const txt = document.querySelector('.language-text');
-  if (txt) txt.textContent = `${i18n.getMessage('languageToggle')} (${langName})`;
+async function handleThemeChange() {
+  const theme = el.themeSelect?.value as 'system' | 'light' | 'dark';
+  await storage.set({ currentTheme: theme });
+  applyTheme(theme);
 }
 
-async function handleLanguageOption(e: Event) {
-  const lang = (e.target as HTMLElement).closest('.language-option')?.getAttribute('data-lang') as 'en' | 'he' | null;
-  if (!lang || !['en', 'he'].includes(lang)) return;
-  try {
-    await i18n.switchLanguage(lang);
-    updateAllText();
-    context = await detectContext();
-    updateInterface();
-    updateUIState(el.extensionToggle?.checked ?? false, true);
-    await loadAnalytics();
-    updateLanguageDropdown();
-    closeDropdown();
-    showStatus(el.statusDiv, `✅ ${i18n.getMessage('successLanguageChanged')}`, 'success');
-  } catch {
-    showStatus(el.statusDiv, `❌ ${i18n.getMessage('errorLanguageSwitchFailed')}`, 'error');
-  }
+async function handleLanguageSelect() {
+  const lang = el.languageSelect?.value as 'system' | 'en' | 'he';
+  await i18n.switchLanguage(lang);
+  updateAllText();
+  context = await detectContext();
+  updateInterface();
+  updateUIState(el.extensionToggle?.checked ?? false, true);
 }
 
 // Analytics
@@ -379,7 +375,7 @@ async function loadAnalytics() {
     statSuccessRate: `${data.analytics.successRate}%`,
   };
   for (const [key, value] of Object.entries(stats)) {
-    const label = el.analyticsSection?.querySelector(`.stat-label[data-i18n="${key}"]`);
+    const label = el.statisticsContent?.querySelector(`.stat-label[data-i18n="${key}"]`);
     const valueEl = label?.closest('.stat-item')?.querySelector('.stat-value');
     if (valueEl) valueEl.textContent = value;
   }

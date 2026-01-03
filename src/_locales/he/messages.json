@@ -87,6 +87,10 @@
     "message": "נקה את כל הנתונים",
     "description": "Clear data button text"
   },
+  "languageSystem": {
+    "message": "מערכת",
+    "description": "System language option"
+  },
   "languageEnglish": {
     "message": "English",
     "description": "English language option"
@@ -210,6 +214,38 @@
   "statistics": {
     "message": "סטטיסטיקות",
     "description": "Statistics section title and toggle label"
+  },
+  "settings": {
+    "message": "הגדרות",
+    "description": "Settings page title"
+  },
+  "appearance": {
+    "message": "מראה",
+    "description": "Appearance settings section title"
+  },
+  "theme": {
+    "message": "ערכת נושא",
+    "description": "Theme setting label"
+  },
+  "themeSystem": {
+    "message": "מערכת",
+    "description": "System theme option"
+  },
+  "themeLight": {
+    "message": "בהיר",
+    "description": "Light theme option"
+  },
+  "themeDark": {
+    "message": "כהה",
+    "description": "Dark theme option"
+  },
+  "enableStatistics": {
+    "message": "הפעל",
+    "description": "Enable statistics toggle label"
+  },
+  "dataManagement": {
+    "message": "נתונים",
+    "description": "Data management settings section title"
   },
   "modalTitle": {
     "message": "למחוק את כל נתוני התוסף?",

@@ -24,7 +24,7 @@
 
 /* Body width */
 body.popup-expanded {
-  width: 270px;
+  width: 300px;
 }
 
 body.popup-collapsed {
@@ -261,6 +261,93 @@ body.popup-collapsed {
 /* ===== SPECIAL UTILITIES ===== */
 #autoClickButton {
   margin-bottom: var(--space-sm);
+}
+
+/* ===== ICON BUTTON ===== */
+.icon-button {
+  background: transparent;
+  border: none;
+  padding: var(--space-sm);
+  cursor: pointer;
+  font-size: var(--font-size-md);
+  color: var(--text-secondary);
+  opacity: 0.85;
+  transition: opacity var(--transition-fast);
+  line-height: 1;
+}
+.icon-button:hover {
+  opacity: 1;
+  color: var(--text-primary);
+}
+
+/* ===== SETTINGS PAGE ===== */
+.settings-container {
+  padding: var(--space-lg);
+  animation: fadeIn var(--transition-smooth);
+}
+.settings-container.hidden {
+  display: none;
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-default);
+}
+.settings-header h2 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+  flex: 1;
+}
+
+.settings-section {
+  margin-bottom: var(--space-lg);
+}
+
+.settings-section-title {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 var(--space-md) 0;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) 0;
+}
+
+.setting-label {
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+}
+
+.setting-select {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.statistics-content {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  background: var(--surface-secondary);
+  border-radius: var(--radius-md);
+}
+.statistics-content.hidden {
+  display: none;
 }
 
 /* ===== MODAL SYSTEM ===== */
