@@ -1,6 +1,6 @@
 import { storage, detectSite, tabs, showStatus } from './lib';
 import * as i18n from './i18n';
-import type { UIContext, ExtensionMessage, ExtensionResponse, StatusType } from './types';
+import type { UIContext, ExtensionMessage, ExtensionResponse, StatusType, CalculatorResult } from './types';
 
 // State
 let context: UIContext = { name: '', type: 'unknown', primaryAction: 'copy' };
@@ -27,6 +27,15 @@ const el = {
   languageSelect: $('#languageSelect') as HTMLSelectElement | null,
   statisticsContent: $('#statisticsContent'),
   clearDataButtonSettings: $('#clearDataButtonSettings') as HTMLButtonElement | null,
+  calculatorSection: $('.calculator-section'),
+  calculatorToggle: $('#calculatorToggle') as HTMLInputElement | null,
+  hourlyRateInput: $('#hourlyRateInput') as HTMLInputElement | null,
+  calculateButton: $('#calculateButton') as HTMLButtonElement | null,
+  calculatorResults: $('#calculatorResults'),
+  calcPeriod: $('#calcPeriod'),
+  rateInputWrapper: $('#rateInputWrapper'),
+  rateArrowUp: $('.calc-arrow-up') as HTMLButtonElement | null,
+  rateArrowDown: $('.calc-arrow-down') as HTMLButtonElement | null,
 };
 
 // Initialize
@@ -96,6 +105,21 @@ function setupEventListeners() {
   el.themeSelect?.addEventListener('change', handleThemeChange);
   el.languageSelect?.addEventListener('change', handleLanguageSelect);
   el.clearDataButtonSettings?.addEventListener('click', handleClearData);
+  el.calculatorToggle?.addEventListener('change', handleCalculatorToggle);
+  el.hourlyRateInput?.addEventListener('input', handleHourlyRateChange);
+  el.hourlyRateInput?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') el.calculateButton?.click();
+  });
+  el.calculateButton?.addEventListener('click', handleCalculate);
+  el.rateInputWrapper?.addEventListener('click', () => el.hourlyRateInput?.focus());
+  el.rateArrowUp?.addEventListener('click', () => {
+    el.hourlyRateInput?.stepUp();
+    handleHourlyRateChange();
+  });
+  el.rateArrowDown?.addEventListener('click', () => {
+    el.hourlyRateInput?.stepDown();
+    handleHourlyRateChange();
+  });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && !el.confirmModal?.classList.contains('hidden')) handleModal(false);
   });
@@ -112,9 +136,12 @@ async function loadSettings() {
   if (el.statisticsToggle) el.statisticsToggle.checked = settings.statisticsEnabled;
   if (el.themeSelect) el.themeSelect.value = settings.currentTheme;
   if (el.languageSelect) el.languageSelect.value = settings.currentLanguage;
+  if (el.calculatorToggle) el.calculatorToggle.checked = settings.calculatorEnabled;
+  if (el.hourlyRateInput && settings.hourlyRate > 0) el.hourlyRateInput.value = String(settings.hourlyRate);
   updateUIState(settings.extensionEnabled, true);
   applyTheme(settings.currentTheme);
   updateStatisticsVisibility(settings.statisticsEnabled);
+  updateCalculatorVisibility(settings.calculatorEnabled);
 }
 
 function updateAllText() {
@@ -176,10 +203,29 @@ function updateButtonAvailability() {
   if (el.copyHours)
     el.copyHours.disabled = !enabled || context.type === 'unknown' || isOperationInProgress || isHilanHome;
   if (el.clearDataButtonSettings) el.clearDataButtonSettings.disabled = isOperationInProgress;
+  updateCalculateButtonState();
 }
 
 function updateStatisticsVisibility(visible: boolean) {
   el.statisticsContent?.classList.toggle('hidden', !visible);
+}
+
+function updateCalculatorVisibility(visible: boolean) {
+  el.calculatorSection?.classList.toggle('hidden', !visible);
+}
+
+function updateCalculateButtonState() {
+  const rate = parseFloat(el.hourlyRateInput?.value || '0');
+  const isHilan = context.type === 'source' && context.name === i18n.getMessage('contextHilanTimesheet');
+  if (el.calculateButton) el.calculateButton.disabled = !(rate > 0) || !isHilan || isOperationInProgress;
+}
+
+async function handleHourlyRateChange() {
+  const rate = parseFloat(el.hourlyRateInput?.value || '0');
+  if (rate > 0) {
+    await storage.set({ hourlyRate: rate });
+  }
+  updateCalculateButtonState();
 }
 
 // Event handlers
@@ -195,6 +241,72 @@ async function handleStatisticsToggle() {
   const enabled = el.statisticsToggle?.checked ?? false;
   await storage.set({ statisticsEnabled: enabled });
   updateStatisticsVisibility(enabled);
+}
+
+async function handleCalculatorToggle() {
+  const enabled = el.calculatorToggle?.checked ?? false;
+  await storage.set({ calculatorEnabled: enabled });
+  updateCalculatorVisibility(enabled);
+}
+
+async function handleCalculate() {
+  if (isOperationInProgress) return;
+  const hourlyRate = parseFloat(el.hourlyRateInput?.value || '0');
+  if (hourlyRate <= 0) {
+    showStatus(el.statusDiv, `❌ ${i18n.getMessage('errorEnterHourlyRate')}`, 'error');
+    return;
+  }
+
+  isOperationInProgress = true;
+  updateCalculateButtonState();
+  showStatus(el.statusDiv, `🧮 ${i18n.getMessage('workingCalculating')}`, 'working');
+
+  try {
+    const [tab] = await tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id) throw new Error('No tab');
+    const response = await tabs.sendMessage<ExtensionResponse>(tab.id, { action: 'calculateSalary', hourlyRate });
+
+    if (response.success && response.calculatorResult) {
+      displayResults(response.calculatorResult);
+      await storage.set({ hourlyRate });
+      showStatus(el.statusDiv, `✅ ${i18n.getMessage('successCalculated')}`, 'success');
+    } else {
+      const msg =
+        response.error?.code === 'NO_DATA'
+          ? i18n.getMessage('errorNoTimesheetData')
+          : i18n.getMessage('errorOperationFailed');
+      showStatus(el.statusDiv, `❌ ${msg}`, 'error');
+    }
+  } catch {
+    showStatus(el.statusDiv, `❌ ${i18n.getMessage('errorOperationFailed')}`, 'error');
+  } finally {
+    isOperationInProgress = false;
+    updateCalculateButtonState();
+  }
+}
+
+function displayResults(r: CalculatorResult) {
+  el.calculatorResults?.classList.remove('hidden');
+  if (el.calcPeriod) el.calcPeriod.textContent = `${r.periodStart} - ${r.periodEnd}`;
+
+  const formatCurrency = (n: number) =>
+    n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmt = (amt: number, cnt: number | string, suf: string) =>
+    `₪${formatCurrency(amt)} (${typeof cnt === 'number' ? cnt.toFixed(1) : cnt}${suf})`;
+  const set = (id: string, v: string) => {
+    const e = document.getElementById(id);
+    if (e) e.textContent = v;
+  };
+
+  set('resultTotalPay', `₪${formatCurrency(r.totalPay)}`);
+  set('resultRegular', fmt(r.regularPay, r.regularHours, 'h'));
+  set('resultNight', fmt(r.nightPay, r.nightHours, 'h'));
+  set('resultWorkDays', fmt(r.workDaysPay, r.workDays, 'd'));
+  set('resultVacation', fmt(r.vacationPay, r.vacationDays, 'd'));
+  set('resultTravel', fmt(r.travelRefund, r.workDays, 'd'));
+  set('resultMeal', fmt(r.mealRefund, r.mealEligibleDays, 'd'));
+  set('resultOT125', fmt(r.overtime125Pay, r.overtime125Hours, 'h'));
+  set('resultOT150', fmt(r.overtime150Pay, r.overtime150Hours, 'h'));
 }
 
 async function handleAutoClick() {
@@ -225,9 +337,15 @@ async function handleClearData() {
   try {
     showStatus(el.statusDiv, `🗑️ ${i18n.getMessage('workingClearing')}`, 'working');
     await storage.clear();
-    await storage.set({ extensionEnabled: true, statisticsEnabled: true });
+    await storage.set({ extensionEnabled: true, statisticsEnabled: true, calculatorEnabled: true });
     if (el.extensionToggle) el.extensionToggle.checked = true;
     if (el.statisticsToggle) el.statisticsToggle.checked = true;
+    // Reset calculator UI
+    if (el.calculatorToggle) el.calculatorToggle.checked = true;
+    if (el.hourlyRateInput) el.hourlyRateInput.value = '';
+    el.calculatorResults?.classList.add('hidden');
+    updateCalculatorVisibility(true);
+    updateCalculateButtonState();
     // Reset language and theme to system defaults
     await i18n.switchLanguage('system');
     if (el.languageSelect) el.languageSelect.value = 'system';

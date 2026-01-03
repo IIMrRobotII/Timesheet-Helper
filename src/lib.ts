@@ -3,9 +3,12 @@ import type { StorageSchema, ExtensionMessage, ExtensionResponse, StatusType } f
 // Default settings
 export const DEFAULTS: StorageSchema = {
   extensionEnabled: true,
+  calculatorEnabled: true,
   statisticsEnabled: true,
-  currentLanguage: 'en',
+  currentLanguage: 'system',
+  currentTheme: 'system',
   timesheetData: {},
+  hourlyRate: 0,
   analytics: {
     operations: {
       copy: { success: 0, failures: 0, lastTime: null },
@@ -59,14 +62,74 @@ export const ERROR_CODES = {
   PASTE_FAILED: 'PASTE_FAILED',
 } as const;
 
+// Calculation constants
+export const CALC_CONSTANTS = {
+  TRAVEL_REFUND_PER_DAY: 26,
+  MEAL_REFUND_PER_DAY: 15,
+  MEAL_ELIGIBLE_HOURS: 6,
+  NIGHT_MULTIPLIER: 1.5,
+  VACATION_HOURS_PER_DAY: 8,
+  OT_125_START: 9,
+  OT_125_END: 11,
+  OT_150_START: 11,
+} as const;
+
+export const DAY_MAP: Record<string, number> = {
+  'יום א': 0,
+  'יום ב': 1,
+  'יום ג': 2,
+  'יום ד': 3,
+  'יום ה': 4,
+  'יום ו': 5,
+  שבת: 6,
+};
+
+export const timeToDecimal = (time: string): number => {
+  const [h, m] = time.split(':').map(Number);
+  return (h ?? 0) + (m ?? 0) / 60;
+};
+
+export const calculateNightHours = (entry: string, exit: string, dayOfWeek: number): number => {
+  if (!entry || !exit) return 0;
+  const entryDec = timeToDecimal(entry);
+  let exitDec = timeToDecimal(exit);
+  if (exitDec < entryDec) exitDec += 24;
+  const totalHours = exitDec - entryDec;
+  let nightHours = 0;
+
+  if (dayOfWeek === 5) {
+    if (entryDec >= 16 || exitDec > 16) {
+      nightHours = Math.max(0, Math.min(exitDec, 24) - Math.max(entryDec, 16));
+      if (exitDec > 24) nightHours += Math.min(exitDec - 24, 6);
+    }
+  } else if (dayOfWeek === 6) {
+    nightHours = totalHours;
+  } else {
+    if (exitDec > 22) nightHours += Math.min(exitDec, 24) - Math.max(entryDec, 22);
+    if (exitDec > 24) nightHours += Math.min(exitDec - 24, 6);
+    if (entryDec < 6) nightHours += Math.min(6, exitDec) - entryDec;
+  }
+  return Math.min(Math.max(0, nightHours), totalHours);
+};
+
+export const calculateOvertime = (totalHours: number): { ot125: number; ot150: number } => ({
+  ot125: Math.max(0, Math.min(totalHours, CALC_CONSTANTS.OT_125_END) - CALC_CONSTANTS.OT_125_START),
+  ot150: Math.max(0, totalHours - CALC_CONSTANTS.OT_150_START),
+});
+
 // Storage validation (security)
 const validateStorageValue = (key: string, value: unknown): boolean => {
   switch (key) {
     case 'extensionEnabled':
     case 'statisticsEnabled':
+    case 'calculatorEnabled':
       return typeof value === 'boolean';
     case 'currentLanguage':
-      return typeof value === 'string' && ['en', 'he'].includes(value);
+      return typeof value === 'string' && ['system', 'en', 'he'].includes(value);
+    case 'currentTheme':
+      return typeof value === 'string' && ['system', 'light', 'dark'].includes(value);
+    case 'hourlyRate':
+      return typeof value === 'number' && value >= 0;
     case 'timesheetData':
       return typeof value === 'object' && value !== null;
     case 'analytics': {
