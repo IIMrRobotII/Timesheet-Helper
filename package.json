@@ -1,6 +1,6 @@
 {
   "name": "timesheet-helper",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Timesheet automation extension for Hilan and Malam Timesheet systems",
   "type": "module",
   "scripts": {
