@@ -87,6 +87,10 @@
     "message": "Clear All Data",
     "description": "Clear data button text"
   },
+  "languageSystem": {
+    "message": "System",
+    "description": "System language option"
+  },
   "languageEnglish": {
     "message": "English",
     "description": "English language option"
@@ -210,6 +214,38 @@
   "statistics": {
     "message": "Statistics",
     "description": "Statistics section title and toggle label"
+  },
+  "settings": {
+    "message": "Settings",
+    "description": "Settings page title"
+  },
+  "appearance": {
+    "message": "Appearance",
+    "description": "Appearance settings section title"
+  },
+  "theme": {
+    "message": "Theme",
+    "description": "Theme setting label"
+  },
+  "themeSystem": {
+    "message": "System",
+    "description": "System theme option"
+  },
+  "themeLight": {
+    "message": "Light",
+    "description": "Light theme option"
+  },
+  "themeDark": {
+    "message": "Dark",
+    "description": "Dark theme option"
+  },
+  "enableStatistics": {
+    "message": "Enable",
+    "description": "Enable statistics toggle label"
+  },
+  "dataManagement": {
+    "message": "Data",
+    "description": "Data management settings section title"
   },
   "modalTitle": {
     "message": "Clear All Extension Data?",

@@ -4,14 +4,18 @@ import type { SupportedLanguage, StorageSchema } from './types';
 let currentLanguage: SupportedLanguage = 'en';
 let messages: Record<string, string> = {};
 
+function getSystemLanguage(): SupportedLanguage {
+  const browserLang = chrome.i18n.getUILanguage().split('-')[0] ?? 'en';
+  return browserLang === 'he' ? 'he' : 'en';
+}
+
 export async function init(): Promise<void> {
   const res = (await storage.get(['currentLanguage'])) as Partial<StorageSchema>;
-  if (res.currentLanguage && ['en', 'he'].includes(res.currentLanguage)) {
-    currentLanguage = res.currentLanguage as SupportedLanguage;
+  if (res.currentLanguage === 'en' || res.currentLanguage === 'he') {
+    currentLanguage = res.currentLanguage;
   } else {
-    const browserLang = chrome.i18n.getUILanguage().split('-')[0] ?? 'en';
-    currentLanguage = ['en', 'he'].includes(browserLang) ? (browserLang as SupportedLanguage) : 'en';
-    await storage.set({ currentLanguage }).catch(() => {});
+    // 'system' or unset - detect from browser, fallback to English
+    currentLanguage = getSystemLanguage();
   }
   await loadMessages();
   setDocumentDirection();
@@ -43,10 +47,10 @@ export function getMessage(key: string, subs: string[] = []): string {
   return msg;
 }
 
-export async function switchLanguage(lang: SupportedLanguage): Promise<boolean> {
-  if (!['en', 'he'].includes(lang)) return false;
-  currentLanguage = lang;
-  await storage.set({ currentLanguage }).catch(() => {});
+export async function switchLanguage(lang: 'system' | SupportedLanguage): Promise<boolean> {
+  if (!['system', 'en', 'he'].includes(lang)) return false;
+  currentLanguage = lang === 'system' ? getSystemLanguage() : lang;
+  await storage.set({ currentLanguage: lang }).catch(() => {});
   await loadMessages();
   setDocumentDirection();
   return true;
