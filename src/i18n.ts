@@ -5,16 +5,12 @@ let currentLanguage: SupportedLanguage = 'en';
 let messages: Record<string, string> = {};
 
 export async function init(): Promise<void> {
-  const res = (await storage.get([
-    'currentLanguage',
-  ])) as Partial<StorageSchema>;
+  const res = (await storage.get(['currentLanguage'])) as Partial<StorageSchema>;
   if (res.currentLanguage && ['en', 'he'].includes(res.currentLanguage)) {
     currentLanguage = res.currentLanguage as SupportedLanguage;
   } else {
     const browserLang = chrome.i18n.getUILanguage().split('-')[0] ?? 'en';
-    currentLanguage = ['en', 'he'].includes(browserLang)
-      ? (browserLang as SupportedLanguage)
-      : 'en';
+    currentLanguage = ['en', 'he'].includes(browserLang) ? (browserLang as SupportedLanguage) : 'en';
     await storage.set({ currentLanguage }).catch(() => {});
   }
   await loadMessages();
@@ -23,13 +19,9 @@ export async function init(): Promise<void> {
 
 async function loadMessages(): Promise<void> {
   try {
-    const response = await fetch(
-      chrome.runtime.getURL(`_locales/${currentLanguage}/messages.json`)
-    );
+    const response = await fetch(chrome.runtime.getURL(`_locales/${currentLanguage}/messages.json`));
     const data = (await response.json()) as Record<string, { message: string }>;
-    messages = Object.fromEntries(
-      Object.entries(data).map(([k, v]) => [k, v.message || k])
-    );
+    messages = Object.fromEntries(Object.entries(data).map(([k, v]) => [k, v.message || k]));
   } catch {
     messages = {};
   }
@@ -51,9 +43,7 @@ export function getMessage(key: string, subs: string[] = []): string {
   return msg;
 }
 
-export async function switchLanguage(
-  lang: SupportedLanguage
-): Promise<boolean> {
+export async function switchLanguage(lang: SupportedLanguage): Promise<boolean> {
   if (!['en', 'he'].includes(lang)) return false;
   currentLanguage = lang;
   await storage.set({ currentLanguage }).catch(() => {});
@@ -85,19 +75,9 @@ export function formatTimestamp(timestamp: string | null): string {
   return new Date(timestamp).toLocaleDateString(currentLanguage);
 }
 
-export function formatCounterValue(
-  timestamp: string | null,
-  count: number,
-  failures = 0
-): string {
-  const successText =
-    count === 1
-      ? getMessage('timeFormatSingularTime')
-      : getMessage('timeFormatPluralTimes');
-  const failText =
-    failures === 1
-      ? getMessage('timeFormatSingularFail')
-      : getMessage('timeFormatPluralFails');
+export function formatCounterValue(timestamp: string | null, count: number, failures = 0): string {
+  const successText = count === 1 ? getMessage('timeFormatSingularTime') : getMessage('timeFormatPluralTimes');
+  const failText = failures === 1 ? getMessage('timeFormatSingularFail') : getMessage('timeFormatPluralFails');
   if (count === 0 && failures === 0) return getMessage('statNever');
   if (count > 0 && timestamp) {
     const time = formatTimestamp(timestamp);
@@ -105,8 +85,7 @@ export function formatCounterValue(
       ? `${time} (${count} ${successText}, ${failures} ${failText})`
       : `${time} (${count} ${successText})`;
   }
-  if (count === 0 && failures > 0)
-    return `${getMessage('statNever')} (${failures} ${failText})`;
+  if (count === 0 && failures > 0) return `${getMessage('statNever')} (${failures} ${failText})`;
   return getMessage('statNever');
 }
 

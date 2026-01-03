@@ -1,37 +1,17 @@
-import {
-  storage,
-  SELECTORS,
-  ERROR_CODES,
-  detectSite,
-  delay,
-  isValidTime,
-  sanitizeTime,
-  triggerEvents,
-} from '../lib';
-import type {
-  ExtensionMessage,
-  ExtensionResponse,
-  TimesheetData,
-} from '../types';
+import { storage, SELECTORS, ERROR_CODES, detectSite, delay, isValidTime, sanitizeTime, triggerEvents } from '../lib';
+import type { ExtensionMessage, ExtensionResponse, TimesheetData } from '../types';
 
 let isProcessing = false;
 const currentSite = detectSite(location.href);
 
 chrome.runtime.onMessage.addListener(
-  (
-    request: ExtensionMessage,
-    _sender,
-    sendResponse: (r: ExtensionResponse) => void
-  ) => {
+  (request: ExtensionMessage, _sender, sendResponse: (r: ExtensionResponse) => void) => {
     handleMessage(request, sendResponse);
     return true;
   }
 );
 
-async function handleMessage(
-  request: ExtensionMessage,
-  sendResponse: (r: ExtensionResponse) => void
-) {
+async function handleMessage(request: ExtensionMessage, sendResponse: (r: ExtensionResponse) => void) {
   const timestamp = new Date().toISOString();
   try {
     const data = await storage.get(['extensionEnabled']);
@@ -107,12 +87,7 @@ async function executeAction(action: string): Promise<ExtensionResponse> {
     await delay(100);
     return { success: true, timestamp, ...result };
   } catch (e) {
-    const eventType =
-      action === 'autoClickTimeBoxes'
-        ? 'autoClick'
-        : currentSite.action === 'copy'
-          ? 'copy'
-          : 'paste';
+    const eventType = action === 'autoClickTimeBoxes' ? 'autoClick' : currentSite.action === 'copy' ? 'copy' : 'paste';
     const errorCode =
       action === 'autoClickTimeBoxes'
         ? ERROR_CODES.NO_TIME_BOXES
@@ -127,17 +102,16 @@ async function executeAction(action: string): Promise<ExtensionResponse> {
 
 // Auto-click time boxes
 async function performAutoClick() {
-  const boxes = Array.from(
-    document.querySelectorAll(SELECTORS.HILAN_TIME_BOXES)
-  ).filter((cell): cell is HTMLElement => {
-    if (cell.classList.contains(SELECTORS.HILAN_CLICKED_CLASS)) return false;
-    const title = cell.getAttribute('title');
-    if (title?.includes('חופשה') || cell.textContent?.includes('חופשה'))
-      return true;
-    if (title && isValidTime(title.trim())) return true;
-    const content = cell.querySelector(SELECTORS.HILAN_TIME_CONTENT);
-    return Boolean(content && isValidTime(content.textContent?.trim() ?? ''));
-  });
+  const boxes = Array.from(document.querySelectorAll(SELECTORS.HILAN_TIME_BOXES)).filter(
+    (cell): cell is HTMLElement => {
+      if (cell.classList.contains(SELECTORS.HILAN_CLICKED_CLASS)) return false;
+      const title = cell.getAttribute('title');
+      if (title?.includes('חופשה') || cell.textContent?.includes('חופשה')) return true;
+      if (title && isValidTime(title.trim())) return true;
+      const content = cell.querySelector(SELECTORS.HILAN_TIME_CONTENT);
+      return Boolean(content && isValidTime(content.textContent?.trim() ?? ''));
+    }
+  );
 
   if (boxes.length === 0) throw new Error(ERROR_CODES.NO_TIME_BOXES);
 
@@ -175,9 +149,7 @@ async function copyTimesheetData() {
     if (!hilanDate?.includes('/')) continue;
 
     const isHolidayRow = dateCell?.getAttribute('rowspan') === '2';
-    const dataRow = isHolidayRow
-      ? (row.nextElementSibling as HTMLElement)
-      : row;
+    const dataRow = isHolidayRow ? (row.nextElementSibling as HTMLElement) : row;
     if (!dataRow) continue;
 
     const entryCell = dataRow.querySelector(SELECTORS.HILAN_ENTRY_TIME);
@@ -186,21 +158,11 @@ async function copyTimesheetData() {
 
     const entryTime = sanitizeTime(entryCell.getAttribute('ov'));
     const exitTime = sanitizeTime(exitCell.getAttribute('ov'));
-    const symbolSelect = dataRow.querySelector(
-      SELECTORS.HILAN_SYMBOL
-    ) as HTMLSelectElement | null;
+    const symbolSelect = dataRow.querySelector(SELECTORS.HILAN_SYMBOL) as HTMLSelectElement | null;
     const isVacation =
-      symbolSelect?.value === '481' ||
-      symbolSelect?.options[symbolSelect.selectedIndex]?.text.includes('חופשה');
+      symbolSelect?.value === '481' || symbolSelect?.options[symbolSelect.selectedIndex]?.text.includes('חופשה');
 
-    if (
-      !isVacation &&
-      (!entryTime ||
-        !exitTime ||
-        !isValidTime(entryTime) ||
-        !isValidTime(exitTime))
-    )
-      continue;
+    if (!isVacation && (!entryTime || !exitTime || !isValidTime(entryTime) || !isValidTime(exitTime))) continue;
 
     // Determine year: if data month > current month, it's from last year
     const dataMonth = parseInt(hilanDate.split('/')[1] || '0', 10);
@@ -225,32 +187,21 @@ async function copyTimesheetData() {
 async function pasteTimesheetData() {
   const data = await storage.get(['timesheetData']);
   const timesheetData = data.timesheetData;
-  if (!timesheetData || Object.keys(timesheetData).length === 0)
-    throw new Error(ERROR_CODES.NO_DATA);
+  if (!timesheetData || Object.keys(timesheetData).length === 0) throw new Error(ERROR_CODES.NO_DATA);
 
   let filledCount = 0;
-  for (const row of Array.from(
-    document.querySelectorAll(SELECTORS.MALAM_ROWS)
-  )) {
-    const dateInput = row.querySelector(
-      SELECTORS.MALAM_DATE_INPUT
-    ) as HTMLInputElement | null;
+  for (const row of Array.from(document.querySelectorAll(SELECTORS.MALAM_ROWS))) {
+    const dateInput = row.querySelector(SELECTORS.MALAM_DATE_INPUT) as HTMLInputElement | null;
     if (!dateInput?.value) continue;
     const entry = timesheetData[dateInput.value.trim()];
     if (!entry) continue;
 
-    const clockIn = row.querySelector(
-      SELECTORS.MALAM_CLOCK_IN
-    ) as HTMLInputElement | null;
-    const clockOut = row.querySelector(
-      SELECTORS.MALAM_CLOCK_OUT
-    ) as HTMLInputElement | null;
+    const clockIn = row.querySelector(SELECTORS.MALAM_CLOCK_IN) as HTMLInputElement | null;
+    const clockOut = row.querySelector(SELECTORS.MALAM_CLOCK_OUT) as HTMLInputElement | null;
     if (!clockIn || !clockOut) continue;
 
     if (entry.isVacation) {
-      const workType = row.querySelector(
-        SELECTORS.MALAM_WORK_TYPE
-      ) as HTMLSelectElement | null;
+      const workType = row.querySelector(SELECTORS.MALAM_WORK_TYPE) as HTMLSelectElement | null;
       if (workType) {
         workType.value = '1_0';
         triggerEvents(workType);
@@ -269,10 +220,7 @@ async function pasteTimesheetData() {
 }
 
 // Analytics tracking
-async function trackAnalytics(
-  event: 'autoClick' | 'copy' | 'paste',
-  success: boolean
-) {
+async function trackAnalytics(event: 'autoClick' | 'copy' | 'paste', success: boolean) {
   const data = await storage.get(['analytics', 'statisticsEnabled']);
   if (data.statisticsEnabled === false) return;
   const analytics = { ...data.analytics };
@@ -284,17 +232,11 @@ async function trackAnalytics(
     op.failures++;
   }
   const totalSuccess =
-    analytics.operations.copy.success +
-    analytics.operations.paste.success +
-    analytics.operations.autoClick.success;
+    analytics.operations.copy.success + analytics.operations.paste.success + analytics.operations.autoClick.success;
   const totalFailures =
-    analytics.operations.copy.failures +
-    analytics.operations.paste.failures +
-    analytics.operations.autoClick.failures;
+    analytics.operations.copy.failures + analytics.operations.paste.failures + analytics.operations.autoClick.failures;
   analytics.totalOperations = totalSuccess + totalFailures;
   analytics.successRate =
-    analytics.totalOperations > 0
-      ? Math.round((totalSuccess / analytics.totalOperations) * 100)
-      : 0;
+    analytics.totalOperations > 0 ? Math.round((totalSuccess / analytics.totalOperations) * 100) : 0;
   await storage.set({ analytics });
 }

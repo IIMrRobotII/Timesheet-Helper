@@ -57,8 +57,7 @@
   --font-size-md: 13px;
   --font-size-lg: 14px;
   --font-size-xl: 16px;
-  --font-family-base:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
@@ -80,8 +79,7 @@
 /* RTL Direction Override */
 [dir='rtl'] {
   --direction: rtl;
-  --font-family-base:
-    'Segoe UI', Tahoma, Arial, 'Noto Sans Hebrew', 'David', sans-serif;
+  --font-family-base: 'Segoe UI', Tahoma, Arial, 'Noto Sans Hebrew', 'David', sans-serif;
 }
 
 /* Dark Mode */
@@ -123,8 +121,7 @@ body {
 
 /* Typography */
 h1 {
-  font: var(--font-weight-semibold) var(--font-size-xl) /
-    var(--line-height-tight) inherit;
+  font: var(--font-weight-semibold) var(--font-size-xl) / var(--line-height-tight) inherit;
   margin: 0;
   color: var(--text-primary);
 }

@@ -51,13 +51,7 @@ export interface AnalyticsOperation {
 // Language types
 export type SupportedLanguage = 'en' | 'he';
 export type AnalyticsEventType = 'copy' | 'paste' | 'autoClick';
-export type StatusType =
-  | 'message'
-  | 'success'
-  | 'error'
-  | 'warning'
-  | 'working'
-  | 'info';
+export type StatusType = 'message' | 'success' | 'error' | 'warning' | 'working' | 'info';
 
 // UI context for popup
 export interface UIContext {

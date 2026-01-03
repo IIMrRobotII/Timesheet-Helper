@@ -109,8 +109,7 @@
 }
 
 .clear-text {
-  font: var(--font-weight-medium) var(--font-size-xs) / var(--line-height-tight)
-    inherit;
+  font: var(--font-weight-medium) var(--font-size-xs) / var(--line-height-tight) inherit;
 }
 
 /* ===== FORM CONTROLS ===== */
@@ -158,8 +157,7 @@
 }
 
 .toggle-label {
-  font: var(--font-weight-medium) var(--font-size-md) / var(--line-height-tight)
-    inherit;
+  font: var(--font-weight-medium) var(--font-size-md) / var(--line-height-tight) inherit;
   color: var(--text-primary);
 }
 

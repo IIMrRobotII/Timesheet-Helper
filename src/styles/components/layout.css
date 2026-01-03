@@ -45,7 +45,7 @@ body.popup-collapsed {
   height: 20px;
   margin-inline-end: var(--space-md);
   border-radius: var(--radius-sm);
-  background: transparent url("../../icons/icon.svg") no-repeat center center / contain;
+  background: transparent url('../../icons/icon.svg') no-repeat center center / contain;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,7 +53,9 @@ body.popup-collapsed {
   color: var(--action-primary-text);
 }
 
-.logo::before { content: ''; }
+.logo::before {
+  content: '';
+}
 
 /* Collapsed State Adjustments */
 .container.collapsed .header {
@@ -185,8 +187,7 @@ body.popup-collapsed {
 }
 
 .analytics-title {
-  font: var(--font-weight-semibold) var(--font-size-base) /
-    var(--line-height-tight) inherit;
+  font: var(--font-weight-semibold) var(--font-size-base) / var(--line-height-tight) inherit;
   color: var(--text-primary);
 }
 
@@ -308,8 +309,7 @@ body.popup-collapsed {
 }
 
 .modal-title {
-  font: var(--font-weight-semibold) var(--font-size-lg) /
-    var(--line-height-tight) inherit;
+  font: var(--font-weight-semibold) var(--font-size-lg) / var(--line-height-tight) inherit;
   color: var(--text-primary);
   margin: 0;
 }

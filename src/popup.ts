@@ -1,11 +1,6 @@
 import { storage, detectSite, tabs, showStatus } from './lib';
 import * as i18n from './i18n';
-import type {
-  UIContext,
-  ExtensionMessage,
-  ExtensionResponse,
-  StatusType,
-} from './types';
+import type { UIContext, ExtensionMessage, ExtensionResponse, StatusType } from './types';
 
 // State
 let context: UIContext = { name: '', type: 'unknown', primaryAction: 'copy' };
@@ -99,30 +94,23 @@ function setupEventListeners() {
   });
   document.addEventListener('click', () => closeDropdown());
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && !el.confirmModal?.classList.contains('hidden'))
-      handleModal(false);
+    if (e.key === 'Escape' && !el.confirmModal?.classList.contains('hidden')) handleModal(false);
   });
   document
     .querySelectorAll('.language-option')
-    .forEach(opt =>
-      opt.addEventListener('click', e => handleLanguageOption(e))
-    );
+    .forEach(opt => opt.addEventListener('click', e => handleLanguageOption(e)));
   $('#modalCancel')?.addEventListener('click', () => handleModal(false));
   $('#modalConfirm')?.addEventListener('click', () => handleModal(true));
   el.confirmModal?.addEventListener('click', e => {
     if (e.target === el.confirmModal) handleModal(false);
   });
-  el.analyticsSection
-    ?.querySelector('#clearDataButton')
-    ?.addEventListener('click', handleClearData);
+  el.analyticsSection?.querySelector('#clearDataButton')?.addEventListener('click', handleClearData);
 }
 
 async function loadSettings() {
   const settings = await storage.get();
-  if (el.extensionToggle)
-    el.extensionToggle.checked = settings.extensionEnabled;
-  if (el.statisticsToggle)
-    el.statisticsToggle.checked = settings.statisticsEnabled;
+  if (el.extensionToggle) el.extensionToggle.checked = settings.extensionEnabled;
+  if (el.statisticsToggle) el.statisticsToggle.checked = settings.statisticsEnabled;
   updateUIState(settings.extensionEnabled, true);
   updateStatisticsVisibility(settings.statisticsEnabled);
 }
@@ -146,14 +134,8 @@ function updateInterface() {
       : context.type === 'target'
         ? 'guidanceTextTarget'
         : 'guidanceTextDefault';
-  const btnKey =
-    context.type === 'source'
-      ? 'copyHours'
-      : context.type === 'target'
-        ? 'pasteHours'
-        : 'syncHours';
-  if (el.guidanceText)
-    el.guidanceText.textContent = i18n.getMessage(guidanceKey);
+  const btnKey = context.type === 'source' ? 'copyHours' : context.type === 'target' ? 'pasteHours' : 'syncHours';
+  if (el.guidanceText) el.guidanceText.textContent = i18n.getMessage(guidanceKey);
   if (el.copyHours) {
     const txt = el.copyHours.querySelector('.button-text');
     if (txt) txt.textContent = i18n.getMessage(btnKey);
@@ -172,10 +154,7 @@ function updateUIState(enabled: boolean, immediate = false) {
   }
   document.body.classList.toggle('popup-expanded', enabled);
   document.body.classList.toggle('popup-collapsed', !enabled);
-  if (el.toggleLabel)
-    el.toggleLabel.textContent = i18n.getMessage(
-      enabled ? 'extensionEnabled' : 'extensionDisabled'
-    );
+  if (el.toggleLabel) el.toggleLabel.textContent = i18n.getMessage(enabled ? 'extensionEnabled' : 'extensionDisabled');
   showStatus(
     el.statusDiv,
     !enabled
@@ -188,24 +167,13 @@ function updateUIState(enabled: boolean, immediate = false) {
 
 function updateButtonAvailability() {
   const enabled = el.extensionToggle?.checked ?? false;
-  const isHilanTimesheet =
-    context.type === 'source' &&
-    context.name === i18n.getMessage('contextHilanTimesheet');
-  const isHilanHome =
-    context.type === 'source' &&
-    context.name === i18n.getMessage('contextHilan');
+  const isHilanTimesheet = context.type === 'source' && context.name === i18n.getMessage('contextHilanTimesheet');
+  const isHilanHome = context.type === 'source' && context.name === i18n.getMessage('contextHilan');
   if (el.autoClickButton)
-    el.autoClickButton.disabled =
-      !enabled || !isHilanTimesheet || isOperationInProgress || isHilanHome;
+    el.autoClickButton.disabled = !enabled || !isHilanTimesheet || isOperationInProgress || isHilanHome;
   if (el.copyHours)
-    el.copyHours.disabled =
-      !enabled ||
-      context.type === 'unknown' ||
-      isOperationInProgress ||
-      isHilanHome;
-  const clearBtn = el.analyticsSection?.querySelector(
-    '#clearDataButton'
-  ) as HTMLButtonElement | null;
+    el.copyHours.disabled = !enabled || context.type === 'unknown' || isOperationInProgress || isHilanHome;
+  const clearBtn = el.analyticsSection?.querySelector('#clearDataButton') as HTMLButtonElement | null;
   if (clearBtn) clearBtn.disabled = isOperationInProgress;
 }
 
@@ -245,9 +213,7 @@ async function handlePrimaryOperation() {
   await performOperation(
     'copyHours',
     i18n.getMessage(isSource ? 'workingCopying' : 'workingPasting'),
-    isSource
-      ? i18n.getWorkingMessages().copying
-      : i18n.getWorkingMessages().pasting,
+    isSource ? i18n.getWorkingMessages().copying : i18n.getWorkingMessages().pasting,
     i18n.getMessage(isSource ? 'copyHours' : 'pasteHours'),
     el.copyHours
   );
@@ -256,11 +222,7 @@ async function handlePrimaryOperation() {
 async function handleClearData() {
   if (isOperationInProgress || !(await showModal())) return;
   try {
-    showStatus(
-      el.statusDiv,
-      `🗑️ ${i18n.getMessage('workingClearing')}`,
-      'working'
-    );
+    showStatus(el.statusDiv, `🗑️ ${i18n.getMessage('workingClearing')}`, 'working');
     await storage.clear();
     await storage.set({ extensionEnabled: true, statisticsEnabled: true });
     if (el.extensionToggle) el.extensionToggle.checked = true;
@@ -268,17 +230,9 @@ async function handleClearData() {
     updateUIState(true);
     updateStatisticsVisibility(true);
     await loadAnalytics();
-    showStatus(
-      el.statusDiv,
-      `✅ ${i18n.getMessage('successCleared')}`,
-      'success'
-    );
+    showStatus(el.statusDiv, `✅ ${i18n.getMessage('successCleared')}`, 'success');
   } catch {
-    showStatus(
-      el.statusDiv,
-      `❌ ${i18n.getMessage('errorClearDataFailed')}`,
-      'error'
-    );
+    showStatus(el.statusDiv, `❌ ${i18n.getMessage('errorClearDataFailed')}`, 'error');
   }
 }
 
@@ -306,12 +260,9 @@ async function performOperation(
               (response.clickedCount || 0).toString(),
               (response.totalBoxes || 0).toString(),
             ])
-          : i18n.getMessage(
-              context.primaryAction === 'copy'
-                ? 'successCopied'
-                : 'successPasted',
-              [(response.count || 0).toString()]
-            );
+          : i18n.getMessage(context.primaryAction === 'copy' ? 'successCopied' : 'successPasted', [
+              (response.count || 0).toString(),
+            ]);
       showStatus(el.statusDiv, `✅ ${msg}`, 'success');
     } else {
       const errMsgs = i18n.getErrorMessages();
@@ -334,23 +285,10 @@ async function performOperation(
   } catch (e) {
     const err = e instanceof Error ? e.message : 'Unknown error';
     if (err.includes('COMMUNICATION_TIMEOUT'))
-      showStatus(
-        el.statusDiv,
-        `⏱️ ${i18n.getMessage('errorOperationTimedOut')}`,
-        'error'
-      );
+      showStatus(el.statusDiv, `⏱️ ${i18n.getMessage('errorOperationTimedOut')}`, 'error');
     else if (err.includes('Communication failed'))
-      showStatus(
-        el.statusDiv,
-        `⚠️ ${i18n.getMessage('errorCommunicationIssue')}`,
-        'error'
-      );
-    else
-      showStatus(
-        el.statusDiv,
-        `❌ ${i18n.getMessage('errorOperationFailed')}: ${err}`,
-        'error'
-      );
+      showStatus(el.statusDiv, `⚠️ ${i18n.getMessage('errorCommunicationIssue')}`, 'error');
+    else showStatus(el.statusDiv, `❌ ${i18n.getMessage('errorOperationFailed')}: ${err}`, 'error');
   } finally {
     setButtonText(btn, defaultText);
     isOperationInProgress = false;
@@ -394,22 +332,14 @@ function updateLanguageDropdown() {
   const lang = i18n.getCurrentLanguage();
   document
     .querySelectorAll('.language-option')
-    .forEach(o =>
-      o.classList.toggle('active', o.getAttribute('data-lang') === lang)
-    );
-  const langName =
-    lang === 'he'
-      ? i18n.getMessage('languageHebrew')
-      : i18n.getMessage('languageEnglish');
+    .forEach(o => o.classList.toggle('active', o.getAttribute('data-lang') === lang));
+  const langName = lang === 'he' ? i18n.getMessage('languageHebrew') : i18n.getMessage('languageEnglish');
   const txt = document.querySelector('.language-text');
-  if (txt)
-    txt.textContent = `${i18n.getMessage('languageToggle')} (${langName})`;
+  if (txt) txt.textContent = `${i18n.getMessage('languageToggle')} (${langName})`;
 }
 
 async function handleLanguageOption(e: Event) {
-  const lang = (e.target as HTMLElement)
-    .closest('.language-option')
-    ?.getAttribute('data-lang') as 'en' | 'he' | null;
+  const lang = (e.target as HTMLElement).closest('.language-option')?.getAttribute('data-lang') as 'en' | 'he' | null;
   if (!lang || !['en', 'he'].includes(lang)) return;
   try {
     await i18n.switchLanguage(lang);
@@ -420,17 +350,9 @@ async function handleLanguageOption(e: Event) {
     await loadAnalytics();
     updateLanguageDropdown();
     closeDropdown();
-    showStatus(
-      el.statusDiv,
-      `✅ ${i18n.getMessage('successLanguageChanged')}`,
-      'success'
-    );
+    showStatus(el.statusDiv, `✅ ${i18n.getMessage('successLanguageChanged')}`, 'success');
   } catch {
-    showStatus(
-      el.statusDiv,
-      `❌ ${i18n.getMessage('errorLanguageSwitchFailed')}`,
-      'error'
-    );
+    showStatus(el.statusDiv, `❌ ${i18n.getMessage('errorLanguageSwitchFailed')}`, 'error');
   }
 }
 
@@ -457,9 +379,7 @@ async function loadAnalytics() {
     statSuccessRate: `${data.analytics.successRate}%`,
   };
   for (const [key, value] of Object.entries(stats)) {
-    const label = el.analyticsSection?.querySelector(
-      `.stat-label[data-i18n="${key}"]`
-    );
+    const label = el.analyticsSection?.querySelector(`.stat-label[data-i18n="${key}"]`);
     const valueEl = label?.closest('.stat-item')?.querySelector('.stat-value');
     if (valueEl) valueEl.textContent = value;
   }

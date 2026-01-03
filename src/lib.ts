@@ -1,9 +1,4 @@
-import type {
-  StorageSchema,
-  ExtensionMessage,
-  ExtensionResponse,
-  StatusType,
-} from './types';
+import type { StorageSchema, ExtensionMessage, ExtensionResponse, StatusType } from './types';
 
 // Default settings
 export const DEFAULTS: StorageSchema = {
@@ -79,7 +74,9 @@ const validateStorageValue = (key: string, value: unknown): boolean => {
       const a = value as StorageSchema['analytics'];
       const validOp = (op: { success: number; failures: number; lastTime: string | null }) =>
         typeof op?.success === 'number' && typeof op?.failures === 'number';
-      return a.operations && validOp(a.operations.copy) && validOp(a.operations.paste) && validOp(a.operations.autoClick);
+      return (
+        a.operations && validOp(a.operations.copy) && validOp(a.operations.paste) && validOp(a.operations.autoClick)
+      );
     }
     default:
       return true;
@@ -94,8 +91,7 @@ export const storage = {
   async get(keys?: (keyof StorageSchema)[]): Promise<StorageSchema> {
     return new Promise((resolve, reject) => {
       chrome.storage.local.get(keys || Object.keys(DEFAULTS), result => {
-        if (chrome.runtime.lastError)
-          return reject(new Error(chrome.runtime.lastError.message));
+        if (chrome.runtime.lastError) return reject(new Error(chrome.runtime.lastError.message));
         const merged = { ...DEFAULTS, ...result } as StorageSchema;
         if (!validateStorage(merged)) {
           console.warn('Invalid data in storage, using defaults');
@@ -111,8 +107,7 @@ export const storage = {
         return reject(new Error('Invalid data provided to storage.set'));
       }
       chrome.storage.local.set(values, () => {
-        if (chrome.runtime.lastError)
-          return reject(new Error(chrome.runtime.lastError.message));
+        if (chrome.runtime.lastError) return reject(new Error(chrome.runtime.lastError.message));
         resolve();
       });
     });
@@ -121,8 +116,7 @@ export const storage = {
   async clear(): Promise<void> {
     return new Promise((resolve, reject) => {
       chrome.storage.local.clear(() => {
-        if (chrome.runtime.lastError)
-          return reject(new Error(chrome.runtime.lastError.message));
+        if (chrome.runtime.lastError) return reject(new Error(chrome.runtime.lastError.message));
         resolve();
       });
     });
@@ -132,25 +126,19 @@ export const storage = {
 // Utility functions
 export const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-export const isValidTime = (s: string | null | undefined): s is string =>
-  /^\d{1,2}:\d{2}$/.test(s?.trim() ?? '');
+export const isValidTime = (s: string | null | undefined): s is string => /^\d{1,2}:\d{2}$/.test(s?.trim() ?? '');
 
 export const sanitizeTime = (s: string | null | undefined): string | null =>
   s ? s.trim().replace(/[^\d:]/g, '') : null;
 
 export const triggerEvents = (el: HTMLElement) => {
-  ['input', 'change', 'blur'].forEach(t =>
-    el.dispatchEvent(new Event(t, { bubbles: true, cancelable: true }))
-  );
+  ['input', 'change', 'blur'].forEach(t => el.dispatchEvent(new Event(t, { bubbles: true, cancelable: true })));
 };
 
 export const detectSite = (url: string) => {
   const lower = url.toLowerCase();
   for (const [name, site] of Object.entries(SITES)) {
-    if (
-      lower.includes(site.domain) &&
-      site.paths.some(p => lower.includes(p.toLowerCase()))
-    ) {
+    if (lower.includes(site.domain) && site.paths.some(p => lower.includes(p.toLowerCase()))) {
       return { name, ...site };
     }
   }
@@ -162,23 +150,12 @@ export const tabs = {
   query: (options: chrome.tabs.QueryInfo): Promise<chrome.tabs.Tab[]> =>
     new Promise(resolve => chrome.tabs.query(options, resolve)),
 
-  sendMessage: <T = ExtensionResponse>(
-    tabId: number,
-    message: ExtensionMessage
-  ): Promise<T> =>
+  sendMessage: <T = ExtensionResponse>(tabId: number, message: ExtensionMessage): Promise<T> =>
     new Promise((resolve, reject) => {
-      const timeout = setTimeout(
-        () => reject(new Error('COMMUNICATION_TIMEOUT')),
-        30000
-      );
+      const timeout = setTimeout(() => reject(new Error('COMMUNICATION_TIMEOUT')), 30000);
       chrome.tabs.sendMessage(tabId, message, response => {
         clearTimeout(timeout);
-        if (chrome.runtime.lastError)
-          reject(
-            new Error(
-              `Communication failed: ${chrome.runtime.lastError.message}`
-            )
-          );
+        if (chrome.runtime.lastError) reject(new Error(`Communication failed: ${chrome.runtime.lastError.message}`));
         else resolve(response as T);
       });
     }),
