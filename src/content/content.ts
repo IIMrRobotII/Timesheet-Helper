@@ -307,7 +307,8 @@ function parseTimesheetFromDOM(): ParsedTimesheetRow[] {
 
     const reportSelect = dataRow.querySelector(CALC_SELECTORS.REPORT_TYPE) as HTMLSelectElement | null;
     const reportValue = reportSelect?.value ?? '0';
-    const isAbsence = reportSelect?.options[reportSelect.selectedIndex]?.getAttribute('isabsencesymbol') === 'true';
+    const isAbsence =
+      reportSelect && reportSelect.options[reportSelect.selectedIndex]?.getAttribute('isabsencesymbol') === 'true';
 
     const reportType: 'regular' | 'vacation' | 'absence' =
       reportValue === '481' ? 'vacation' : isAbsence ? 'absence' : 'regular';
@@ -345,10 +346,23 @@ function calculateSalary(rows: ParsedTimesheetRow[], hourlyRate: number): Calcul
     ot150Hours = 0;
   let periodStart = '',
     periodEnd = '';
+  let minDateVal = Infinity,
+    maxDateVal = -Infinity;
 
   for (const row of rows) {
-    if (!periodStart || row.date < periodStart) periodStart = row.date;
-    if (!periodEnd || row.date > periodEnd) periodEnd = row.date;
+    const parts = row.date.split('/');
+    const d = parseInt(parts[0] || '0', 10);
+    const m = parseInt(parts[1] || '0', 10);
+    const dateVal = m * 100 + d;
+
+    if (dateVal < minDateVal) {
+      minDateVal = dateVal;
+      periodStart = row.date;
+    }
+    if (dateVal > maxDateVal) {
+      maxDateVal = dateVal;
+      periodEnd = row.date;
+    }
 
     if (row.reportType === 'absence') continue;
     if (row.reportType === 'vacation') {
