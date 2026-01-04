@@ -1,380 +1,287 @@
 {
   "extensionName": {
-    "message": "Timesheet Helper",
-    "description": "Extension name displayed in Chrome"
+    "message": "Timesheet Helper"
   },
   "extensionDescription": {
-    "message": "Copy work hours from Hilan timesheet to Malam payroll system",
-    "description": "Extension description displayed in Chrome"
+    "message": "Copy work hours from Hilan timesheet to Malam payroll system"
   },
   "defaultTitle": {
-    "message": "Sync timesheet hours",
-    "description": "Default title for the extension action"
+    "message": "Sync timesheet hours"
   },
   "pageTitle": {
-    "message": "Timesheet Helper",
-    "description": "Page title in popup"
+    "message": "Timesheet Helper"
   },
   "unknownWebsite": {
-    "message": "Unknown Website",
-    "description": "Badge text for unknown website"
+    "message": "Unknown Website"
   },
   "guidanceTextDefault": {
-    "message": "Please navigate to Hilan timesheet or Malam payroll website.",
-    "description": "Default guidance text for unknown websites"
+    "message": "Please navigate to Hilan timesheet or Malam payroll website."
   },
   "guidanceTextSource": {
-    "message": "Step 1: Click \"Auto-Click\" to reveal time boxes, then \"Copy Hours\" to copy data.",
-    "description": "Guidance text for Hilan timesheet page"
+    "message": "Step 1: Click \"Auto-Click\" to reveal time boxes, then \"Copy Hours\" to copy data."
   },
   "guidanceTextTarget": {
-    "message": "Step 2: Click \"Paste Hours\" to sync your copied timesheet data.",
-    "description": "Guidance text for Malam payroll page"
+    "message": "Step 2: Click \"Paste Hours\" to sync your copied timesheet data."
   },
   "autoClickButton": {
-    "message": "Auto-Click Time Boxes",
-    "description": "Auto-click button text"
+    "message": "Auto-Click Time Boxes"
   },
   "syncHours": {
-    "message": "Sync Hours",
-    "description": "Default sync button text"
+    "message": "Sync Hours"
   },
   "copyHours": {
-    "message": "Copy Hours",
-    "description": "Copy hours button text for Hilan"
+    "message": "Copy Hours"
   },
   "pasteHours": {
-    "message": "Paste Hours",
-    "description": "Paste hours button text for Malam"
+    "message": "Paste Hours"
   },
   "contextHilan": {
-    "message": "Hilan",
-    "description": "Context name for general Hilan website pages"
+    "message": "Hilan"
   },
   "contextHilanTimesheet": {
-    "message": "Hilan Timesheet",
-    "description": "Context name for Hilan timesheet pages where operations are enabled"
+    "message": "Hilan Timesheet"
   },
   "contextMalam": {
-    "message": "Malam Payroll",
-    "description": "Context name for Malam payroll"
+    "message": "Malam Payroll"
   },
   "statLastCopied": {
-    "message": "Last copied:",
-    "description": "Statistics label for last copied timestamp"
+    "message": "Last copied:"
   },
   "statLastPasted": {
-    "message": "Last pasted:",
-    "description": "Statistics label for last pasted timestamp"
+    "message": "Last pasted:"
   },
   "statLastAutoClick": {
-    "message": "Last auto-click:",
-    "description": "Statistics label for last auto-click timestamp"
+    "message": "Last auto-click:"
   },
   "statTotalOperations": {
-    "message": "Total operations:",
-    "description": "Statistics label for total operations count"
+    "message": "Total operations:"
   },
   "statSuccessRate": {
-    "message": "Success rate:",
-    "description": "Statistics label for success rate percentage"
+    "message": "Success rate:"
   },
   "statNever": {
-    "message": "Never",
-    "description": "Statistics value for never performed operations"
+    "message": "Never"
   },
   "clearAllData": {
-    "message": "Clear All Data",
-    "description": "Clear data button text"
+    "message": "Clear All Data"
   },
   "languageSystem": {
-    "message": "System",
-    "description": "System language option"
+    "message": "System"
   },
   "languageEnglish": {
-    "message": "English",
-    "description": "English language option"
+    "message": "English"
   },
   "languageHebrew": {
-    "message": "עברית",
-    "description": "Hebrew language option"
+    "message": "עברית"
   },
   "errorExtensionDisabled": {
-    "message": "Extension is disabled. Please enable it in the extension popup.",
-    "description": "Error message when extension is disabled"
+    "message": "Extension is disabled. Please enable it in the extension popup."
   },
   "errorWrongSite": {
-    "message": "This feature is not available on the current website.",
-    "description": "Error message for wrong website"
+    "message": "This feature is not available on the current website."
   },
   "errorNoData": {
-    "message": "No timesheet data found. Please ensure you are on the correct page.",
-    "description": "Error message when no data is found"
+    "message": "No timesheet data found. Please ensure you are on the correct page."
   },
   "errorInProgress": {
-    "message": "Another operation is in progress. Please wait.",
-    "description": "Error message when operation is in progress"
+    "message": "Another operation is in progress. Please wait."
   },
   "errorNoTimeBoxes": {
-    "message": "No clickable time boxes found. Make sure you are on the Hilan timesheet calendar page.",
-    "description": "Error when no time boxes found for auto-click"
+    "message": "No clickable time boxes found. Make sure you are on the Hilan timesheet calendar page."
   },
   "errorUnknownAction": {
-    "message": "Unknown action requested",
-    "description": "Error for unknown action"
+    "message": "Unknown action requested"
   },
   "workingCopying": {
-    "message": "Copying timesheet data...",
-    "description": "Working message for copy operation"
+    "message": "Copying timesheet data..."
   },
   "workingPasting": {
-    "message": "Pasting timesheet data...",
-    "description": "Working message for paste operation"
+    "message": "Pasting timesheet data..."
   },
   "workingAutoClick": {
-    "message": "Auto-clicking time boxes...",
-    "description": "Working message for auto-click operation"
+    "message": "Auto-clicking time boxes..."
   },
   "workingClearing": {
-    "message": "Clearing extension data...",
-    "description": "Working message for clear data operation"
+    "message": "Clearing extension data..."
   },
   "successCleared": {
-    "message": "All extension data has been cleared successfully.",
-    "description": "Success message for clear data operation"
+    "message": "All extension data has been cleared successfully."
   },
   "errorClearDataFailed": {
-    "message": "Failed to clear data",
-    "description": "Error message when clearing data fails"
+    "message": "Failed to clear data"
   },
   "successLanguageChanged": {
-    "message": "Language changed",
-    "description": "Success message when language is switched"
+    "message": "Language changed"
   },
   "errorLanguageSwitchFailed": {
-    "message": "Failed to switch language",
-    "description": "Error message when language switch fails"
+    "message": "Failed to switch language"
   },
   "errorOperationTimedOut": {
-    "message": "Operation timed out - please try again",
-    "description": "Error message when operation times out"
+    "message": "Operation timed out - please try again"
   },
   "errorCommunicationIssue": {
-    "message": "Communication issue - operation may have succeeded",
-    "description": "Error message when communication fails but operation might have succeeded"
+    "message": "Communication issue - operation may have succeeded"
   },
   "errorOperationFailed": {
-    "message": "Operation failed",
-    "description": "Generic error message prefix for failed operations"
+    "message": "Operation failed"
   },
   "timeFormatJustNow": {
-    "message": "Just now",
-    "description": "Timestamp format for very recent actions"
+    "message": "Just now"
   },
   "timeFormatMinutesAgo": {
-    "message": "m ago",
-    "description": "Timestamp format for minutes ago"
+    "message": "m ago"
   },
   "timeFormatHoursAgo": {
-    "message": "h ago",
-    "description": "Timestamp format for hours ago"
+    "message": "h ago"
   },
   "timeFormatDaysAgo": {
-    "message": "d ago",
-    "description": "Timestamp format for days ago"
+    "message": "d ago"
   },
   "timeFormatSingularTime": {
-    "message": "time",
-    "description": "Singular form of 'time' in statistics"
+    "message": "time"
   },
   "timeFormatPluralTimes": {
-    "message": "times",
-    "description": "Plural form of 'times' in statistics"
+    "message": "times"
   },
   "timeFormatSingularFail": {
-    "message": "fail",
-    "description": "Singular form of 'fail' in statistics"
+    "message": "fail"
   },
   "timeFormatPluralFails": {
-    "message": "fails",
-    "description": "Plural form of 'fails' in statistics"
+    "message": "fails"
   },
   "footerMadeBy": {
-    "message": "Made by Segev Levinshtein",
-    "description": "Footer text showing the extension creator"
+    "message": "Made by Segev Levinshtein"
   },
   "extensionEnabled": {
-    "message": "Extension Enabled",
-    "description": "Toggle label for extension enabled state"
+    "message": "Extension Enabled"
   },
   "extensionDisabled": {
-    "message": "Extension Disabled",
-    "description": "Toggle label for extension disabled state"
+    "message": "Extension Disabled"
   },
   "statistics": {
-    "message": "Statistics",
-    "description": "Statistics section title and toggle label"
+    "message": "Statistics"
   },
   "settings": {
-    "message": "Settings",
-    "description": "Settings page title"
+    "message": "Settings"
   },
   "appearance": {
-    "message": "Appearance",
-    "description": "Appearance settings section title"
+    "message": "Appearance"
   },
   "theme": {
-    "message": "Theme",
-    "description": "Theme setting label"
+    "message": "Theme"
   },
   "themeSystem": {
-    "message": "System",
-    "description": "System theme option"
+    "message": "System"
   },
   "themeLight": {
-    "message": "Light",
-    "description": "Light theme option"
+    "message": "Light"
   },
   "themeDark": {
-    "message": "Dark",
-    "description": "Dark theme option"
+    "message": "Dark"
   },
   "enableStatistics": {
-    "message": "Enable",
-    "description": "Enable statistics toggle label"
+    "message": "Enable"
   },
   "dataManagement": {
-    "message": "Data",
-    "description": "Data management settings section title"
+    "message": "Data"
   },
   "modalTitle": {
-    "message": "Clear All Extension Data?",
-    "description": "Confirmation modal title"
+    "message": "Clear All Extension Data?"
   },
   "modalMessage": {
-    "message": "This will delete all statistics, timesheet data, and settings permanently.",
-    "description": "Confirmation modal message"
+    "message": "This will delete all statistics, timesheet data, and settings permanently."
   },
   "modalCancel": {
-    "message": "Cancel",
-    "description": "Modal cancel button text"
+    "message": "Cancel"
   },
   "modalConfirm": {
-    "message": "Clear Data",
-    "description": "Modal confirm button text"
+    "message": "Clear Data"
   },
   "languageToggle": {
-    "message": "Language",
-    "description": "Language toggle button text"
+    "message": "Language"
   },
   "successCopied": {
     "message": "Successfully copied $COUNT$ entries from Hilan timesheet",
-    "description": "Success message for copy operation",
     "placeholders": {
       "count": {
-        "content": "$1",
-        "example": "5"
+        "content": "$1"
       }
     }
   },
   "successPasted": {
     "message": "Successfully pasted $COUNT$ entries to Malam timesheet",
-    "description": "Success message for paste operation",
     "placeholders": {
       "count": {
-        "content": "$1",
-        "example": "5"
+        "content": "$1"
       }
     }
   },
   "successAutoClick": {
     "message": "Successfully clicked $COUNT$ of $TOTAL$ time boxes",
-    "description": "Success message for auto-click operation",
     "placeholders": {
       "count": {
-        "content": "$1",
-        "example": "12"
+        "content": "$1"
       },
       "total": {
-        "content": "$2",
-        "example": "15"
+        "content": "$2"
       }
     }
   },
   "salaryCalculator": {
-    "message": "Salary Calculator",
-    "description": "Salary calculator toggle label"
+    "message": "Salary Calculator"
   },
   "hourlyRate": {
-    "message": "Rate",
-    "description": "Hourly rate input label"
+    "message": "Rate"
   },
   "calculate": {
-    "message": "Calculate",
-    "description": "Calculate button text"
+    "message": "Calculate"
   },
   "calculationResults": {
-    "message": "Results",
-    "description": "Calculator results header"
+    "message": "Results"
   },
   "resultTotalPay": {
-    "message": "Total Pay",
-    "description": "Total pay result label"
+    "message": "Total Pay"
   },
   "resultRegularHours": {
-    "message": "Regular",
-    "description": "Regular hours result label"
+    "message": "Regular (100%)"
   },
   "resultNightHours": {
-    "message": "Night/Weekend",
-    "description": "Night/Weekend hours result label"
+    "message": "Night/Weekend (150%)"
   },
   "resultWorkDays": {
-    "message": "Work Days",
-    "description": "Work days result label"
+    "message": "Work Days"
   },
   "resultVacationDays": {
-    "message": "Vacation",
-    "description": "Vacation days result label"
+    "message": "Vacation"
   },
   "resultTravelRefund": {
-    "message": "Travel",
-    "description": "Travel refund result label"
+    "message": "Travel"
   },
   "resultMealAllowance": {
-    "message": "Meals",
-    "description": "Meal allowance result label"
+    "message": "Meals"
   },
   "resultOvertime125": {
-    "message": "OT 125%",
-    "description": "Overtime 125% result label"
+    "message": "Overtime (125%)"
   },
   "resultOvertime150": {
-    "message": "OT 150%",
-    "description": "Overtime 150% result label"
+    "message": "Overtime (150%)"
   },
   "workingCalculating": {
-    "message": "Calculating...",
-    "description": "Working message for calculate operation"
+    "message": "Calculating..."
   },
   "successCalculated": {
-    "message": "Calculated!",
-    "description": "Success message for calculate operation"
+    "message": "Calculated!"
   },
   "errorNoTimesheetData": {
-    "message": "No data. Click Auto-Click first.",
-    "description": "Error when no timesheet data found for calculation"
+    "message": "No data. Click Auto-Click first."
   },
   "errorEnterHourlyRate": {
-    "message": "Enter rate",
-    "description": "Error when hourly rate is not entered"
+    "message": "Enter rate"
   },
   "support": {
-    "message": "Support",
-    "description": "Support section title"
+    "message": "Support"
   },
   "viewOnGitHub": {
-    "message": "View on GitHub",
-    "description": "Link to view source code or open issues on GitHub"
+    "message": "View on GitHub"
   }
 }

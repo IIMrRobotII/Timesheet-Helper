@@ -92,21 +92,3 @@ export function formatCounterValue(timestamp: string | null, count: number, fail
   if (count === 0 && failures > 0) return `${getMessage('statNever')} (${failures} ${failText})`;
   return getMessage('statNever');
 }
-
-export const getErrorMessages = () => ({
-  extensionDisabled: getMessage('errorExtensionDisabled'),
-  wrongSite: getMessage('errorWrongSite'),
-  noData: getMessage('errorNoData'),
-  inProgress: getMessage('errorInProgress'),
-  noTimeBoxes: getMessage('errorNoTimeBoxes'),
-  copyFailed: getMessage('errorNoData'),
-  pasteFailed: getMessage('errorNoData'),
-  invalidAction: getMessage('errorUnknownAction'),
-});
-
-export const getWorkingMessages = () => ({
-  copying: getMessage('workingCopying'),
-  pasting: getMessage('workingPasting'),
-  autoClick: getMessage('workingAutoClick'),
-  clearing: getMessage('workingClearing'),
-});

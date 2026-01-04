@@ -158,6 +158,7 @@ export const storage = {
         const merged = { ...DEFAULTS, ...result } as StorageSchema;
         if (!validateStorage(merged)) {
           console.warn('Invalid data in storage, using defaults');
+          return resolve(JSON.parse(JSON.stringify(DEFAULTS)) as StorageSchema);
         }
         resolve(merged);
       });

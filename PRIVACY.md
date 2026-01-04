@@ -1,6 +1,6 @@
 ## Privacy Policy - Timesheet Helper
 
-Last Updated: August 11, 2025
+Last Updated: January 4, 2026
 
 This Privacy Policy explains what data the Timesheet Helper Chrome extension (the "Extension") processes, how it is used, and what choices you have. This policy is designed to meet Chrome Web Store requirements, including the Privacy Policy and Limited Use sections of the Program Policies. See Chrome’s policy for reference: [Chrome Web Store Program Policies - Privacy Policy](https://developer.chrome.com/docs/webstore/program-policies/policies#privacy_policy).
 
@@ -19,7 +19,7 @@ The Extension only accesses page content on the specific sites you use it with a
 - **Optional local statistics (local only):**
   - Counts of successful/failed operations and the last time each operation ran (copy, paste, auto‑click). These are aggregate counters only; no raw page content or identifiers are included. Controlled by the "Statistics" toggle.
 - **Settings (local only):**
-  - `extensionEnabled` (on/off), `statisticsEnabled` (on/off), `currentLanguage` (en/he).
+  - `extensionEnabled` (on/off), `statisticsEnabled` (on/off), `calculatorEnabled` (on/off), `currentLanguage` (en/he), `currentTheme` (system/light/dark), and `hourlyRate` (number, used by the salary calculator).
 
 The Extension does not access your credentials, names, ID numbers, payroll amounts, or any other fields beyond the times needed to accomplish the single purpose described above.
 
@@ -28,6 +28,7 @@ The Extension does not access your credentials, names, ID numbers, payroll amoun
 - **Provide core functionality:**
   - Read times from Hilan and fill them into Malam when you ask it to.
   - Auto‑click Hilan time boxes to reveal times (when applicable).
+  - Estimate monthly pay using the optional salary calculator (reads timesheet data locally; nothing is sent externally).
 - **Improve the user experience (optional):**
   - Show local‑only aggregated statistics in the popup (success counts, last time an action ran). You can disable this at any time.
 
@@ -43,9 +44,9 @@ The Extension does not access your credentials, names, ID numbers, payroll amoun
 To operate, the Extension requires the following Chrome permissions and page scope:
 
 - **`storage`:** Save timesheet data, settings, and optional local statistics in `chrome.storage.local`.
-- **Host permissions (limited scope):**
-  - `https://*.hilan.co.il/*` (used only on the specific timesheet pages)
-  - `https://payroll.malam.com/*` (used only on the specific payroll pages)
+- **Host permissions (path‑scoped):**
+  - `https://*.hilan.co.il/Hilannetv2/Attendance/*` and `https://*.hilan.co.il/Hilannetv2/attendance/*`
+  - `https://payroll.malam.com/Salprd5Root/faces/*`
 
 The Extension injects content scripts only on the supported paths explicitly listed in the manifest and only to perform the user‑facing features described here.
 

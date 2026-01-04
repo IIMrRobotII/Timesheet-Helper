@@ -12,33 +12,18 @@ import {
   calculateNightHours,
   calculateOvertime,
   CALC_CONSTANTS,
-} from '../lib';
-import type {
-  ExtensionMessage,
-  ExtensionResponse,
-  TimesheetData,
-  ParsedTimesheetRow,
-  CalculatorResult,
-} from '../types';
-
+} from './lib';
+import type { ExtensionMessage, ExtensionResponse, TimesheetData, ParsedTimesheetRow, CalculatorResult } from './types';
 let isProcessing = false;
 const currentSite = detectSite(location.href);
-
-const CALC_SELECTORS = {
-  DATE_CELL: 'td[id*="cellOf_ReportDate"]',
-  ENTRY_CELL: 'td[id*="cellOf_ManualEntry_EmployeeReports"]',
-  EXIT_CELL: 'td[id*="cellOf_ManualExit_EmployeeReports"]',
-  TOTAL_CELL: 'td[id*="cellOf_ManualTotal_EmployeeReports"]',
-  REPORT_TYPE: 'select[id*="Symbol.SymbolId"]',
-} as const;
-
+const TOTAL_CELL_SELECTOR = 'td[id*="cellOf_ManualTotal_EmployeeReports"]';
+const REPORT_TYPE_SELECTOR = 'select[id*="Symbol.SymbolId"]';
 chrome.runtime.onMessage.addListener(
   (request: ExtensionMessage, _sender, sendResponse: (r: ExtensionResponse) => void) => {
     handleMessage(request, sendResponse);
     return true;
   }
 );
-
 async function handleMessage(request: ExtensionMessage, sendResponse: (r: ExtensionResponse) => void) {
   const timestamp = new Date().toISOString();
   try {
@@ -71,17 +56,9 @@ async function handleMessage(request: ExtensionMessage, sendResponse: (r: Extens
     isProcessing = false;
   }
 }
-
-async function executeAction(action: string, hourlyRate?: number): Promise<ExtensionResponse> {
+async function executeAction(action: ExtensionMessage['action'], hourlyRate?: number): Promise<ExtensionResponse> {
   const timestamp = new Date().toISOString();
-  if (!currentSite)
-    return {
-      success: false,
-      timestamp,
-      error: { code: ERROR_CODES.WRONG_SITE },
-    };
-
-  // Handle calculateSalary action
+  if (!currentSite) return { success: false, timestamp, error: { code: ERROR_CODES.WRONG_SITE } };
   if (action === 'calculateSalary') {
     if (currentSite.action !== 'copy') return { success: false, timestamp, error: { code: ERROR_CODES.WRONG_SITE } };
     if (!hourlyRate || hourlyRate <= 0) return { success: false, timestamp, error: { code: 'INVALID_RATE' } };
@@ -89,42 +66,23 @@ async function executeAction(action: string, hourlyRate?: number): Promise<Exten
     if (rows.length === 0) return { success: false, timestamp, error: { code: ERROR_CODES.NO_DATA } };
     return { success: true, timestamp, calculatorResult: calculateSalary(rows, hourlyRate) };
   }
-
+  const eventType = action === 'autoClickTimeBoxes' ? 'autoClick' : currentSite.action === 'copy' ? 'copy' : 'paste';
   try {
-    let eventType: 'autoClick' | 'copy' | 'paste';
-    let result: {
-      count?: number;
-      clickedCount?: number;
-      totalBoxes?: number;
-      skippedCount?: number;
-    };
-
+    let result: { count?: number; clickedCount?: number; totalBoxes?: number; skippedCount?: number };
     if (action === 'autoClickTimeBoxes') {
-      if (currentSite.action !== 'copy')
-        return {
-          success: false,
-          timestamp,
-          error: { code: ERROR_CODES.WRONG_SITE },
-        };
+      if (currentSite.action !== 'copy') return { success: false, timestamp, error: { code: ERROR_CODES.WRONG_SITE } };
       result = await performAutoClick();
-      eventType = 'autoClick';
     } else if (action === 'copyHours') {
-      if (currentSite.action === 'copy') {
-        result = await copyTimesheetData();
-        eventType = 'copy';
-      } else if (currentSite.action === 'paste') {
-        result = await pasteTimesheetData();
-        eventType = 'paste';
-      } else throw new Error(ERROR_CODES.WRONG_SITE);
+      if (currentSite.action === 'copy') result = await copyTimesheetData();
+      else if (currentSite.action === 'paste') result = await pasteTimesheetData();
+      else return { success: false, timestamp, error: { code: ERROR_CODES.WRONG_SITE } };
     } else {
       return { success: false, timestamp, error: { code: 'INVALID_ACTION' } };
     }
-
     await trackAnalytics(eventType, true);
     await delay(100);
     return { success: true, timestamp, ...result };
-  } catch (e) {
-    const eventType = action === 'autoClickTimeBoxes' ? 'autoClick' : currentSite.action === 'copy' ? 'copy' : 'paste';
+  } catch {
     const errorCode =
       action === 'autoClickTimeBoxes'
         ? ERROR_CODES.NO_TIME_BOXES
@@ -136,8 +94,6 @@ async function executeAction(action: string, hourlyRate?: number): Promise<Exten
     return { success: false, timestamp, error: { code: errorCode } };
   }
 }
-
-// Auto-click time boxes
 async function performAutoClick() {
   const boxes = Array.from(document.querySelectorAll(SELECTORS.HILAN_TIME_BOXES)).filter(
     (cell): cell is HTMLElement => {
@@ -149,9 +105,7 @@ async function performAutoClick() {
       return Boolean(content && isValidTime(content.textContent?.trim() ?? ''));
     }
   );
-
   if (boxes.length === 0) throw new Error(ERROR_CODES.NO_TIME_BOXES);
-
   let clickedCount = 0;
   for (const box of boxes) {
     try {
@@ -165,7 +119,7 @@ async function performAutoClick() {
       clickedCount++;
       if (clickedCount < boxes.length) await delay(100);
     } catch {
-      /* Skip failed clicks */
+      continue;
     }
   }
   return {
@@ -174,8 +128,6 @@ async function performAutoClick() {
     skippedCount: boxes.length - clickedCount,
   };
 }
-
-// Copy from Hilan
 async function copyTimesheetData() {
   const timesheetData: TimesheetData = {};
   for (const row of Array.from(document.querySelectorAll('tr'))) {
@@ -184,24 +136,18 @@ async function copyTimesheetData() {
     if (!ov) continue;
     const hilanDate = ov.split(' ')[0];
     if (!hilanDate?.includes('/')) continue;
-
     const isHolidayRow = dateCell?.getAttribute('rowspan') === '2';
     const dataRow = isHolidayRow ? (row.nextElementSibling as HTMLElement) : row;
     if (!dataRow) continue;
-
     const entryCell = dataRow.querySelector(SELECTORS.HILAN_ENTRY_TIME);
     const exitCell = dataRow.querySelector(SELECTORS.HILAN_EXIT_TIME);
     if (!entryCell || !exitCell) continue;
-
     const entryTime = sanitizeTime(entryCell.getAttribute('ov'));
     const exitTime = sanitizeTime(exitCell.getAttribute('ov'));
     const symbolSelect = dataRow.querySelector(SELECTORS.HILAN_SYMBOL) as HTMLSelectElement | null;
     const isVacation =
       symbolSelect?.value === '481' || symbolSelect?.options[symbolSelect.selectedIndex]?.text.includes('חופשה');
-
     if (!isVacation && (!entryTime || !exitTime || !isValidTime(entryTime) || !isValidTime(exitTime))) continue;
-
-    // Determine year: if data month > current month, it's from last year
     const dataMonth = parseInt(hilanDate.split('/')[1] || '0', 10);
     const now = new Date();
     const year = dataMonth > now.getMonth() + 1 ? now.getFullYear() - 1 : now.getFullYear();
@@ -213,30 +159,24 @@ async function copyTimesheetData() {
       isVacation,
     };
   }
-
   const count = Object.keys(timesheetData).length;
   if (count === 0) throw new Error(ERROR_CODES.NO_DATA);
   await storage.set({ timesheetData });
   return { count };
 }
-
-// Paste to Malam
 async function pasteTimesheetData() {
   const data = await storage.get(['timesheetData']);
   const timesheetData = data.timesheetData;
   if (!timesheetData || Object.keys(timesheetData).length === 0) throw new Error(ERROR_CODES.NO_DATA);
-
   let filledCount = 0;
   for (const row of Array.from(document.querySelectorAll(SELECTORS.MALAM_ROWS))) {
     const dateInput = row.querySelector(SELECTORS.MALAM_DATE_INPUT) as HTMLInputElement | null;
     if (!dateInput?.value) continue;
     const entry = timesheetData[dateInput.value.trim()];
     if (!entry) continue;
-
     const clockIn = row.querySelector(SELECTORS.MALAM_CLOCK_IN) as HTMLInputElement | null;
     const clockOut = row.querySelector(SELECTORS.MALAM_CLOCK_OUT) as HTMLInputElement | null;
     if (!clockIn || !clockOut) continue;
-
     if (entry.isVacation) {
       const workType = row.querySelector(SELECTORS.MALAM_WORK_TYPE) as HTMLSelectElement | null;
       if (workType) {
@@ -251,51 +191,36 @@ async function pasteTimesheetData() {
     }
     filledCount++;
   }
-
   if (filledCount === 0) throw new Error(ERROR_CODES.NO_DATA);
   return { count: filledCount };
 }
-
-// Parse timesheet from DOM for calculator
 function parseTimesheetFromDOM(): ParsedTimesheetRow[] {
   const rows: ParsedTimesheetRow[] = [];
   const processedDates = new Set<string>();
-
-  for (const dateCell of document.querySelectorAll(CALC_SELECTORS.DATE_CELL)) {
+  for (const dateCell of document.querySelectorAll(SELECTORS.HILAN_DATE_CELL)) {
     const ov = dateCell.getAttribute('ov');
     if (!ov) continue;
-
-    // Normalize whitespace: replace non-breaking spaces (U+00A0) and multiple spaces
     const normalizedOv = ov
       .replace(/\u00A0/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
-
-    // Allow single or double digit day/month: D/MM, DD/MM, D/M, DD/M
     const match = normalizedOv.match(/^(\d{1,2}\/\d{1,2})\s+(.+)$/);
     if (!match) continue;
     const [, date, dayName] = match;
     if (!date || processedDates.has(date)) continue;
     processedDates.add(date);
-
     const row = dateCell.closest('tr');
     if (!row) continue;
-
     const isHoliday = dateCell.getAttribute('rowspan') === '2';
     const dataRow = isHoliday ? (row.nextElementSibling as HTMLElement) : row;
     if (!dataRow) continue;
-
-    // Clean day name: remove non-breaking spaces and normalize
     const cleanDay =
       dayName
         ?.replace(/\u00A0/g, ' ')
         .replace(/\s+/g, ' ')
         .trim() ?? '';
-
-    // Try to find day in DAY_MAP - also try partial matches
     let dayOfWeek = DAY_MAP[cleanDay] ?? -1;
     if (dayOfWeek === -1) {
-      // Try partial match: check if cleanDay starts with any key in DAY_MAP
       for (const [key, value] of Object.entries(DAY_MAP)) {
         if (cleanDay.startsWith(key) || cleanDay.includes(key)) {
           dayOfWeek = value;
@@ -304,38 +229,29 @@ function parseTimesheetFromDOM(): ParsedTimesheetRow[] {
       }
     }
     if (dayOfWeek === -1) continue;
-
-    const reportSelect = dataRow.querySelector(CALC_SELECTORS.REPORT_TYPE) as HTMLSelectElement | null;
+    const reportSelect = dataRow.querySelector(REPORT_TYPE_SELECTOR) as HTMLSelectElement | null;
     const reportValue = reportSelect?.value ?? '0';
     const isAbsence =
       reportSelect && reportSelect.options[reportSelect.selectedIndex]?.getAttribute('isabsencesymbol') === 'true';
-
     const reportType: 'regular' | 'vacation' | 'absence' =
       reportValue === '481' ? 'vacation' : isAbsence ? 'absence' : 'regular';
-
-    const entryOv = dataRow.querySelector(CALC_SELECTORS.ENTRY_CELL)?.getAttribute('ov')?.trim() ?? '';
-    const exitOv = dataRow.querySelector(CALC_SELECTORS.EXIT_CELL)?.getAttribute('ov')?.trim() ?? '';
-    const totalOv = dataRow.querySelector(CALC_SELECTORS.TOTAL_CELL)?.getAttribute('ov')?.trim() ?? '';
-
-    const validTime = (t: string) => /^\d{1,2}:\d{2}$/.test(t);
-    const entryTime = validTime(entryOv) ? entryOv : '';
-    const exitTime = validTime(exitOv) ? exitOv : '';
-
+    const entryOv = dataRow.querySelector(SELECTORS.HILAN_ENTRY_TIME)?.getAttribute('ov')?.trim() ?? '';
+    const exitOv = dataRow.querySelector(SELECTORS.HILAN_EXIT_TIME)?.getAttribute('ov')?.trim() ?? '';
+    const totalOv = dataRow.querySelector(TOTAL_CELL_SELECTOR)?.getAttribute('ov')?.trim() ?? '';
+    const entryTime = isValidTime(entryOv) ? entryOv : '';
+    const exitTime = isValidTime(exitOv) ? exitOv : '';
     let totalHours = 0;
-    if (validTime(totalOv)) {
+    if (isValidTime(totalOv)) {
       totalHours = timeToDecimal(totalOv);
     } else if (entryTime && exitTime) {
       let e = timeToDecimal(exitTime);
       if (e < timeToDecimal(entryTime)) e += 24;
       totalHours = e - timeToDecimal(entryTime);
     }
-
     rows.push({ date, dayOfWeek, entryTime, exitTime, totalHours, reportType, isHoliday });
   }
   return rows;
 }
-
-// Calculate salary from parsed rows
 function calculateSalary(rows: ParsedTimesheetRow[], hourlyRate: number): CalculatorResult {
   let regularHours = 0,
     nightHours = 0,
@@ -345,16 +261,14 @@ function calculateSalary(rows: ParsedTimesheetRow[], hourlyRate: number): Calcul
     ot125Hours = 0,
     ot150Hours = 0;
   let periodStart = '',
-    periodEnd = '';
-  let minDateVal = Infinity,
+    periodEnd = '',
+    minDateVal = Infinity,
     maxDateVal = -Infinity;
-
   for (const row of rows) {
     const parts = row.date.split('/');
     const d = parseInt(parts[0] || '0', 10);
     const m = parseInt(parts[1] || '0', 10);
     const dateVal = m * 100 + d;
-
     if (dateVal < minDateVal) {
       minDateVal = dateVal;
       periodStart = row.date;
@@ -363,14 +277,12 @@ function calculateSalary(rows: ParsedTimesheetRow[], hourlyRate: number): Calcul
       maxDateVal = dateVal;
       periodEnd = row.date;
     }
-
     if (row.reportType === 'absence') continue;
     if (row.reportType === 'vacation') {
       vacationDays++;
       continue;
     }
     if (row.totalHours <= 0) continue;
-
     workDays++;
     const night = calculateNightHours(row.entryTime, row.exitTime, row.dayOfWeek);
     nightHours += night;
@@ -380,7 +292,6 @@ function calculateSalary(rows: ParsedTimesheetRow[], hourlyRate: number): Calcul
     ot125Hours += ot.ot125;
     ot150Hours += ot.ot150;
   }
-
   const round = (n: number) => Math.round(n * 100) / 100;
   const regularPay = hourlyRate * regularHours;
   const nightPay = hourlyRate * CALC_CONSTANTS.NIGHT_MULTIPLIER * nightHours;
@@ -391,7 +302,6 @@ function calculateSalary(rows: ParsedTimesheetRow[], hourlyRate: number): Calcul
   const ot125Pay = hourlyRate * 0.25 * ot125Hours;
   const ot150Pay = hourlyRate * 0.5 * ot150Hours;
   const totalPay = regularPay + nightPay + vacationPay + travelRefund + mealRefund + ot125Pay + ot150Pay;
-
   return {
     totalPay: round(totalPay),
     regularHours: round(regularHours),
@@ -413,8 +323,6 @@ function calculateSalary(rows: ParsedTimesheetRow[], hourlyRate: number): Calcul
     periodEnd,
   };
 }
-
-// Analytics tracking
 async function trackAnalytics(event: 'autoClick' | 'copy' | 'paste', success: boolean) {
   const data = await storage.get(['analytics', 'statisticsEnabled']);
   if (data.statisticsEnabled === false) return;
@@ -426,10 +334,9 @@ async function trackAnalytics(event: 'autoClick' | 'copy' | 'paste', success: bo
   } else {
     op.failures++;
   }
-  const totalSuccess =
-    analytics.operations.copy.success + analytics.operations.paste.success + analytics.operations.autoClick.success;
-  const totalFailures =
-    analytics.operations.copy.failures + analytics.operations.paste.failures + analytics.operations.autoClick.failures;
+  const ops = analytics.operations;
+  const totalSuccess = ops.copy.success + ops.paste.success + ops.autoClick.success;
+  const totalFailures = ops.copy.failures + ops.paste.failures + ops.autoClick.failures;
   analytics.totalOperations = totalSuccess + totalFailures;
   analytics.successRate =
     analytics.totalOperations > 0 ? Math.round((totalSuccess / analytics.totalOperations) * 100) : 0;

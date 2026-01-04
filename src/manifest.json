@@ -10,7 +10,11 @@
     "128": "icons/icon128.png"
   },
   "permissions": ["storage"],
-  "host_permissions": ["https://*.hilan.co.il/*", "https://payroll.malam.com/*"],
+  "host_permissions": [
+    "https://*.hilan.co.il/Hilannetv2/Attendance/*",
+    "https://*.hilan.co.il/Hilannetv2/attendance/*",
+    "https://payroll.malam.com/Salprd5Root/faces/*"
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_title": "__MSG_defaultTitle__",
@@ -27,7 +31,7 @@
         "https://*.hilan.co.il/Hilannetv2/attendance/*",
         "https://payroll.malam.com/Salprd5Root/faces/*"
       ],
-      "js": ["content/content.ts"],
+      "js": ["content.ts"],
       "run_at": "document_end"
     }
   ],

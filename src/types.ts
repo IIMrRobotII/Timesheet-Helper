@@ -92,7 +92,10 @@ export type AnalyticsEventType = 'copy' | 'paste' | 'autoClick';
 export type StatusType = 'message' | 'success' | 'error' | 'warning' | 'working' | 'info';
 
 // UI context for popup
+export type ContextId = 'hilanTimesheet' | 'hilan' | 'malam' | 'unknown';
+
 export interface UIContext {
+  id: ContextId;
   name: string;
   type: 'source' | 'target' | 'unknown';
   primaryAction: 'copy' | 'paste';

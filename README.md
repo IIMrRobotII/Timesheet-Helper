@@ -12,6 +12,7 @@ Install via Chrome Web Store: [Timesheet Helper](https://chromewebstore.google.c
 - **📋 Copy from Hilan**: Read actual in/out times
 - **📝 Paste to Malam**: Fill payroll timesheet automatically
 - **📊 Local Stats**: Optional, on-device analytics (can be disabled in the popup)
+- **🧮 Salary Calculator**: Estimate monthly pay from timesheet data (on Hilan)
 - **🏖️ Vacation Support**: Copies vacation days to Malam
 - **🌐 i18n**: English and Hebrew support
 

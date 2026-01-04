@@ -1,44 +1,62 @@
-import { storage, detectSite, tabs, showStatus } from './lib';
+﻿import { storage, detectSite, tabs, showStatus } from './lib';
 import * as i18n from './i18n';
-import type { UIContext, ExtensionMessage, ExtensionResponse, StatusType, CalculatorResult } from './types';
-
-// State
-let context: UIContext = { name: '', type: 'unknown', primaryAction: 'copy' };
+import { displayResults, loadAnalytics, setText } from './popup-ui';
+import type { ContextId, ExtensionMessage, ExtensionResponse, StatusType, UIContext } from './types';
+let context: UIContext = { id: 'unknown', name: '', type: 'unknown', primaryAction: 'copy' };
 let isOperationInProgress = false;
 let modalResolve: ((v: boolean) => void) | null = null;
-
-// Cached DOM elements
-const $ = (s: string) => document.querySelector(s) as HTMLElement | null;
+const $ = <T extends Element = HTMLElement>(selector: string) => document.querySelector(selector) as T | null;
+const $id = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
 const el = {
   container: $('.container'),
   contextBadge: $('.context-badge'),
   toggleLabel: $('.toggle-label'),
   guidanceText: $('.guidance-text'),
-  statusDiv: $('#status'),
-  confirmModal: $('#confirmModal'),
-  extensionToggle: $('#extensionToggle') as HTMLInputElement | null,
-  statisticsToggle: $('#statisticsToggle') as HTMLInputElement | null,
-  autoClickButton: $('#autoClickButton') as HTMLButtonElement | null,
-  copyHours: $('#copyHours') as HTMLButtonElement | null,
+  statusDiv: $id('status'),
+  confirmModal: $id('confirmModal'),
+  extensionToggle: $id<HTMLInputElement>('extensionToggle'),
+  statisticsToggle: $id<HTMLInputElement>('statisticsToggle'),
+  autoClickButton: $id<HTMLButtonElement>('autoClickButton'),
+  copyHours: $id<HTMLButtonElement>('copyHours'),
   settingsContainer: $('.settings-container'),
-  settingsButton: $('#settingsButton'),
-  backButton: $('#backButton'),
-  themeSelect: $('#themeSelect') as HTMLSelectElement | null,
-  languageSelect: $('#languageSelect') as HTMLSelectElement | null,
-  statisticsContent: $('#statisticsContent'),
-  clearDataButtonSettings: $('#clearDataButtonSettings') as HTMLButtonElement | null,
+  settingsButton: $id('settingsButton'),
+  backButton: $id('backButton'),
+  themeSelect: $id<HTMLSelectElement>('themeSelect'),
+  languageSelect: $id<HTMLSelectElement>('languageSelect'),
+  statisticsContent: $id('statisticsContent'),
+  clearDataButtonSettings: $id<HTMLButtonElement>('clearDataButtonSettings'),
   calculatorSection: $('.calculator-section'),
-  calculatorToggle: $('#calculatorToggle') as HTMLInputElement | null,
-  hourlyRateInput: $('#hourlyRateInput') as HTMLInputElement | null,
-  calculateButton: $('#calculateButton') as HTMLButtonElement | null,
-  calculatorResults: $('#calculatorResults'),
-  calcPeriod: $('#calcPeriod'),
-  rateInputWrapper: $('#rateInputWrapper'),
-  rateArrowUp: $('.calc-arrow-up') as HTMLButtonElement | null,
-  rateArrowDown: $('.calc-arrow-down') as HTMLButtonElement | null,
+  calculatorToggle: $id<HTMLInputElement>('calculatorToggle'),
+  hourlyRateInput: $id<HTMLInputElement>('hourlyRateInput'),
+  calculateButton: $id<HTMLButtonElement>('calculateButton'),
+  rateInputWrapper: $id('rateInputWrapper'),
+  rateArrowUp: $<HTMLButtonElement>('.calc-arrow-up'),
+  rateArrowDown: $<HTMLButtonElement>('.calc-arrow-down'),
 };
-
-// Initialize
+const CONTEXTS: Record<
+  ContextId,
+  { nameKey: string; type: UIContext['type']; primaryAction: UIContext['primaryAction'] }
+> = {
+  unknown: { nameKey: 'unknownWebsite', type: 'unknown', primaryAction: 'copy' },
+  hilanTimesheet: { nameKey: 'contextHilanTimesheet', type: 'source', primaryAction: 'copy' },
+  hilan: { nameKey: 'contextHilan', type: 'source', primaryAction: 'copy' },
+  malam: { nameKey: 'contextMalam', type: 'target', primaryAction: 'paste' },
+};
+const ERROR_KEY_BY_CODE: Record<string, string> = {
+  EXT_DISABLED: 'errorExtensionDisabled',
+  WRONG_SITE: 'errorWrongSite',
+  NO_DATA: 'errorNoData',
+  OPERATION_IN_PROGRESS: 'errorInProgress',
+  NO_TIME_BOXES: 'errorNoTimeBoxes',
+  COPY_FAILED: 'errorNoData',
+  PASTE_FAILED: 'errorNoData',
+  INVALID_ACTION: 'errorUnknownAction',
+};
+const status = (message: string | [string, StatusType] | null, type?: StatusType) =>
+  showStatus(el.statusDiv, message, type);
+const toggleHidden = (node: Element | null, visible: boolean) => node?.classList.toggle('hidden', !visible);
+const setButtonText = (btn: HTMLButtonElement | null, text: string) =>
+  setText(btn?.querySelector('.button-text'), text);
 async function init() {
   await i18n.init();
   context = await detectContext();
@@ -51,50 +69,24 @@ async function init() {
   updateButtonAvailability();
   await loadAnalytics();
 }
-
+const getContext = (id: ContextId): UIContext => {
+  const { nameKey, type, primaryAction } = CONTEXTS[id];
+  return { id, name: i18n.getMessage(nameKey), type, primaryAction };
+};
 async function detectContext(): Promise<UIContext> {
   try {
     const [tab] = await tabs.query({ active: true, currentWindow: true });
-    if (!tab)
-      return {
-        name: i18n.getMessage('unknownWebsite'),
-        type: 'unknown',
-        primaryAction: 'copy',
-      };
+    if (!tab) return getContext('unknown');
     const site = detectSite(tab.url || '');
     const url = (tab.url || '').toLowerCase();
-    if (site?.name === 'HILAN')
-      return {
-        name: i18n.getMessage('contextHilanTimesheet'),
-        type: 'source',
-        primaryAction: 'copy',
-      };
-    if (site?.name === 'MALAM')
-      return {
-        name: i18n.getMessage('contextMalam'),
-        type: 'target',
-        primaryAction: 'paste',
-      };
-    if (url.includes('hilan.co.il'))
-      return {
-        name: i18n.getMessage('contextHilan'),
-        type: 'source',
-        primaryAction: 'copy',
-      };
-    return {
-      name: i18n.getMessage('unknownWebsite'),
-      type: 'unknown',
-      primaryAction: 'copy',
-    };
+    if (site?.name === 'HILAN') return getContext('hilanTimesheet');
+    if (site?.name === 'MALAM') return getContext('malam');
+    if (url.includes('hilan.co.il')) return getContext('hilan');
+    return getContext('unknown');
   } catch {
-    return {
-      name: i18n.getMessage('unknownWebsite'),
-      type: 'unknown',
-      primaryAction: 'copy',
-    };
+    return getContext('unknown');
   }
 }
-
 function setupEventListeners() {
   el.extensionToggle?.addEventListener('change', handleExtensionToggle);
   el.statisticsToggle?.addEventListener('change', handleStatisticsToggle);
@@ -107,9 +99,7 @@ function setupEventListeners() {
   el.clearDataButtonSettings?.addEventListener('click', handleClearData);
   el.calculatorToggle?.addEventListener('change', handleCalculatorToggle);
   el.hourlyRateInput?.addEventListener('input', handleHourlyRateChange);
-  el.hourlyRateInput?.addEventListener('keydown', e => {
-    if (e.key === 'Enter') el.calculateButton?.click();
-  });
+  el.hourlyRateInput?.addEventListener('keydown', e => e.key === 'Enter' && el.calculateButton?.click());
   el.calculateButton?.addEventListener('click', handleCalculate);
   el.rateInputWrapper?.addEventListener('click', () => el.hourlyRateInput?.focus());
   el.rateArrowUp?.addEventListener('click', () => {
@@ -120,16 +110,14 @@ function setupEventListeners() {
     el.hourlyRateInput?.stepDown();
     handleHourlyRateChange();
   });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && !el.confirmModal?.classList.contains('hidden')) handleModal(false);
-  });
-  $('#modalCancel')?.addEventListener('click', () => handleModal(false));
-  $('#modalConfirm')?.addEventListener('click', () => handleModal(true));
-  el.confirmModal?.addEventListener('click', e => {
-    if (e.target === el.confirmModal) handleModal(false);
-  });
+  document.addEventListener(
+    'keydown',
+    e => e.key === 'Escape' && !el.confirmModal?.classList.contains('hidden') && handleModal(false)
+  );
+  $id('modalCancel')?.addEventListener('click', () => handleModal(false));
+  $id('modalConfirm')?.addEventListener('click', () => handleModal(true));
+  el.confirmModal?.addEventListener('click', e => e.target === el.confirmModal && handleModal(false));
 }
-
 async function loadSettings() {
   const settings = await storage.get();
   if (el.extensionToggle) el.extensionToggle.checked = settings.extensionEnabled;
@@ -140,18 +128,16 @@ async function loadSettings() {
   if (el.hourlyRateInput && settings.hourlyRate > 0) el.hourlyRateInput.value = String(settings.hourlyRate);
   updateUIState(settings.extensionEnabled, true);
   applyTheme(settings.currentTheme);
-  updateStatisticsVisibility(settings.statisticsEnabled);
-  updateCalculatorVisibility(settings.calculatorEnabled);
+  toggleHidden(el.statisticsContent, settings.statisticsEnabled);
+  toggleHidden(el.calculatorSection, settings.calculatorEnabled);
 }
-
 function updateAllText() {
   document.title = i18n.getMessage('pageTitle');
-  document.querySelectorAll('[data-i18n]').forEach(e => {
-    const key = e.getAttribute('data-i18n');
-    if (key) e.textContent = i18n.getMessage(key);
+  document.querySelectorAll('[data-i18n]').forEach(node => {
+    const key = node.getAttribute('data-i18n');
+    if (key) setText(node, i18n.getMessage(key));
   });
 }
-
 function updateInterface() {
   if (el.contextBadge) {
     el.contextBadge.textContent = context.name;
@@ -164,15 +150,10 @@ function updateInterface() {
         ? 'guidanceTextTarget'
         : 'guidanceTextDefault';
   const btnKey = context.type === 'source' ? 'copyHours' : context.type === 'target' ? 'pasteHours' : 'syncHours';
-  if (el.guidanceText) el.guidanceText.textContent = i18n.getMessage(guidanceKey);
-  if (el.copyHours) {
-    const txt = el.copyHours.querySelector('.button-text');
-    if (txt) txt.textContent = i18n.getMessage(btnKey);
-    const icon = el.copyHours.querySelector('.button-icon');
-    if (icon) icon.textContent = context.type === 'target' ? '📝' : '📋';
-  }
+  setText(el.guidanceText, i18n.getMessage(guidanceKey));
+  setText(el.copyHours?.querySelector('.button-text'), i18n.getMessage(btnKey));
+  setText(el.copyHours?.querySelector('.button-icon'), context.type === 'target' ? '📝' : '📋');
 }
-
 function updateUIState(enabled: boolean, immediate = false) {
   if (!el.container) return;
   el.container.classList.toggle('collapsed', !enabled);
@@ -183,52 +164,30 @@ function updateUIState(enabled: boolean, immediate = false) {
   }
   document.body.classList.toggle('popup-expanded', enabled);
   document.body.classList.toggle('popup-collapsed', !enabled);
-  if (el.toggleLabel) el.toggleLabel.textContent = i18n.getMessage(enabled ? 'extensionEnabled' : 'extensionDisabled');
-  showStatus(
-    el.statusDiv,
-    !enabled
-      ? null
-      : context.type === 'unknown'
-        ? [`ℹ️ ${i18n.getMessage('guidanceTextDefault')}`, 'info' as StatusType]
-        : null
-  );
+  setText(el.toggleLabel, i18n.getMessage(enabled ? 'extensionEnabled' : 'extensionDisabled'));
+  const statusMessage: [string, StatusType] | null =
+    enabled && context.type === 'unknown' ? [`ℹ️ ${i18n.getMessage('guidanceTextDefault')}`, 'info'] : null;
+  status(statusMessage);
 }
-
 function updateButtonAvailability() {
   const enabled = el.extensionToggle?.checked ?? false;
-  const isHilanTimesheet = context.type === 'source' && context.name === i18n.getMessage('contextHilanTimesheet');
-  const isHilanHome = context.type === 'source' && context.name === i18n.getMessage('contextHilan');
-  if (el.autoClickButton)
-    el.autoClickButton.disabled = !enabled || !isHilanTimesheet || isOperationInProgress || isHilanHome;
+  const isHilanTimesheet = context.id === 'hilanTimesheet';
+  if (el.autoClickButton) el.autoClickButton.disabled = !enabled || !isHilanTimesheet || isOperationInProgress;
   if (el.copyHours)
-    el.copyHours.disabled = !enabled || context.type === 'unknown' || isOperationInProgress || isHilanHome;
+    el.copyHours.disabled = !enabled || context.type === 'unknown' || isOperationInProgress || context.id === 'hilan';
   if (el.clearDataButtonSettings) el.clearDataButtonSettings.disabled = isOperationInProgress;
   updateCalculateButtonState();
 }
-
-function updateStatisticsVisibility(visible: boolean) {
-  el.statisticsContent?.classList.toggle('hidden', !visible);
-}
-
-function updateCalculatorVisibility(visible: boolean) {
-  el.calculatorSection?.classList.toggle('hidden', !visible);
-}
-
 function updateCalculateButtonState() {
   const rate = parseFloat(el.hourlyRateInput?.value || '0');
-  const isHilan = context.type === 'source' && context.name === i18n.getMessage('contextHilanTimesheet');
+  const isHilan = context.id === 'hilanTimesheet';
   if (el.calculateButton) el.calculateButton.disabled = !(rate > 0) || !isHilan || isOperationInProgress;
 }
-
 async function handleHourlyRateChange() {
   const rate = parseFloat(el.hourlyRateInput?.value || '0');
-  if (rate > 0) {
-    await storage.set({ hourlyRate: rate });
-  }
+  if (rate > 0) await storage.set({ hourlyRate: rate });
   updateCalculateButtonState();
 }
-
-// Event handlers
 async function handleExtensionToggle() {
   if (isOperationInProgress) return;
   const enabled = el.extensionToggle?.checked ?? false;
@@ -236,133 +195,96 @@ async function handleExtensionToggle() {
   updateUIState(enabled);
   updateButtonAvailability();
 }
-
 async function handleStatisticsToggle() {
   const enabled = el.statisticsToggle?.checked ?? false;
   await storage.set({ statisticsEnabled: enabled });
-  updateStatisticsVisibility(enabled);
+  toggleHidden(el.statisticsContent, enabled);
 }
-
 async function handleCalculatorToggle() {
   const enabled = el.calculatorToggle?.checked ?? false;
   await storage.set({ calculatorEnabled: enabled });
-  updateCalculatorVisibility(enabled);
+  toggleHidden(el.calculatorSection, enabled);
 }
-
 async function handleCalculate() {
   if (isOperationInProgress) return;
   const hourlyRate = parseFloat(el.hourlyRateInput?.value || '0');
   if (hourlyRate <= 0) {
-    showStatus(el.statusDiv, `❌ ${i18n.getMessage('errorEnterHourlyRate')}`, 'error');
+    status(`❌ ${i18n.getMessage('errorEnterHourlyRate')}`, 'error');
     return;
   }
-
   isOperationInProgress = true;
   updateCalculateButtonState();
-  showStatus(el.statusDiv, `🧮 ${i18n.getMessage('workingCalculating')}`, 'working');
-
+  status(`🧮 ${i18n.getMessage('workingCalculating')}`, 'working');
   try {
     const [tab] = await tabs.query({ active: true, currentWindow: true });
     if (!tab?.id) throw new Error('No tab');
     const response = await tabs.sendMessage<ExtensionResponse>(tab.id, { action: 'calculateSalary', hourlyRate });
-
     if (response.success && response.calculatorResult) {
       displayResults(response.calculatorResult);
       await storage.set({ hourlyRate });
-      showStatus(el.statusDiv, `✅ ${i18n.getMessage('successCalculated')}`, 'success');
+      status(`✅ ${i18n.getMessage('successCalculated')}`, 'success');
     } else {
       const msg =
         response.error?.code === 'NO_DATA'
           ? i18n.getMessage('errorNoTimesheetData')
           : i18n.getMessage('errorOperationFailed');
-      showStatus(el.statusDiv, `❌ ${msg}`, 'error');
+      status(`❌ ${msg}`, 'error');
     }
   } catch {
-    showStatus(el.statusDiv, `❌ ${i18n.getMessage('errorOperationFailed')}`, 'error');
+    status(`❌ ${i18n.getMessage('errorOperationFailed')}`, 'error');
   } finally {
     isOperationInProgress = false;
     updateCalculateButtonState();
   }
 }
-
-function displayResults(r: CalculatorResult) {
-  el.calculatorResults?.classList.remove('hidden');
-  if (el.calcPeriod) el.calcPeriod.textContent = `${r.periodStart} - ${r.periodEnd}`;
-
-  const formatCurrency = (n: number) =>
-    n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const fmt = (amt: number, cnt: number | string, suf: string) =>
-    `₪${formatCurrency(amt)} (${typeof cnt === 'number' ? cnt.toFixed(1) : cnt}${suf})`;
-  const set = (id: string, v: string) => {
-    const e = document.getElementById(id);
-    if (e) e.textContent = v;
-  };
-
-  set('resultTotalPay', `₪${formatCurrency(r.totalPay)}`);
-  set('resultRegular', fmt(r.regularPay, r.regularHours, 'h'));
-  set('resultNight', fmt(r.nightPay, r.nightHours, 'h'));
-  set('resultWorkDays', fmt(r.workDaysPay, r.workDays, 'd'));
-  set('resultVacation', fmt(r.vacationPay, r.vacationDays, 'd'));
-  set('resultTravel', fmt(r.travelRefund, r.workDays, 'd'));
-  set('resultMeal', fmt(r.mealRefund, r.mealEligibleDays, 'd'));
-  set('resultOT125', fmt(r.overtime125Pay, r.overtime125Hours, 'h'));
-  set('resultOT150', fmt(r.overtime150Pay, r.overtime150Hours, 'h'));
-}
-
 async function handleAutoClick() {
   if (isOperationInProgress || context.primaryAction !== 'copy') return;
+  const working = i18n.getMessage('workingAutoClick');
   await performOperation(
     'autoClickTimeBoxes',
-    i18n.getMessage('workingAutoClick'),
-    i18n.getWorkingMessages().autoClick,
+    working,
+    working,
     i18n.getMessage('autoClickButton'),
     el.autoClickButton
   );
 }
-
 async function handlePrimaryOperation() {
   if (isOperationInProgress || context.type === 'unknown') return;
   const isSource = context.primaryAction === 'copy';
+  const working = i18n.getMessage(isSource ? 'workingCopying' : 'workingPasting');
   await performOperation(
     'copyHours',
-    i18n.getMessage(isSource ? 'workingCopying' : 'workingPasting'),
-    isSource ? i18n.getWorkingMessages().copying : i18n.getWorkingMessages().pasting,
+    working,
+    working,
     i18n.getMessage(isSource ? 'copyHours' : 'pasteHours'),
     el.copyHours
   );
 }
-
 async function handleClearData() {
   if (isOperationInProgress || !(await showModal())) return;
   try {
-    showStatus(el.statusDiv, `🗑️ ${i18n.getMessage('workingClearing')}`, 'working');
+    status(`🗑️ ${i18n.getMessage('workingClearing')}`, 'working');
     await storage.clear();
     await storage.set({ extensionEnabled: true, statisticsEnabled: true, calculatorEnabled: true });
-    if (el.extensionToggle) el.extensionToggle.checked = true;
-    if (el.statisticsToggle) el.statisticsToggle.checked = true;
-    // Reset calculator UI
-    if (el.calculatorToggle) el.calculatorToggle.checked = true;
+    [el.extensionToggle, el.statisticsToggle, el.calculatorToggle].forEach(toggle => toggle && (toggle.checked = true));
     if (el.hourlyRateInput) el.hourlyRateInput.value = '';
-    el.calculatorResults?.classList.add('hidden');
-    updateCalculatorVisibility(true);
+    document.getElementById('calculatorResults')?.classList.add('hidden');
+    toggleHidden(el.calculatorSection, true);
     updateCalculateButtonState();
-    // Reset language and theme to system defaults
     await i18n.switchLanguage('system');
-    if (el.languageSelect) el.languageSelect.value = 'system';
-    if (el.themeSelect) el.themeSelect.value = 'system';
+    [el.languageSelect, el.themeSelect].forEach(select => select && (select.value = 'system'));
     applyTheme('system');
     updateAllText();
     context = await detectContext();
     updateInterface();
     updateUIState(true);
-    updateStatisticsVisibility(true);
+    toggleHidden(el.statisticsContent, true);
     await loadAnalytics();
-    showStatus(el.statusDiv, `✅ ${i18n.getMessage('successCleared')}`, 'success');
+    status(`✅ ${i18n.getMessage('successCleared')}`, 'success');
   } catch {
-    showStatus(el.statusDiv, `❌ ${i18n.getMessage('errorClearDataFailed')}`, 'error');
+    status(`❌ ${i18n.getMessage('errorClearDataFailed')}`, 'error');
   }
 }
-
 async function performOperation(
   action: ExtensionMessage['action'],
   workingText: string,
@@ -373,49 +295,30 @@ async function performOperation(
   isOperationInProgress = true;
   updateButtonAvailability();
   setButtonText(btn, workingText);
-  showStatus(el.statusDiv, statusText, 'working');
+  status(statusText, 'working');
   try {
     const [tab] = await tabs.query({ active: true, currentWindow: true });
     if (!tab) throw new Error('No active tab');
-    const response = await tabs.sendMessage<ExtensionResponse>(tab.id!, {
-      action,
-    });
+    const response = await tabs.sendMessage<ExtensionResponse>(tab.id!, { action });
     if (response.success) {
+      const count = String(response.count || 0);
+      const clicked = String(response.clickedCount || 0);
+      const total = String(response.totalBoxes || 0);
       const msg =
         action === 'autoClickTimeBoxes'
-          ? i18n.getMessage('successAutoClick', [
-              (response.clickedCount || 0).toString(),
-              (response.totalBoxes || 0).toString(),
-            ])
-          : i18n.getMessage(context.primaryAction === 'copy' ? 'successCopied' : 'successPasted', [
-              (response.count || 0).toString(),
-            ]);
-      showStatus(el.statusDiv, `✅ ${msg}`, 'success');
+          ? i18n.getMessage('successAutoClick', [clicked, total])
+          : i18n.getMessage(context.primaryAction === 'copy' ? 'successCopied' : 'successPasted', [count]);
+      status(`✅ ${msg}`, 'success');
     } else {
-      const errMsgs = i18n.getErrorMessages();
-      const errMap: Record<string, string> = {
-        EXT_DISABLED: errMsgs.extensionDisabled,
-        WRONG_SITE: errMsgs.wrongSite,
-        NO_DATA: errMsgs.noData,
-        OPERATION_IN_PROGRESS: errMsgs.inProgress,
-        NO_TIME_BOXES: errMsgs.noTimeBoxes,
-        COPY_FAILED: errMsgs.copyFailed,
-        PASTE_FAILED: errMsgs.pasteFailed,
-        INVALID_ACTION: errMsgs.invalidAction,
-      };
-      showStatus(
-        el.statusDiv,
-        `❌ ${errMap[response.error?.code ?? ''] || response.error?.message || i18n.getMessage('errorOperationFailed')}`,
-        'error'
-      );
+      const key = ERROR_KEY_BY_CODE[response.error?.code ?? ''];
+      const msg = key ? i18n.getMessage(key) : response.error?.message || i18n.getMessage('errorOperationFailed');
+      status(`❌ ${msg}`, 'error');
     }
   } catch (e) {
     const err = e instanceof Error ? e.message : 'Unknown error';
-    if (err.includes('COMMUNICATION_TIMEOUT'))
-      showStatus(el.statusDiv, `⏱️ ${i18n.getMessage('errorOperationTimedOut')}`, 'error');
-    else if (err.includes('Communication failed'))
-      showStatus(el.statusDiv, `⚠️ ${i18n.getMessage('errorCommunicationIssue')}`, 'error');
-    else showStatus(el.statusDiv, `❌ ${i18n.getMessage('errorOperationFailed')}: ${err}`, 'error');
+    if (err.includes('COMMUNICATION_TIMEOUT')) status(`⏱️ ${i18n.getMessage('errorOperationTimedOut')}`, 'error');
+    else if (err.includes('Communication failed')) status(`⚠️ ${i18n.getMessage('errorCommunicationIssue')}`, 'error');
+    else status(`❌ ${i18n.getMessage('errorOperationFailed')}: ${err}`, 'error');
   } finally {
     setButtonText(btn, defaultText);
     isOperationInProgress = false;
@@ -423,44 +326,31 @@ async function performOperation(
     await loadAnalytics();
   }
 }
-
-function setButtonText(btn: HTMLButtonElement | null, text: string) {
-  const txt = btn?.querySelector('.button-text');
-  if (txt) txt.textContent = text;
-}
-
-// Modal
 function showModal(): Promise<boolean> {
   return new Promise(resolve => {
     modalResolve = resolve;
     el.confirmModal?.classList.remove('hidden');
   });
 }
-
 function handleModal(confirmed: boolean) {
   el.confirmModal?.classList.add('hidden');
   modalResolve?.(confirmed);
   modalResolve = null;
 }
-
-// Settings & Navigation
 function showView(view: 'main' | 'settings') {
   el.container?.classList.toggle('hidden', view !== 'main');
   el.settingsContainer?.classList.toggle('hidden', view !== 'settings');
   if (view === 'settings') loadAnalytics();
 }
-
 function applyTheme(theme: 'system' | 'light' | 'dark') {
   document.documentElement.removeAttribute('data-theme');
   if (theme !== 'system') document.documentElement.setAttribute('data-theme', theme);
 }
-
 async function handleThemeChange() {
   const theme = el.themeSelect?.value as 'system' | 'light' | 'dark';
   await storage.set({ currentTheme: theme });
   applyTheme(theme);
 }
-
 async function handleLanguageSelect() {
   const lang = el.languageSelect?.value as 'system' | 'en' | 'he';
   await i18n.switchLanguage(lang);
@@ -468,35 +358,6 @@ async function handleLanguageSelect() {
   context = await detectContext();
   updateInterface();
   updateUIState(el.extensionToggle?.checked ?? false, true);
+  await loadAnalytics();
 }
-
-// Analytics
-async function loadAnalytics() {
-  const data = await storage.get();
-  const stats: Record<string, string> = {
-    statLastCopied: i18n.formatCounterValue(
-      data.analytics.operations.copy.lastTime,
-      data.analytics.operations.copy.success,
-      data.analytics.operations.copy.failures
-    ),
-    statLastPasted: i18n.formatCounterValue(
-      data.analytics.operations.paste.lastTime,
-      data.analytics.operations.paste.success,
-      data.analytics.operations.paste.failures
-    ),
-    statLastAutoClick: i18n.formatCounterValue(
-      data.analytics.operations.autoClick.lastTime,
-      data.analytics.operations.autoClick.success,
-      data.analytics.operations.autoClick.failures
-    ),
-    statTotalOperations: String(data.analytics.totalOperations),
-    statSuccessRate: `${data.analytics.successRate}%`,
-  };
-  for (const [key, value] of Object.entries(stats)) {
-    const label = el.statisticsContent?.querySelector(`.stat-label[data-i18n="${key}"]`);
-    const valueEl = label?.closest('.stat-item')?.querySelector('.stat-value');
-    if (valueEl) valueEl.textContent = value;
-  }
-}
-
 init();

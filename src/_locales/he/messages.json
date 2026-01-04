@@ -1,380 +1,287 @@
 {
   "extensionName": {
-    "message": "עוזר דוח נוכחות",
-    "description": "Extension name displayed in Chrome"
+    "message": "עוזר דוח נוכחות"
   },
   "extensionDescription": {
-    "message": "העתקת שעות עבודה מדוח הנוכחות של חילן למערכת השכר של מלם",
-    "description": "Extension description displayed in Chrome"
+    "message": "העתקת שעות עבודה מדוח הנוכחות של חילן למערכת השכר של מלם"
   },
   "defaultTitle": {
-    "message": "סנכרון שעות נוכחות",
-    "description": "Default title for the extension action"
+    "message": "סנכרון שעות נוכחות"
   },
   "pageTitle": {
-    "message": "עוזר דוח נוכחות",
-    "description": "Page title in popup"
+    "message": "עוזר דוח נוכחות"
   },
   "unknownWebsite": {
-    "message": "אתר לא מזוהה",
-    "description": "Badge text for unknown website"
+    "message": "אתר לא מזוהה"
   },
   "guidanceTextDefault": {
-    "message": "אנא נווט לאתר דוח הנוכחות של חילן או מערכת השכר של מלם.",
-    "description": "Default guidance text for unknown websites"
+    "message": "אנא נווט לאתר דוח הנוכחות של חילן או מערכת השכר של מלם."
   },
   "guidanceTextSource": {
-    "message": "שלב 1: לחץ על \"לחיצה אוטומטית\" כדי לחשוף את תיבות הזמן, ואז \"העתק שעות\" כדי להעתיק נתונים.",
-    "description": "Guidance text for Hilan timesheet page"
+    "message": "שלב 1: לחץ על \"לחיצה אוטומטית\" כדי לחשוף את תיבות הזמן, ואז \"העתק שעות\" כדי להעתיק נתונים."
   },
   "guidanceTextTarget": {
-    "message": "שלב 2: לחץ על \"הדבק שעות\" כדי לסנכרן את נתוני דוח הנוכחות שהועתקו.",
-    "description": "Guidance text for Malam payroll page"
+    "message": "שלב 2: לחץ על \"הדבק שעות\" כדי לסנכרן את נתוני דוח הנוכחות שהועתקו."
   },
   "autoClickButton": {
-    "message": "לחיצה אוטומטית על תיבות זמן",
-    "description": "Auto-click button text"
+    "message": "לחיצה אוטומטית על תיבות זמן"
   },
   "syncHours": {
-    "message": "סנכרון שעות",
-    "description": "Default sync button text"
+    "message": "סנכרון שעות"
   },
   "copyHours": {
-    "message": "העתק שעות",
-    "description": "Copy hours button text for Hilan"
+    "message": "העתק שעות"
   },
   "pasteHours": {
-    "message": "הדבק שעות",
-    "description": "Paste hours button text for Malam"
+    "message": "הדבק שעות"
   },
   "contextHilan": {
-    "message": "חילן",
-    "description": "Context name for general Hilan website pages"
+    "message": "חילן"
   },
   "contextHilanTimesheet": {
-    "message": "דוח נוכחות חילן",
-    "description": "Context name for Hilan timesheet pages where operations are enabled"
+    "message": "דוח נוכחות חילן"
   },
   "contextMalam": {
-    "message": "מערכת שכר מלם",
-    "description": "Context name for Malam payroll"
+    "message": "מערכת שכר מלם"
   },
   "statLastCopied": {
-    "message": "העתקה אחרונה:",
-    "description": "Statistics label for last copied timestamp"
+    "message": "העתקה אחרונה:"
   },
   "statLastPasted": {
-    "message": "הדבקה אחרונה:",
-    "description": "Statistics label for last pasted timestamp"
+    "message": "הדבקה אחרונה:"
   },
   "statLastAutoClick": {
-    "message": "לחיצה אוטומטית אחרונה:",
-    "description": "Statistics label for last auto-click timestamp"
+    "message": "לחיצה אוטומטית אחרונה:"
   },
   "statTotalOperations": {
-    "message": "סה\"כ פעולות:",
-    "description": "Statistics label for total operations count"
+    "message": "סה\"כ פעולות:"
   },
   "statSuccessRate": {
-    "message": "שיעור הצלחה:",
-    "description": "Statistics label for success rate percentage"
+    "message": "שיעור הצלחה:"
   },
   "statNever": {
-    "message": "אף פעם",
-    "description": "Statistics value for never performed operations"
+    "message": "אף פעם"
   },
   "clearAllData": {
-    "message": "נקה את כל הנתונים",
-    "description": "Clear data button text"
+    "message": "נקה את כל הנתונים"
   },
   "languageSystem": {
-    "message": "מערכת",
-    "description": "System language option"
+    "message": "מערכת"
   },
   "languageEnglish": {
-    "message": "English",
-    "description": "English language option"
+    "message": "English"
   },
   "languageHebrew": {
-    "message": "עברית",
-    "description": "Hebrew language option"
+    "message": "עברית"
   },
   "errorExtensionDisabled": {
-    "message": "התוסף כבוי. אנא הפעל אותו בחלונית התוסף.",
-    "description": "Error message when extension is disabled"
+    "message": "התוסף כבוי. אנא הפעל אותו בחלונית התוסף."
   },
   "errorWrongSite": {
-    "message": "תכונה זו אינה זמינה באתר הנוכחי.",
-    "description": "Error message for wrong website"
+    "message": "תכונה זו אינה זמינה באתר הנוכחי."
   },
   "errorNoData": {
-    "message": "לא נמצאו נתוני דוח נוכחות. אנא ודא שאתה בעמוד הנכון.",
-    "description": "Error message when no data is found"
+    "message": "לא נמצאו נתוני דוח נוכחות. אנא ודא שאתה בעמוד הנכון."
   },
   "errorInProgress": {
-    "message": "פעולה אחרת מתבצעת כעת. אנא המתן.",
-    "description": "Error message when operation is in progress"
+    "message": "פעולה אחרת מתבצעת כעת. אנא המתן."
   },
   "errorNoTimeBoxes": {
-    "message": "לא נמצאו תיבות זמן לחיצות. ודא שאתה בעמוד יומן הנוכחות של חילן.",
-    "description": "Error when no time boxes found for auto-click"
+    "message": "לא נמצאו תיבות זמן לחיצות. ודא שאתה בעמוד יומן הנוכחות של חילן."
   },
   "errorUnknownAction": {
-    "message": "התבקשה פעולה לא מוכרת",
-    "description": "Error for unknown action"
+    "message": "התבקשה פעולה לא מוכרת"
   },
   "workingCopying": {
-    "message": "מעתיק נתוני דוח נוכחות...",
-    "description": "Working message for copy operation"
+    "message": "מעתיק נתוני דוח נוכחות..."
   },
   "workingPasting": {
-    "message": "מדביק נתוני דוח נוכחות...",
-    "description": "Working message for paste operation"
+    "message": "מדביק נתוני דוח נוכחות..."
   },
   "workingAutoClick": {
-    "message": "לוחץ אוטומטית על תיבות זמן...",
-    "description": "Working message for auto-click operation"
+    "message": "לוחץ אוטומטית על תיבות זמן..."
   },
   "workingClearing": {
-    "message": "מוחק נתוני תוסף...",
-    "description": "Working message for clear data operation"
+    "message": "מוחק נתוני תוסף..."
   },
   "successCleared": {
-    "message": "כל נתוני התוסף נמחקו בהצלחה.",
-    "description": "Success message for clear data operation"
+    "message": "כל נתוני התוסף נמחקו בהצלחה."
   },
   "errorClearDataFailed": {
-    "message": "מחיקת הנתונים נכשלה",
-    "description": "Error message when clearing data fails"
+    "message": "מחיקת הנתונים נכשלה"
   },
   "successLanguageChanged": {
-    "message": "השפה שונתה",
-    "description": "Success message when language is switched"
+    "message": "השפה שונתה"
   },
   "errorLanguageSwitchFailed": {
-    "message": "שינוי השפה נכשל",
-    "description": "Error message when language switch fails"
+    "message": "שינוי השפה נכשל"
   },
   "errorOperationTimedOut": {
-    "message": "הפעולה פגה - אנא נסה שוב",
-    "description": "Error message when operation times out"
+    "message": "הפעולה פגה - אנא נסה שוב"
   },
   "errorCommunicationIssue": {
-    "message": "בעיית תקשורת - הפעולה אולי הצליחה",
-    "description": "Error message when communication fails but operation might have succeeded"
+    "message": "בעיית תקשורת - הפעולה אולי הצליחה"
   },
   "errorOperationFailed": {
-    "message": "הפעולה נכשלה",
-    "description": "Generic error message prefix for failed operations"
+    "message": "הפעולה נכשלה"
   },
   "timeFormatJustNow": {
-    "message": "עכשיו",
-    "description": "Timestamp format for very recent actions"
+    "message": "עכשיו"
   },
   "timeFormatMinutesAgo": {
-    "message": "דק׳",
-    "description": "Timestamp format for minutes ago"
+    "message": "דק׳"
   },
   "timeFormatHoursAgo": {
-    "message": "שע׳",
-    "description": "Timestamp format for hours ago"
+    "message": "שע׳"
   },
   "timeFormatDaysAgo": {
-    "message": "יום",
-    "description": "Timestamp format for days ago"
+    "message": "יום"
   },
   "timeFormatSingularTime": {
-    "message": "פעם",
-    "description": "Singular form of 'time' in statistics"
+    "message": "פעם"
   },
   "timeFormatPluralTimes": {
-    "message": "פעמים",
-    "description": "Plural form of 'times' in statistics"
+    "message": "פעמים"
   },
   "timeFormatSingularFail": {
-    "message": "כישלון",
-    "description": "Singular form of 'fail' in statistics"
+    "message": "כישלון"
   },
   "timeFormatPluralFails": {
-    "message": "כישלונות",
-    "description": "Plural form of 'fails' in statistics"
+    "message": "כישלונות"
   },
   "footerMadeBy": {
-    "message": "נוצר על ידי שגב לוינשטיין",
-    "description": "Footer text showing the extension creator"
+    "message": "נוצר על ידי שגב לוינשטיין"
   },
   "extensionEnabled": {
-    "message": "תוסף מופעל",
-    "description": "Toggle label for extension enabled state"
+    "message": "תוסף מופעל"
   },
   "extensionDisabled": {
-    "message": "תוסף כבוי",
-    "description": "Toggle label for extension disabled state"
+    "message": "תוסף כבוי"
   },
   "statistics": {
-    "message": "סטטיסטיקות",
-    "description": "Statistics section title and toggle label"
+    "message": "סטטיסטיקות"
   },
   "settings": {
-    "message": "הגדרות",
-    "description": "Settings page title"
+    "message": "הגדרות"
   },
   "appearance": {
-    "message": "מראה",
-    "description": "Appearance settings section title"
+    "message": "מראה"
   },
   "theme": {
-    "message": "ערכת נושא",
-    "description": "Theme setting label"
+    "message": "ערכת נושא"
   },
   "themeSystem": {
-    "message": "מערכת",
-    "description": "System theme option"
+    "message": "מערכת"
   },
   "themeLight": {
-    "message": "בהיר",
-    "description": "Light theme option"
+    "message": "בהיר"
   },
   "themeDark": {
-    "message": "כהה",
-    "description": "Dark theme option"
+    "message": "כהה"
   },
   "enableStatistics": {
-    "message": "הפעל",
-    "description": "Enable statistics toggle label"
+    "message": "הפעל"
   },
   "dataManagement": {
-    "message": "נתונים",
-    "description": "Data management settings section title"
+    "message": "נתונים"
   },
   "modalTitle": {
-    "message": "למחוק את כל נתוני התוסף?",
-    "description": "Confirmation modal title"
+    "message": "למחוק את כל נתוני התוסף?"
   },
   "modalMessage": {
-    "message": "פעולה זו תמחק את כל הסטטיסטיקות, נתוני דוח הנוכחות וההגדרות לצמיתות.",
-    "description": "Confirmation modal message"
+    "message": "פעולה זו תמחק את כל הסטטיסטיקות, נתוני דוח הנוכחות וההגדרות לצמיתות."
   },
   "modalCancel": {
-    "message": "ביטול",
-    "description": "Modal cancel button text"
+    "message": "ביטול"
   },
   "modalConfirm": {
-    "message": "מחק נתונים",
-    "description": "Modal confirm button text"
+    "message": "מחק נתונים"
   },
   "languageToggle": {
-    "message": "שפה",
-    "description": "Language toggle button text"
+    "message": "שפה"
   },
   "successCopied": {
     "message": "הועתקו בהצלחה $COUNT$ רשומות מדוח הנוכחות של חילן",
-    "description": "Success message for copy operation",
     "placeholders": {
       "count": {
-        "content": "$1",
-        "example": "5"
+        "content": "$1"
       }
     }
   },
   "successPasted": {
     "message": "הודבקו בהצלחה $COUNT$ רשומות למערכת השכר של מלם",
-    "description": "Success message for paste operation",
     "placeholders": {
       "count": {
-        "content": "$1",
-        "example": "5"
+        "content": "$1"
       }
     }
   },
   "successAutoClick": {
     "message": "נלחצו בהצלחה $COUNT$ מתוך $TOTAL$ תיבות זמן",
-    "description": "Success message for auto-click operation",
     "placeholders": {
       "count": {
-        "content": "$1",
-        "example": "12"
+        "content": "$1"
       },
       "total": {
-        "content": "$2",
-        "example": "15"
+        "content": "$2"
       }
     }
   },
   "salaryCalculator": {
-    "message": "מחשבון שכר",
-    "description": "Salary calculator toggle label"
+    "message": "מחשבון שכר"
   },
   "hourlyRate": {
-    "message": "תעריף",
-    "description": "Hourly rate input label"
+    "message": "תעריף"
   },
   "calculate": {
-    "message": "חשב",
-    "description": "Calculate button text"
+    "message": "חשב"
   },
   "calculationResults": {
-    "message": "תוצאות",
-    "description": "Calculator results header"
+    "message": "תוצאות"
   },
   "resultTotalPay": {
-    "message": "סה״כ",
-    "description": "Total pay result label"
+    "message": "סה״כ"
   },
   "resultRegularHours": {
-    "message": "רגיל",
-    "description": "Regular hours result label"
+    "message": "רגיל (100%)"
   },
   "resultNightHours": {
-    "message": "לילה/סופ״ש",
-    "description": "Night/Weekend hours result label"
+    "message": "לילה/סופ״ש (150%)"
   },
   "resultWorkDays": {
-    "message": "ימי עבודה",
-    "description": "Work days result label"
+    "message": "ימי עבודה"
   },
   "resultVacationDays": {
-    "message": "חופשה",
-    "description": "Vacation days result label"
+    "message": "חופשה"
   },
   "resultTravelRefund": {
-    "message": "נסיעות",
-    "description": "Travel refund result label"
+    "message": "נסיעות"
   },
   "resultMealAllowance": {
-    "message": "ארוחות",
-    "description": "Meal allowance result label"
+    "message": "ארוחות"
   },
   "resultOvertime125": {
-    "message": "נוספות 125%",
-    "description": "Overtime 125% result label"
+    "message": "שעות נוספות (125%)"
   },
   "resultOvertime150": {
-    "message": "נוספות 150%",
-    "description": "Overtime 150% result label"
+    "message": "שעות נוספות (150%)"
   },
   "workingCalculating": {
-    "message": "מחשב...",
-    "description": "Working message for calculate operation"
+    "message": "מחשב..."
   },
   "successCalculated": {
-    "message": "חושב!",
-    "description": "Success message for calculate operation"
+    "message": "חושב!"
   },
   "errorNoTimesheetData": {
-    "message": "אין נתונים. לחץ לחיצה אוטומטית.",
-    "description": "Error when no timesheet data found for calculation"
+    "message": "אין נתונים. לחץ לחיצה אוטומטית."
   },
   "errorEnterHourlyRate": {
-    "message": "הזן תעריף",
-    "description": "Error when hourly rate is not entered"
+    "message": "הזן תעריף"
   },
   "support": {
-    "message": "תמיכה",
-    "description": "Support section title"
+    "message": "תמיכה"
   },
   "viewOnGitHub": {
-    "message": "צפה ב-GitHub",
-    "description": "Link to view source code or open issues on GitHub"
+    "message": "צפה ב-GitHub"
   }
 }
