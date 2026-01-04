@@ -1,237 +1,94 @@
-import { storage } from '@/shared/common';
-import type { SupportedLanguage, I18nMessages, StorageSchema } from '@/types';
+import { storage } from './lib';
+import type { SupportedLanguage, StorageSchema } from './types';
 
-type MessageSubstitutions = string[] | [string] | [string, string];
+let currentLanguage: SupportedLanguage = 'en';
+let messages: Record<string, string> = {};
 
-export class I18nManager {
-  private currentLanguage: SupportedLanguage = 'en';
-  private messages: I18nMessages = {};
+function getSystemLanguage(): SupportedLanguage {
+  const browserLang = chrome.i18n.getUILanguage().split('-')[0] ?? 'en';
+  return browserLang === 'he' ? 'he' : 'en';
+}
 
-  constructor() {}
-
-  async init(): Promise<void> {
-    await this.loadCurrentLanguage();
-    await this.loadMessages();
-    this.setDocumentDirection();
+export async function init(): Promise<void> {
+  const res = (await storage.get(['currentLanguage'])) as Partial<StorageSchema>;
+  if (res.currentLanguage === 'en' || res.currentLanguage === 'he') {
+    currentLanguage = res.currentLanguage;
+  } else {
+    // 'system' or unset - detect from browser, fallback to English
+    currentLanguage = getSystemLanguage();
   }
+  await loadMessages();
+  setDocumentDirection();
+}
 
-  async loadCurrentLanguage(): Promise<void> {
-    try {
-      const res = (await storage.get([
-        'currentLanguage',
-      ])) as Partial<StorageSchema>;
-      const currentLanguage = res.currentLanguage as
-        | SupportedLanguage
-        | undefined;
-
-      if (currentLanguage && ['en', 'he'].includes(currentLanguage)) {
-        this.currentLanguage = currentLanguage;
-      } else {
-        const browserLang = chrome.i18n.getUILanguage();
-        const langCode = browserLang.split('-')[0] as SupportedLanguage;
-        if (['en', 'he'].includes(langCode)) {
-          this.currentLanguage = langCode;
-        } else {
-          this.currentLanguage = 'en';
-        }
-        try {
-          await storage.set({ currentLanguage: this.currentLanguage });
-        } catch (_error) {
-          // Intentionally ignore storage errors
-        }
-      }
-    } catch (error) {
-      this.currentLanguage = 'en';
-    }
-  }
-
-  async loadMessages(): Promise<void> {
-    try {
-      const response = await fetch(
-        chrome.runtime.getURL(`_locales/${this.currentLanguage}/messages.json`)
-      );
-      const messages = (await response.json()) as Record<
-        string,
-        { message: string }
-      >;
-      this.messages = Object.fromEntries(
-        Object.entries(messages).map(([k, v]) => [k, v.message || k])
-      );
-    } catch (error) {
-      this.messages = {};
-    }
-  }
-
-  getMessage(key: string, substitutions: MessageSubstitutions = []): string {
-    try {
-      if (this.messages[key]) {
-        let message = this.messages[key];
-        if (substitutions.length > 0) {
-          substitutions.forEach((sub, index) => {
-            message = message.replace(
-              new RegExp(`\\$${index + 1}\\$`, 'g'),
-              sub
-            );
-            if (index === 0) {
-              ['COUNT', 'CURRENT', 'DATE', 'START', 'SITE', 'INDEX'].forEach(
-                p => {
-                  message = message.replace(new RegExp(`\\$${p}\\$`, 'g'), sub);
-                }
-              );
-            } else if (index === 1) {
-              ['TOTAL', 'END'].forEach(p => {
-                message = message.replace(new RegExp(`\\$${p}\\$`, 'g'), sub);
-              });
-            }
-          });
-        }
-        return message;
-      }
-      return chrome.i18n.getMessage(key, substitutions) || key;
-    } catch (error) {
-      return key;
-    }
-  }
-
-  async switchLanguage(language: SupportedLanguage): Promise<boolean> {
-    if (!['en', 'he'].includes(language)) {
-      return false;
-    }
-
-    this.currentLanguage = language;
-    try {
-      await storage.set({ currentLanguage: this.currentLanguage });
-    } catch (_error) {
-      // Intentionally ignore storage errors
-    }
-    await this.loadMessages();
-    this.setDocumentDirection();
-    return true;
-  }
-
-  getCurrentLanguage(): SupportedLanguage {
-    return this.currentLanguage;
-  }
-
-  isRtl(): boolean {
-    return this.currentLanguage === 'he';
-  }
-
-  getTextDirection(): 'ltr' | 'rtl' {
-    return this.isRtl() ? 'rtl' : 'ltr';
-  }
-
-  setDocumentDirection(): void {
-    if (typeof document !== 'undefined') {
-      const direction = this.getTextDirection();
-      document.documentElement.dir = direction;
-      document.documentElement.lang = this.currentLanguage;
-      document.body.classList.toggle('rtl', this.isRtl());
-    }
-  }
-
-  getErrorMessages(): {
-    extensionDisabled: string;
-    wrongSite: string;
-    noData: string;
-    inProgress: string;
-    noTimeBoxes: string;
-    copyFailed: string;
-    pasteFailed: string;
-    invalidAction: string;
-  } {
-    return {
-      extensionDisabled: this.getMessage('errorExtensionDisabled'),
-      wrongSite: this.getMessage('errorWrongSite'),
-      noData: this.getMessage('errorNoData'),
-      inProgress: this.getMessage('errorInProgress'),
-      noTimeBoxes: this.getMessage('errorNoTimeBoxes'),
-      copyFailed: this.getMessage('errorNoData'),
-      pasteFailed: this.getMessage('errorNoData'),
-      invalidAction: this.getMessage('errorUnknownAction'),
-    };
-  }
-
-  getWorkingMessages(): {
-    copying: string;
-    pasting: string;
-    autoClick: string;
-    clearing: string;
-  } {
-    return {
-      copying: this.getMessage('workingCopying'),
-      pasting: this.getMessage('workingPasting'),
-      autoClick: this.getMessage('workingAutoClick'),
-      clearing: this.getMessage('workingClearing'),
-    };
-  }
-
-  formatTimestamp(timestamp: string | null): string {
-    if (!timestamp) {
-      return this.getMessage('statNever');
-    }
-
-    const diffMs = Date.now() - new Date(timestamp).getTime();
-    const diffMinutes = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMinutes < 1) {
-      return this.getMessage('timeFormatJustNow');
-    }
-    if (diffMinutes < 60) {
-      return `${diffMinutes}${this.getMessage('timeFormatMinutesAgo')}`;
-    }
-    if (diffHours < 24) {
-      return `${diffHours}${this.getMessage('timeFormatHoursAgo')}`;
-    }
-    if (diffDays < 7) {
-      return `${diffDays}${this.getMessage('timeFormatDaysAgo')}`;
-    }
-
-    return new Date(timestamp).toLocaleDateString(this.getCurrentLanguage());
-  }
-
-  formatCounterValue(
-    timestamp: string | null,
-    count: number,
-    failures: number = 0
-  ): string {
-    const successText =
-      count === 1
-        ? this.getMessage('timeFormatSingularTime')
-        : this.getMessage('timeFormatPluralTimes');
-    const failText =
-      failures === 1
-        ? this.getMessage('timeFormatSingularFail')
-        : this.getMessage('timeFormatPluralFails');
-
-    if (count === 0 && failures === 0) {
-      return this.getMessage('statNever');
-    }
-
-    if (count > 0 && timestamp) {
-      const timeText = this.formatTimestamp(timestamp);
-      if (failures > 0) {
-        return `${timeText} (${count} ${successText}, ${failures} ${failText})`;
-      } else {
-        return `${timeText} (${count} ${successText})`;
-      }
-    }
-
-    if (count === 0 && failures > 0) {
-      return `${this.getMessage('statNever')} (${failures} ${failText})`;
-    }
-
-    return this.getMessage('statNever');
+async function loadMessages(): Promise<void> {
+  try {
+    const response = await fetch(chrome.runtime.getURL(`_locales/${currentLanguage}/messages.json`));
+    const data = (await response.json()) as Record<string, { message: string }>;
+    messages = Object.fromEntries(Object.entries(data).map(([k, v]) => [k, v.message || k]));
+  } catch {
+    messages = {};
   }
 }
 
-const i18nManager = new I18nManager();
-
-if (typeof window !== 'undefined') {
-  window.i18nManager = i18nManager;
+export function getMessage(key: string, subs: string[] = []): string {
+  let msg = messages[key] || chrome.i18n.getMessage(key, subs) || key;
+  subs.forEach((sub, i) => {
+    msg = msg.replace(new RegExp(`\\$${i + 1}\\$`, 'g'), sub);
+    if (i === 0)
+      ['COUNT', 'CURRENT', 'DATE', 'START', 'SITE', 'INDEX'].forEach(p => {
+        msg = msg.replace(new RegExp(`\\$${p}\\$`, 'g'), sub);
+      });
+    if (i === 1)
+      ['TOTAL', 'END'].forEach(p => {
+        msg = msg.replace(new RegExp(`\\$${p}\\$`, 'g'), sub);
+      });
+  });
+  return msg;
 }
 
-export { i18nManager };
-export default i18nManager;
+export async function switchLanguage(lang: 'system' | SupportedLanguage): Promise<boolean> {
+  if (!['system', 'en', 'he'].includes(lang)) return false;
+  currentLanguage = lang === 'system' ? getSystemLanguage() : lang;
+  await storage.set({ currentLanguage: lang }).catch(() => {});
+  await loadMessages();
+  setDocumentDirection();
+  return true;
+}
+
+export const getCurrentLanguage = () => currentLanguage;
+export const isRtl = () => currentLanguage === 'he';
+
+export function setDocumentDirection(): void {
+  if (typeof document === 'undefined') return;
+  document.documentElement.dir = isRtl() ? 'rtl' : 'ltr';
+  document.documentElement.lang = currentLanguage;
+  document.body.classList.toggle('rtl', isRtl());
+}
+
+export function formatTimestamp(timestamp: string | null): string {
+  if (!timestamp) return getMessage('statNever');
+  const diffMs = Date.now() - new Date(timestamp).getTime();
+  const mins = Math.floor(diffMs / 60000),
+    hrs = Math.floor(diffMs / 3600000),
+    days = Math.floor(diffMs / 86400000);
+  if (mins < 1) return getMessage('timeFormatJustNow');
+  if (mins < 60) return `${mins}${getMessage('timeFormatMinutesAgo')}`;
+  if (hrs < 24) return `${hrs}${getMessage('timeFormatHoursAgo')}`;
+  if (days < 7) return `${days}${getMessage('timeFormatDaysAgo')}`;
+  return new Date(timestamp).toLocaleDateString(currentLanguage);
+}
+
+export function formatCounterValue(timestamp: string | null, count: number, failures = 0): string {
+  const successText = count === 1 ? getMessage('timeFormatSingularTime') : getMessage('timeFormatPluralTimes');
+  const failText = failures === 1 ? getMessage('timeFormatSingularFail') : getMessage('timeFormatPluralFails');
+  if (count === 0 && failures === 0) return getMessage('statNever');
+  if (count > 0 && timestamp) {
+    const time = formatTimestamp(timestamp);
+    return failures > 0
+      ? `${time} (${count} ${successText}, ${failures} ${failText})`
+      : `${time} (${count} ${successText})`;
+  }
+  if (count === 0 && failures > 0) return `${getMessage('statNever')} (${failures} ${failText})`;
+  return getMessage('statNever');
+}

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extensionName__",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "__MSG_extensionDescription__",
   "default_locale": "en",
   "icons": {
@@ -11,8 +11,9 @@
   },
   "permissions": ["storage"],
   "host_permissions": [
-    "https://*.hilan.co.il/*",
-    "https://payroll.malam.com/*"
+    "https://*.hilan.co.il/Hilannetv2/Attendance/*",
+    "https://*.hilan.co.il/Hilannetv2/attendance/*",
+    "https://payroll.malam.com/Salprd5Root/faces/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -30,7 +31,7 @@
         "https://*.hilan.co.il/Hilannetv2/attendance/*",
         "https://payroll.malam.com/Salprd5Root/faces/*"
       ],
-      "js": ["content/content.ts"],
+      "js": ["content.ts"],
       "run_at": "document_end"
     }
   ],

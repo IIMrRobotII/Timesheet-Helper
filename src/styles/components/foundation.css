@@ -1,8 +1,4 @@
-/* Foundation - Variables & Base Styles */
-
-/* ===== CSS CUSTOM PROPERTIES ===== */
 :root {
-  /* Color Palette */
   --color-white: #ffffff;
   --color-gray-50: #f8f9fa;
   --color-gray-900: #1a1a1a;
@@ -20,71 +16,48 @@
   --color-red-400: #f87171;
   --color-yellow-500: #f59e0b;
   --color-yellow-400: #fbbf24;
-
-  /* Semantic Colors */
   --surface-primary: var(--color-white);
   --surface-secondary: var(--color-gray-50);
   --text-primary: var(--color-gray-900);
   --text-secondary: var(--color-gray-600);
   --border-default: var(--color-gray-300);
-
-  /* Action Colors */
   --action-primary: var(--color-blue-500);
   --action-primary-hover: var(--color-blue-600);
   --action-primary-text: var(--color-white);
   --action-danger: var(--color-red-600);
-
-  /* Status Colors */
   --status-success: var(--color-green-500);
   --status-error: var(--color-red-600);
   --status-warning: var(--color-yellow-500);
-
-  /* Spacing Scale */
   --space-sm: 5px;
   --space-md: 7px;
   --space-lg: 10px;
   --space-xl: 14px;
-
-  /* Border Radius */
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
-
-  /* Typography */
   --font-size-xs: 10px;
   --font-size-sm: 11px;
   --font-size-base: 12px;
   --font-size-md: 13px;
   --font-size-lg: 14px;
   --font-size-xl: 16px;
-  --font-family-base:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --line-height-tight: 1;
   --line-height-normal: 1.3;
   --line-height-relaxed: 1.4;
-
-  /* Animation */
   --transition-fast: 0.2s ease;
   --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* Layout */
   --popup-width-collapsed: 180px;
   --popup-height-max: 580px;
-
   --direction: ltr;
 }
-
-/* RTL Direction Override */
 [dir='rtl'] {
   --direction: rtl;
-  --font-family-base:
-    'Segoe UI', Tahoma, Arial, 'Noto Sans Hebrew', 'David', sans-serif;
+  --font-family-base: 'Segoe UI', Tahoma, Arial, 'Noto Sans Hebrew', 'David', sans-serif;
 }
-
-/* Dark Mode */
 @media (prefers-color-scheme: dark) {
   :root {
     --surface-primary: var(--color-gray-900);
@@ -98,15 +71,23 @@
     --status-warning: var(--color-yellow-400);
   }
 }
-
-/* ===== BASE STYLES ===== */
-
-/* Box Sizing */
+[data-theme='dark'] {
+  --surface-primary: var(--color-gray-900);
+  --surface-secondary: var(--color-gray-800);
+  --text-primary: var(--color-white);
+  --text-secondary: var(--color-gray-400);
+  --border-default: var(--color-gray-700);
+}
+[data-theme='light'] {
+  --surface-primary: var(--color-white);
+  --surface-secondary: var(--color-gray-50);
+  --text-primary: var(--color-gray-900);
+  --text-secondary: var(--color-gray-600);
+  --border-default: var(--color-gray-300);
+}
 * {
   box-sizing: border-box;
 }
-
-/* Body & Document */
 body {
   font: var(--font-size-lg) / var(--line-height-relaxed) var(--font-family-base);
   margin: 0;
@@ -120,30 +101,22 @@ body {
   direction: var(--direction);
   overflow: hidden;
 }
-
-/* Typography */
 h1 {
-  font: var(--font-weight-semibold) var(--font-size-xl) /
-    var(--line-height-tight) inherit;
+  font: var(--font-weight-semibold) var(--font-size-xl) / var(--line-height-tight) inherit;
   margin: 0;
   color: var(--text-primary);
 }
-
-/* Text Elements */
 .guidance-text {
   font-size: var(--font-size-base);
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
   color: var(--text-secondary);
   line-height: var(--line-height-normal);
 }
-
 .footer-text {
   font-size: var(--font-size-xs);
   color: var(--text-secondary);
   opacity: 0.8;
 }
-
-/* Animation Control */
 .no-transition,
 .no-transition * {
   transition: none !important;

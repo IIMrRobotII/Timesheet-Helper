@@ -12,6 +12,7 @@ Install via Chrome Web Store: [Timesheet Helper](https://chromewebstore.google.c
 - **📋 Copy from Hilan**: Read actual in/out times
 - **📝 Paste to Malam**: Fill payroll timesheet automatically
 - **📊 Local Stats**: Optional, on-device analytics (can be disabled in the popup)
+- **🧮 Salary Calculator**: Estimate monthly pay from timesheet data (on Hilan)
 - **🏖️ Vacation Support**: Copies vacation days to Malam
 - **🌐 i18n**: English and Hebrew support
 
@@ -51,6 +52,10 @@ Install via Chrome Web Store: [Timesheet Helper](https://chromewebstore.google.c
 ### Report Issues
 
 [![Report Issue](https://img.shields.io/badge/Report%20Issue-GitHub-red?style=for-the-badge&logo=github)](../../issues/new)
+
+### Special Thanks
+
+- [Roei Sarid](https://github.com/roeisarid1) - Inspiration for the Salary Calculator feature ([original repository](https://github.com/roeisarid1/salary-calculator)).
 
 ### License
 

@@ -10,10 +10,11 @@
     <div class="container collapsed no-transition">
       <div class="header">
         <div class="logo"></div>
-        <h1 data-i18n="pageTitle">Timesheet Helper</h1>
-        <span class="context-badge unknown" data-i18n="unknownWebsite"
-          >Unknown Website</span
-        >
+        <h1 data-i18n="pageTitle"></h1>
+        <span class="context-badge unknown" data-i18n="unknownWebsite"></span>
+        <button id="settingsButton" class="icon-button" aria-label="Settings">
+          <span>⚙️</span>
+        </button>
       </div>
       <div class="toggle-section">
         <label class="toggle-container">
@@ -22,129 +23,181 @@
           <span class="toggle-label">Extension Enabled</span>
         </label>
       </div>
-      <div class="language-section">
-        <button id="languageToggle" class="language-button">
-          <span class="language-icon">🌐</span>
-          <span class="language-text" data-i18n="languageToggle">Language</span>
-          <span class="language-arrow">▼</span>
-        </button>
-        <div id="languageDropdown" class="language-dropdown hidden">
-          <div class="language-option" data-lang="en">
-            <span data-i18n="languageEnglish">English</span>
-          </div>
-          <div class="language-option" data-lang="he">
-            <span data-i18n="languageHebrew">עברית</span>
-          </div>
-        </div>
-      </div>
       <div class="collapsible-content">
-        <p class="guidance-text" data-i18n="guidanceTextDefault">
-          Please navigate to Hilan timesheet or Malam payroll website.
-        </p>
+        <p class="guidance-text" data-i18n="guidanceTextDefault"></p>
         <button id="autoClickButton" class="btn-base action-button">
           <span class="button-icon">🔄</span>
-          <span class="button-text" data-i18n="autoClickButton"
-            >Auto-Click Time Boxes</span
-          >
+          <span class="button-text" data-i18n="autoClickButton"></span>
         </button>
         <button id="copyHours" class="btn-base action-button">
           <span class="button-icon">📋</span>
-          <span class="button-text" data-i18n="syncHours">Sync Hours</span>
+          <span class="button-text" data-i18n="syncHours"></span>
         </button>
         <div id="status"></div>
-        <div class="toggle-section statistics-toggle-section">
+        <div class="toggle-section calculator-toggle-section">
           <label class="toggle-container">
-            <input type="checkbox" id="statisticsToggle" />
+            <input type="checkbox" id="calculatorToggle" />
             <span class="toggle-slider"></span>
-            <span class="toggle-label" data-i18n="statistics">Statistics</span>
+            <span class="toggle-label" data-i18n="salaryCalculator"></span>
           </label>
         </div>
-        <div class="analytics-section">
-          <div class="analytics-header">
-            <span class="analytics-icon">📊</span>
-            <span class="analytics-title" data-i18n="statistics"
-              >Statistics</span
-            >
+        <div class="calculator-section hidden">
+          <div class="calc-input-row">
+            <label class="calc-input-label" data-i18n="hourlyRate"></label>
+            <div class="calc-input-arrows">
+              <button type="button" class="calc-arrow calc-arrow-up" tabindex="-1">▲</button>
+              <button type="button" class="calc-arrow calc-arrow-down" tabindex="-1">▼</button>
+            </div>
+            <div class="calc-input-wrapper" id="rateInputWrapper">
+              <input type="number" id="hourlyRateInput" min="1" step="1" placeholder="0" />
+              <span class="calc-input-suffix">₪</span>
+            </div>
+            <button id="calculateButton" class="btn-base calc-btn" disabled>
+              <span data-i18n="calculate"></span>
+            </button>
           </div>
-          <div class="analytics-stats">
-            <div class="stat-item">
-              <span class="stat-label" data-i18n="statLastCopied"
-                >Last copied:</span
-              >
-              <span class="stat-value" data-i18n="statNever">Never</span>
+
+          <div id="calculatorResults" class="calc-results hidden">
+            <div class="calc-header">
+              <span data-i18n="calculationResults"></span>
+              <span id="calcPeriod" class="calc-period"></span>
             </div>
-            <div class="stat-item">
-              <span class="stat-label" data-i18n="statLastPasted"
-                >Last pasted:</span
-              >
-              <span class="stat-value" data-i18n="statNever">Never</span>
+            <div class="calc-total">
+              <span class="calc-total-label" data-i18n="resultTotalPay"></span>
+              <span id="resultTotalPay" class="calc-total-value">₪0.00</span>
             </div>
-            <div class="stat-item">
-              <span class="stat-label" data-i18n="statLastAutoClick"
-                >Last auto-click:</span
-              >
-              <span class="stat-value" data-i18n="statNever">Never</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label" data-i18n="statTotalOperations"
-                >Total operations:</span
-              >
-              <span class="stat-value">0</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label" data-i18n="statSuccessRate"
-                >Success rate:</span
-              >
-              <span class="stat-value">0%</span>
+            <div class="calc-grid">
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultRegularHours"></span
+                ><span class="calc-box-value" id="resultRegular">₪0 (0h)</span>
+              </div>
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultNightHours"></span
+                ><span class="calc-box-value" id="resultNight">₪0 (0h)</span>
+              </div>
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultWorkDays"></span
+                ><span class="calc-box-value" id="resultWorkDays">₪0 (0d)</span>
+              </div>
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultVacationDays"></span
+                ><span class="calc-box-value" id="resultVacation">₪0 (0d)</span>
+              </div>
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultTravelRefund"></span
+                ><span class="calc-box-value" id="resultTravel">₪0 (0d)</span>
+              </div>
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultMealAllowance"></span
+                ><span class="calc-box-value" id="resultMeal">₪0 (0d)</span>
+              </div>
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultOvertime125"></span
+                ><span class="calc-box-value" id="resultOT125">₪0 (0h)</span>
+              </div>
+              <div class="calc-box">
+                <span class="calc-box-label" data-i18n="resultOvertime150"></span
+                ><span class="calc-box-value" id="resultOT150">₪0 (0h)</span>
+              </div>
             </div>
           </div>
-          <button id="clearDataButton" class="btn-base clear-data-button">
-            <span class="button-icon">🗑️</span>
-            <span class="clear-text" data-i18n="clearAllData"
-              >Clear All Data</span
-            >
-          </button>
         </div>
       </div>
       <div class="footer">
-        <span class="footer-text" data-i18n="footerMadeBy"
-          >Made by Segev Levinshtein</span
+        <span class="footer-text" data-i18n="footerMadeBy"></span>
+      </div>
+    </div>
+    <div class="settings-container hidden">
+      <div class="settings-header">
+        <button id="backButton" class="icon-button" aria-label="Back">←</button>
+        <h2 data-i18n="settings"></h2>
+      </div>
+
+      <div class="settings-section">
+        <h3 class="settings-section-title" data-i18n="appearance"></h3>
+        <div class="setting-item">
+          <span class="setting-label" data-i18n="theme"></span>
+          <select id="themeSelect" class="setting-select">
+            <option value="system" data-i18n="themeSystem"></option>
+            <option value="light" data-i18n="themeLight"></option>
+            <option value="dark" data-i18n="themeDark"></option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label" data-i18n="languageToggle"></span>
+          <select id="languageSelect" class="setting-select">
+            <option value="system" data-i18n="languageSystem"></option>
+            <option value="en">English</option>
+            <option value="he">עברית</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3 class="settings-section-title" data-i18n="statistics"></h3>
+        <label class="toggle-container">
+          <input type="checkbox" id="statisticsToggle" />
+          <span class="toggle-slider"></span>
+          <span class="toggle-label" data-i18n="enableStatistics"></span>
+        </label>
+        <div id="statisticsContent" class="statistics-content">
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="statLastCopied"></span
+            ><span class="stat-value" data-i18n="statNever"></span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="statLastPasted"></span
+            ><span class="stat-value" data-i18n="statNever"></span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="statLastAutoClick"></span
+            ><span class="stat-value" data-i18n="statNever"></span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="statTotalOperations"></span><span class="stat-value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="statSuccessRate"></span><span class="stat-value">0%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3 class="settings-section-title" data-i18n="dataManagement"></h3>
+        <button id="clearDataButtonSettings" class="btn-base clear-data-button">
+          <span class="button-icon">🗑️</span>
+          <span data-i18n="clearAllData"></span>
+        </button>
+      </div>
+
+      <div class="settings-section">
+        <h3 class="settings-section-title" data-i18n="support"></h3>
+        <a
+          href="https://github.com/IIMrRobotII/Timesheet-Helper"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="support-link"
         >
+          <span class="button-icon">📦</span>
+          <span data-i18n="viewOnGitHub"></span>
+        </a>
       </div>
     </div>
     <div id="confirmModal" class="modal-overlay hidden">
       <div class="modal-content">
         <div class="modal-header">
           <span class="modal-icon">⚠️</span>
-          <h3 class="modal-title" data-i18n="modalTitle">
-            Clear All Extension Data?
-          </h3>
+          <h3 class="modal-title" data-i18n="modalTitle"></h3>
         </div>
         <div class="modal-body">
-          <p class="modal-message" data-i18n="modalMessage">
-            This will delete all statistics, timesheet data, and settings
-            permanently.
-          </p>
+          <p class="modal-message" data-i18n="modalMessage"></p>
         </div>
         <div class="modal-actions">
-          <button
-            id="modalCancel"
-            class="btn-base modal-btn modal-btn-cancel"
-            data-i18n="modalCancel"
-          >
-            Cancel
-          </button>
-          <button
-            id="modalConfirm"
-            class="btn-base modal-btn modal-btn-confirm"
-            data-i18n="modalConfirm"
-          >
-            Clear Data
-          </button>
+          <button id="modalCancel" class="btn-base modal-btn modal-btn-cancel" data-i18n="modalCancel"></button>
+          <button id="modalConfirm" class="btn-base modal-btn modal-btn-confirm" data-i18n="modalConfirm"></button>
         </div>
       </div>
     </div>
-    <script type="module" src="i18n.ts"></script>
-    <script type="module" src="popup/popup-controller.ts"></script>
+    <script type="module" src="popup.ts"></script>
   </body>
 </html>
