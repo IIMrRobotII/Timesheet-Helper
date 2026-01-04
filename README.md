@@ -53,6 +53,10 @@ Install via Chrome Web Store: [Timesheet Helper](https://chromewebstore.google.c
 
 [![Report Issue](https://img.shields.io/badge/Report%20Issue-GitHub-red?style=for-the-badge&logo=github)](../../issues/new)
 
+### Special Thanks
+
+- [Roei Sarid](https://github.com/roeisarid1) - Inspiration for the Salary Calculator feature ([original repository](https://github.com/roeisarid1/salary-calculator)).
+
 ### License
 
 GPL-3.0 — see `LICENSE`.
