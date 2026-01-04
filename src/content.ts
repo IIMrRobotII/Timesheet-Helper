@@ -148,10 +148,11 @@ async function copyTimesheetData() {
     const isVacation =
       symbolSelect?.value === '481' || symbolSelect?.options[symbolSelect.selectedIndex]?.text.includes('חופשה');
     if (!isVacation && (!entryTime || !exitTime || !isValidTime(entryTime) || !isValidTime(exitTime))) continue;
-    const dataMonth = parseInt(hilanDate.split('/')[1] || '0', 10);
+    const dateParts = hilanDate.split('/');
+    const dataMonth = parseInt(dateParts[1] || '0', 10);
     const now = new Date();
     const year = dataMonth > now.getMonth() + 1 ? now.getFullYear() - 1 : now.getFullYear();
-    const malamDate = `${hilanDate}/${year}`;
+    const malamDate = dateParts.length === 3 ? hilanDate : `${hilanDate}/${year}`;
     timesheetData[malamDate] = {
       entryTime: entryTime || '',
       exitTime: exitTime || '',
