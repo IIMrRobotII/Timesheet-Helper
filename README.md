@@ -1,62 +1,71 @@
-## 🕒 Hilan to Malam Timesheet Sync
+# Timesheet Helper
 
-Chrome extension to copy work hours from Hilan to Malam.
+Chrome extension that copies work hours from Hilan to Malam and estimates monthly pay on your device.
 
-![Extension Icon](src/icons/icon128.png)
+![Timesheet Helper icon](public/icon/128.png)
 
-Install via Chrome Web Store: [Timesheet Helper](https://chromewebstore.google.com/detail/timesheet-helper/paoakhnbjhhefbnpkopaciggopfncnif).
+Install from the Chrome Web Store: [Timesheet Helper](https://chromewebstore.google.com/detail/timesheet-helper/paoakhnbjhhefbnpkopaciggopfncnif).
 
-### Features
+## Features
 
-- **🔄 Auto-Click**: Reveal time boxes in Hilan
-- **📋 Copy from Hilan**: Read actual in/out times
-- **📝 Paste to Malam**: Fill payroll timesheet automatically
-- **📊 Local Stats**: Optional, on-device analytics (can be disabled in the popup)
-- **🧮 Salary Calculator**: Estimate monthly pay from timesheet data (on Hilan)
-- **🏖️ Vacation Support**: Copies vacation days to Malam
-- **🌐 i18n**: English and Hebrew support
+- Auto-click Hilan time boxes.
+- Copy entry and exit times from Hilan.
+- Paste copied hours into Malam.
+- Estimate monthly pay locally, including regular hours, night and weekend hours, overtime, travel, meals, and vacation.
+- Carry vacation days across to Malam.
+- Switch between English and Hebrew, with RTL layout for Hebrew.
+- Use light, dark, or system theme.
 
-### Install (Developer mode)
+## Tech stack
 
-1. `npm install`
-2. `npm run build`
-3. Open `chrome://extensions/` → enable Developer mode → Load unpacked → select `dist`
+[WXT](https://wxt.dev), [React 19](https://react.dev), [shadcn/ui](https://ui.shadcn.com) (Radix), [Tailwind CSS 4](https://tailwindcss.com), TypeScript, [Vitest](https://vitest.dev), and [Bun](https://bun.sh).
 
-### How to Use
+## Develop
 
-1. Open Hilan timesheet (`/Hilannetv2/Attendance/`) → click "🔄 Auto-Click Time Boxes"
-2. Click "📋 Copy Hours"
-3. Open Malam payroll (`/Salprd5Root/faces/`) → click "📝 Paste Hours"
+```bash
+bun install
+bun run dev      # launches Chrome with the extension (HMR)
+bun run build    # production build in .output/chrome-mv3
+```
 
-### Supported Sites
+Load unpacked: open `chrome://extensions/`, enable Developer mode, choose Load unpacked, and select `.output/chrome-mv3`.
 
-- Hilan: `https://*.hilan.co.il/Hilannetv2/Attendance/`
+```bash
+bun run compile  # wxt prepare + tsc --noEmit
+bun run test     # Vitest watch mode
+bun run test:run # Vitest once for CI
+bun run lint     # ESLint
+bun run format   # Prettier
+```
+
+## How to use
+
+1. Open your Hilan timesheet (`/Hilannetv2/Attendance/`), click Auto-Click Time Boxes, then Copy Hours.
+2. Open Malam payroll (`/Salprd5Root/faces/`) and click Paste Hours.
+
+## Supported sites
+
+- Hilan: `https://*.hilan.co.il/Hilannetv2/Attendance/` and `https://*.hilan.co.il/Hilannetv2/attendance/`
 - Malam: `https://payroll.malam.com/Salprd5Root/faces/`
 
-### Security & Privacy
+## Security and privacy
 
-- **No external network**: All logic runs locally; no data is sent out
-- **Minimal permissions**: Only `storage`; HTTPS host permissions scoped to the paths above
-- **Scoped content scripts**: Injected only on supported paths, at `document_end`
-- **Strict CSP**: `default-src 'self'`; no objects; base/frame ancestors disabled; Trusted Types required
-- **Safe DOM updates**: No `innerHTML`; only `textContent`/DOM APIs; ESLint forbids dangerous sinks
-- **Local-only analytics**: Optional and can be disabled; one-click clear of all data
+- Local only. No servers, analytics, or network requests. Data stays in `chrome.storage.local`.
+- Minimal permissions. The extension requests `storage` and host access only for the Hilan and Malam paths listed above.
+- Scoped content scripts. Chrome injects the content script only on supported paths, at `document_end`.
+- Strict CSP. Extension pages use `default-src 'self'`, `script-src 'self'`, and `object-src 'none'`. There is no remote code.
+- Safer DOM rules. Production TypeScript lint forbids HTML injection sinks (`innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, `createContextualFragment`), `eval`, and `new Function`.
 
-### Development
+Full policy: [privacy/index.html](privacy/index.html).
 
-- Dev: `npm run dev`
-- Build: `npm run build`
-- Lint: `npm run lint`
-- Type-check: `npm run type-check`
+## Report issues
 
-### Report Issues
+[Open an issue on GitHub](https://github.com/IIMrRobotII/Timesheet-Helper/issues/new).
 
-[![Report Issue](https://img.shields.io/badge/Report%20Issue-GitHub-red?style=for-the-badge&logo=github)](../../issues/new)
+## Special thanks
 
-### Special Thanks
+- [Roei Sarid](https://github.com/roeisarid1) for the salary calculator inspiration: [original repository](https://github.com/roeisarid1/salary-calculator).
 
-- [Roei Sarid](https://github.com/roeisarid1) - Inspiration for the Salary Calculator feature ([original repository](https://github.com/roeisarid1/salary-calculator)).
+## License
 
-### License
-
-GPL-3.0 — see `LICENSE`.
+GPL-3.0. See [`LICENSE`](LICENSE).
