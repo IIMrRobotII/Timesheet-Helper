@@ -56,7 +56,7 @@ bun run format   # Prettier
 - Strict CSP. Extension pages use `default-src 'self'`, `script-src 'self'`, and `object-src 'none'`. There is no remote code.
 - Safer DOM rules. Production TypeScript lint forbids HTML injection sinks (`innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, `createContextualFragment`), `eval`, and `new Function`.
 
-Full policy: [privacy/index.html](privacy/index.html).
+Read the full [Privacy Policy](https://iimrrobotii.github.io/Timesheet-Helper/privacy/).
 
 ## Report issues
 
