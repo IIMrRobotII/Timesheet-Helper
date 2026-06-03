@@ -1,31 +1,34 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, ClipboardCopy, ClipboardPaste, MousePointerClick, RefreshCw, Settings } from "lucide-react";
+import { ArrowLeft, ClipboardCopy, ClipboardPaste, MousePointerClick, RefreshCw, Settings, Zap } from "lucide-react";
 import { Direction } from "radix-ui";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Kbd } from "@/components/ui/kbd";
 import { Calculator } from "@/components/calculator";
 import { SettingsView } from "@/components/settings-view";
 import { StatusLine, type Status } from "@/components/status-line";
 import { useI18n } from "@/lib/i18n/use-i18n";
 import { useTheme } from "@/lib/use-theme";
-import { detectSite } from "@/lib/sites";
+import { detectSite, SYNC_COMMAND } from "@/lib/sites";
 import { isValidHourlyRate } from "@/lib/calc";
 import { clearSettings, getSettings, setSettings } from "@/lib/storage";
 import { activeTabUrl, sendToActiveTab } from "@/lib/messaging";
 import { cn } from "@/lib/utils";
 import type { Messages } from "@/lib/i18n/messages";
-import type { CalculatorResult, ContextId, ContextKind, ExtensionAction } from "@/lib/types";
+import type {
+  CalculatorResult,
+  ExtensionAction,
+  ExtensionErrorCode,
+  FullSyncRequest,
+  FullSyncResult,
+  UIContext,
+} from "@/lib/types";
 
 type View = "main" | "settings";
-interface PageContext {
-  id: ContextId;
-  kind: ContextKind;
-  primaryAction: "copy" | "paste";
-}
 
-const ERROR_TEXT: Record<string, (t: Messages) => string> = {
+const ERROR_TEXT: Record<ExtensionErrorCode, (t: Messages) => string> = {
   EXT_DISABLED: t => t.errorExtensionDisabled,
   WRONG_SITE: t => t.errorWrongSite,
   NO_DATA: t => t.errorNoData,
@@ -35,9 +38,14 @@ const ERROR_TEXT: Record<string, (t: Messages) => string> = {
   PASTE_FAILED: t => t.errorNoData,
   INVALID_ACTION: t => t.errorUnknownAction,
   INVALID_RATE: t => t.errorEnterHourlyRate,
+  UNEXPECTED_ERROR: t => t.errorOperationFailed,
+  NO_HILAN_TAB: t => t.errorNoHilanTab,
+  HILAN_MONTH_UNREADABLE: t => t.errorHilanMonthUnreadable,
+  MALAM_MONTH_UNREADABLE: t => t.errorMalamMonthUnreadable,
+  MONTH_MISMATCH: t => t.errorMonthMismatch,
 };
 
-function contextFromUrl(url: string): PageContext {
+function contextFromUrl(url: string): UIContext {
   const site = detectSite(url);
   if (site?.name === "HILAN") return { id: "hilanTimesheet", kind: "source", primaryAction: "copy" };
   if (site?.name === "MALAM") return { id: "malam", kind: "target", primaryAction: "paste" };
@@ -45,28 +53,38 @@ function contextFromUrl(url: string): PageContext {
   return { id: "unknown", kind: "unknown", primaryAction: "copy" };
 }
 
+const formatShortcut = (shortcut: string) => shortcut.split("+").join(" + ");
+
 export default function App() {
   const { t, lang, setLang, dir } = useI18n();
   const { theme, setTheme, resetTheme } = useTheme();
 
   const [view, setView] = useState<View>("main");
-  const [context, setContext] = useState<PageContext>({ id: "unknown", kind: "unknown", primaryAction: "copy" });
+  const [context, setContext] = useState<UIContext>({ id: "unknown", kind: "unknown", primaryAction: "copy" });
   const [enabled, setEnabled] = useState(true);
   const [calculatorEnabled, setCalculatorEnabled] = useState(false);
   const [rate, setRate] = useState("");
   const [result, setResult] = useState<CalculatorResult | null>(null);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const [busy, setBusy] = useState(false);
+  const [shortcuts, setShortcuts] = useState<Record<string, string>>({});
 
   useEffect(() => {
     let active = true;
     void (async () => {
-      const [settings, url] = await Promise.all([getSettings(), activeTabUrl()]);
+      const [settings, url, commands] = await Promise.all([
+        getSettings(),
+        activeTabUrl(),
+        chrome.commands.getAll().catch(() => [] as chrome.commands.Command[]),
+      ]);
       if (!active) return;
       setEnabled(settings.extensionEnabled);
       setCalculatorEnabled(settings.calculatorEnabled);
       if (settings.hourlyRate > 0) setRate(String(settings.hourlyRate));
       setContext(contextFromUrl(url));
+      const map: Record<string, string> = {};
+      for (const command of commands) if (command.name && command.shortcut) map[command.name] = command.shortcut;
+      setShortcuts(map);
     })();
     return () => {
       active = false;
@@ -83,8 +101,18 @@ export default function App() {
   const primaryLabel = context.kind === "source" ? t.copyHours : context.kind === "target" ? t.pasteHours : t.syncHours;
   const PrimaryIcon =
     context.kind === "source" ? ClipboardCopy : context.kind === "target" ? ClipboardPaste : RefreshCw;
+  const autoClickShortcut = shortcuts["auto-click"];
+  const primaryShortcut =
+    context.kind === "source"
+      ? shortcuts["copy-hours"]
+      : context.kind === "target"
+        ? shortcuts["paste-hours"]
+        : undefined;
+  const syncShortcut = shortcuts[SYNC_COMMAND];
+  const showSync = context.kind !== "unknown" && context.id !== "hilan";
+  const canSync = enabled && !busy && showSync;
 
-  const errorText = (code: string) => ERROR_TEXT[code]?.(t) ?? t.errorOperationFailed;
+  const errorText = (code: ExtensionErrorCode) => ERROR_TEXT[code]?.(t) ?? t.errorOperationFailed;
 
   const failFromException = (error: unknown) => {
     const message = error instanceof Error ? error.message : "";
@@ -110,22 +138,46 @@ export default function App() {
     if (isValidHourlyRate(parsed)) void setSettings({ hourlyRate: parsed }).catch(() => {});
   };
 
-  const runOperation = async (action: Exclude<ExtensionAction, "calculateSalary">, working: string) => {
+  const runOperation = async (
+    action: Extract<ExtensionAction, "autoClickTimeBoxes" | "copyHours">,
+    working: string
+  ) => {
     setBusy(true);
     setStatus({ kind: "working", text: working });
     try {
       const response = await sendToActiveTab({ action });
       if (response.success) {
-        const text =
-          action === "autoClickTimeBoxes"
-            ? t.successAutoClick(response.clickedCount ?? 0, response.totalBoxes ?? 0)
-            : context.kind === "source"
-              ? t.successCopied(response.count ?? 0)
-              : t.successPasted(response.count ?? 0);
-        setStatus({ kind: "success", text });
+        if (response.action === "autoClickTimeBoxes") {
+          setStatus({ kind: "success", text: t.successAutoClick(response.clickedCount, response.totalBoxes) });
+        } else if (response.action === "copyHours") {
+          setStatus({
+            kind: "success",
+            text: context.kind === "source" ? t.successCopied(response.count) : t.successPasted(response.count),
+          });
+        } else {
+          setStatus({ kind: "error", text: t.errorOperationFailed });
+        }
       } else {
         setStatus({ kind: "error", text: errorText(response.error.code) });
       }
+    } catch (error) {
+      setStatus({ kind: "error", text: failFromException(error) });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const syncEverything = async () => {
+    setBusy(true);
+    setStatus({ kind: "working", text: t.workingSyncing });
+    try {
+      const result = (await chrome.runtime.sendMessage({
+        kind: "fullSync",
+      } satisfies FullSyncRequest)) as FullSyncResult;
+      if (result.status === "synced")
+        setStatus({ kind: "success", text: t.successSynced(result.copied, result.pasted) });
+      else if (result.status === "copiedNoMalam") setStatus({ kind: "info", text: t.syncNoMalam(result.copied) });
+      else setStatus({ kind: "error", text: errorText(result.code) });
     } catch (error) {
       setStatus({ kind: "error", text: failFromException(error) });
     } finally {
@@ -143,7 +195,7 @@ export default function App() {
     setStatus({ kind: "working", text: t.workingCalculating });
     try {
       const response = await sendToActiveTab({ action: "calculateSalary", hourlyRate: parsed });
-      if (response.success && response.calculatorResult) {
+      if (response.success && response.action === "calculateSalary") {
         setResult(response.calculatorResult);
         setStatus({ kind: "success", text: t.successCalculated });
         void setSettings({ hourlyRate: parsed }).catch(() => {});
@@ -221,6 +273,7 @@ export default function App() {
             language={lang}
             onLanguageChange={setLang}
             onClearData={() => void clearData()}
+            onOpenShortcuts={() => void chrome.tabs.create({ url: "chrome://extensions/shortcuts" })}
             status={status}
           />
         ) : (
@@ -236,6 +289,19 @@ export default function App() {
               <div className="flex flex-col gap-2.5">
                 <p className="text-xs leading-snug text-muted-foreground">{guidance}</p>
 
+                {showSync ? (
+                  <Button
+                    size="sm"
+                    className="w-full justify-start"
+                    disabled={!canSync}
+                    onClick={() => void syncEverything()}
+                  >
+                    <Zap />
+                    {t.syncEverything}
+                    {syncShortcut ? <Kbd className="ms-auto">{formatShortcut(syncShortcut)}</Kbd> : null}
+                  </Button>
+                ) : null}
+
                 {isHilanTimesheet ? (
                   <Button
                     variant="outline"
@@ -246,10 +312,12 @@ export default function App() {
                   >
                     <MousePointerClick />
                     {t.autoClick}
+                    {autoClickShortcut ? <Kbd className="ms-auto">{formatShortcut(autoClickShortcut)}</Kbd> : null}
                   </Button>
                 ) : null}
 
                 <Button
+                  variant="outline"
                   size="sm"
                   className="w-full justify-start"
                   disabled={!canPrimary}
@@ -259,6 +327,7 @@ export default function App() {
                 >
                   <PrimaryIcon />
                   {primaryLabel}
+                  {primaryShortcut ? <Kbd className="ms-auto">{formatShortcut(primaryShortcut)}</Kbd> : null}
                 </Button>
 
                 <StatusLine status={status} />

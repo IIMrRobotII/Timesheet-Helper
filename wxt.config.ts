@@ -30,6 +30,24 @@ export default defineConfig({
       "https://*.hilan.co.il/Hilannetv2/attendance/*",
       "https://payroll.malam.com/Salprd5Root/faces/*",
     ],
+    commands: {
+      "copy-hours": {
+        suggested_key: { default: "Alt+C", mac: "MacCtrl+Shift+C" },
+        description: "Copy hours from the Hilan timesheet",
+      },
+      "paste-hours": {
+        suggested_key: { default: "Alt+V", mac: "MacCtrl+Shift+V" },
+        description: "Paste hours into the Malam payroll",
+      },
+      "auto-click": {
+        suggested_key: { default: "Alt+X", mac: "MacCtrl+Shift+X" },
+        description: "Auto-click the Hilan time boxes",
+      },
+      "sync-all": {
+        suggested_key: { default: "Alt+S", mac: "MacCtrl+Shift+S" },
+        description: "Sync everything: copy from Hilan and paste into Malam",
+      },
+    },
     content_security_policy: {
       extension_pages: CSP,
     },

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { copyTimesheetData, parseTimesheetFromDOM } from "./dom";
+import { autoClickThenCopy, copyTimesheetData, parseTimesheetFromDOM, readHilanMonth } from "./dom";
 import type { TimesheetData } from "./types";
 
 const NBSP = " ";
@@ -79,6 +79,42 @@ describe("parseTimesheetFromDOM", () => {
       },
     ]);
   });
+
+  it("parses a date cell whose ov carries a year (DD/MM/YYYY)", () => {
+    document.body.innerHTML = `<table><tbody>
+      <tr>${dateCell("y", "12/05/2026 יום ג")}${dataCells("y", "08:00", "16:00", "08:00", '<option value="0" selected>x</option>')}</tr>
+    </tbody></table>`;
+    for (const sel of document.querySelectorAll("select")) {
+      const i = Array.from(sel.options).findIndex(o => o.hasAttribute("selected"));
+      sel.selectedIndex = i >= 0 ? i : 0;
+    }
+
+    expect(parseTimesheetFromDOM()).toEqual([
+      {
+        date: "12/05/2026",
+        dayOfWeek: 2,
+        entryTime: "08:00",
+        exitTime: "16:00",
+        totalHours: 8,
+        reportType: "regular",
+        isHoliday: false,
+      },
+    ]);
+  });
+});
+
+describe("readHilanMonth", () => {
+  it("returns the dominant month of the visible Hilan timesheet", () => {
+    expect(readHilanMonth()).toEqual({ month: 4, year: null });
+  });
+
+  it("prefers the month-picker label over the expanded date cells", () => {
+    const label = document.createElement("span");
+    label.id = "ctl00_mp_calendar_monthChanged";
+    label.textContent = "מאי 2026";
+    document.body.appendChild(label);
+    expect(readHilanMonth()).toEqual({ month: 5, year: 2026 });
+  });
 });
 
 describe("copyTimesheetData", () => {
@@ -94,5 +130,31 @@ describe("copyTimesheetData", () => {
       exitTime: "18:00",
       originalHilanDate: "03/04",
     });
+  });
+});
+
+describe("autoClickThenCopy", () => {
+  it("waits for copied rows to stabilize after Hilan fills fields asynchronously", async () => {
+    document.body.innerHTML = `<table><tbody>
+      <tr><td id="clicker" class="cDIES" title="08:00"></td></tr>
+      <tr>${dateCell("a", "03/04 יום ג")}${dataCells("a", "", "", "", '<option value="0" selected>x</option>')}</tr>
+      <tr>${dateCell("b", "04/04 יום ד")}${dataCells("b", "", "", "", '<option value="0" selected>x</option>')}</tr>
+    </tbody></table>`;
+    for (const sel of document.querySelectorAll("select")) {
+      const i = Array.from(sel.options).findIndex(o => o.hasAttribute("selected"));
+      sel.selectedIndex = i >= 0 ? i : 0;
+    }
+    document.getElementById("clicker")?.addEventListener("dblclick", () => {
+      setTimeout(() => {
+        document.querySelector('[id*="cellOf_ManualEntry_EmployeeReports_a"]')?.setAttribute("ov", "08:00");
+        document.querySelector('[id*="cellOf_ManualExit_EmployeeReports_a"]')?.setAttribute("ov", "16:00");
+      }, 100);
+      setTimeout(() => {
+        document.querySelector('[id*="cellOf_ManualEntry_EmployeeReports_b"]')?.setAttribute("ov", "09:00");
+        document.querySelector('[id*="cellOf_ManualExit_EmployeeReports_b"]')?.setAttribute("ov", "17:00");
+      }, 700);
+    });
+
+    await expect(autoClickThenCopy()).resolves.toEqual({ count: 2 });
   });
 });

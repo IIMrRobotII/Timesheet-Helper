@@ -1,3 +1,5 @@
+import type { ERROR_CODES, Period } from "./sites";
+
 export interface TimesheetEntry {
   entryTime: string;
   exitTime: string;
@@ -40,23 +42,30 @@ export interface CalculatorResult {
   periodEnd: string;
 }
 
-export type ExtensionAction = "autoClickTimeBoxes" | "copyHours" | "calculateSalary";
+export type ExtensionAction = "autoClickTimeBoxes" | "copyHours" | "calculateSalary" | "autoClickAndCopy" | "readMonth";
 
 export interface ExtensionMessage {
   action: ExtensionAction;
   hourlyRate?: number;
 }
 
+export type ExtensionErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
+
 export type ExtensionResponse =
-  | {
-      success: true;
-      count?: number;
-      clickedCount?: number;
-      totalBoxes?: number;
-      skippedCount?: number;
-      calculatorResult?: CalculatorResult;
-    }
-  | { success: false; error: { code: string; message?: string } };
+  | { success: true; action: "autoClickTimeBoxes"; clickedCount: number; totalBoxes: number; skippedCount: number }
+  | { success: true; action: "copyHours" | "autoClickAndCopy"; count: number }
+  | ({ success: true; action: "readMonth" } & Period)
+  | { success: true; action: "calculateSalary"; calculatorResult: CalculatorResult }
+  | { success: false; error: { code: ExtensionErrorCode; message?: string } };
+
+export interface FullSyncRequest {
+  kind: "fullSync";
+}
+
+export type FullSyncResult =
+  | { status: "synced"; copied: number; pasted: number }
+  | { status: "copiedNoMalam"; copied: number }
+  | { status: "error"; code: ExtensionErrorCode };
 
 export type ThemePref = "system" | "light" | "dark";
 export type LanguagePref = "system" | "en" | "he";

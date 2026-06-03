@@ -11,6 +11,8 @@ Install from the Chrome Web Store: [Timesheet Helper](https://chromewebstore.goo
 - Auto-click Hilan time boxes.
 - Copy entry and exit times from Hilan.
 - Paste copied hours into Malam.
+- Trigger copy, paste, and auto-click with keyboard shortcuts: `Alt+C` and `Alt+X` on Hilan, `Alt+V` on Malam. The active keys show on the buttons and can be changed in Chrome.
+- Or do the whole flow in one go: **Sync Everything** (`Alt+S`) copies from Hilan and pastes into Malam when supported tabs are open.
 - Estimate monthly pay locally, including regular hours, night and weekend hours, overtime, travel, meals, and vacation.
 - Carry vacation days across to Malam.
 - Switch between English and Hebrew, with RTL layout for Hebrew.
@@ -42,6 +44,10 @@ bun run format   # Prettier
 
 1. Open your Hilan timesheet (`/Hilannetv2/Attendance/`), click Auto-Click Time Boxes, then Copy Hours.
 2. Open Malam payroll (`/Salprd5Root/faces/`) and click Paste Hours.
+
+Instead of opening the popup, you can press `Alt+C` to copy or `Alt+X` to auto-click on Hilan, and `Alt+V` to paste on Malam. The shortcuts act only on the Hilan and Malam pages and do nothing elsewhere. On those pages a short badge on the toolbar icon shows the result: the affected count in green on success, a red `!` on failure. Each button also shows its current key, and Settings has a "Customize in Chrome" button. Chrome owns the bindings, so rebind them at `chrome://extensions/shortcuts`.
+
+**One-button full sync.** Click **Sync Everything** (or press `Alt+S`) and the extension runs the whole flow across your open tabs: it brings Hilan forward to auto-click and copy, then brings Malam forward to paste, and leaves you on Malam to review and submit. If Malam is not open, it still copies from Hilan and tells you to open Malam to paste. It never submits the form for you. If Hilan and Malam show different months, or if Malam is not on the attendance view with readable dates, it stops before auto-clicking anything.
 
 ## Supported sites
 

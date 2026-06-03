@@ -1,6 +1,14 @@
 import { defineContentScript } from "#imports";
 import { detectSite, ERROR_CODES, delay } from "@/lib/sites";
-import { copyTimesheetData, pasteTimesheetData, performAutoClick, parseTimesheetFromDOM } from "@/lib/dom";
+import {
+  copyTimesheetData,
+  pasteTimesheetData,
+  performAutoClick,
+  parseTimesheetFromDOM,
+  autoClickThenCopy,
+  readHilanMonth,
+  readMalamMonth,
+} from "@/lib/dom";
 import { calculateSalary, isValidHourlyRate } from "@/lib/calc";
 import { getSettings } from "@/lib/storage";
 import type { ExtensionAction, ExtensionMessage, ExtensionResponse } from "@/lib/types";
@@ -24,22 +32,32 @@ export default defineContentScript({
         if (!isValidHourlyRate(hourlyRate)) return { success: false, error: { code: ERROR_CODES.INVALID_RATE } };
         const rows = parseTimesheetFromDOM();
         if (rows.length === 0) return { success: false, error: { code: ERROR_CODES.NO_DATA } };
-        return { success: true, calculatorResult: calculateSalary(rows, hourlyRate) };
+        return { success: true, action, calculatorResult: calculateSalary(rows, hourlyRate) };
+      }
+
+      if (action === "readMonth") {
+        return { success: true, action, ...(currentSite.action === "copy" ? readHilanMonth() : readMalamMonth()) };
       }
 
       try {
-        let result: { count?: number; clickedCount?: number; totalBoxes?: number; skippedCount?: number };
         if (action === "autoClickTimeBoxes") {
           if (currentSite.action !== "copy") return { success: false, error: { code: ERROR_CODES.WRONG_SITE } };
-          result = await performAutoClick();
+          const result = await performAutoClick();
+          if (result.totalBoxes === 0) return { success: false, error: { code: ERROR_CODES.NO_TIME_BOXES } };
+          await delay(100);
+          return { success: true, action, ...result };
+        } else if (action === "autoClickAndCopy") {
+          if (currentSite.action !== "copy") return { success: false, error: { code: ERROR_CODES.WRONG_SITE } };
+          const result = await autoClickThenCopy();
+          await delay(100);
+          return { success: true, action, count: result.count };
         } else if (action === "copyHours") {
-          if (currentSite.action === "copy") result = await copyTimesheetData();
-          else result = await pasteTimesheetData();
+          const result = currentSite.action === "copy" ? await copyTimesheetData() : await pasteTimesheetData();
+          await delay(100);
+          return { success: true, action, count: result.count };
         } else {
           return { success: false, error: { code: ERROR_CODES.INVALID_ACTION } };
         }
-        await delay(100);
-        return { success: true, ...result };
       } catch {
         const code =
           action === "autoClickTimeBoxes"
@@ -53,11 +71,13 @@ export default defineContentScript({
     }
 
     async function handleMessage(request: ExtensionMessage, sendResponse: (response: ExtensionResponse) => void) {
+      let acquired = false;
       try {
         const { extensionEnabled } = await getSettings();
         if (!extensionEnabled) return sendResponse({ success: false, error: { code: ERROR_CODES.EXT_DISABLED } });
         if (isProcessing) return sendResponse({ success: false, error: { code: ERROR_CODES.OPERATION_IN_PROGRESS } });
         isProcessing = true;
+        acquired = true;
         sendResponse(await executeAction(request.action, request.hourlyRate));
       } catch (e) {
         sendResponse({
@@ -65,7 +85,7 @@ export default defineContentScript({
           error: { code: ERROR_CODES.UNEXPECTED_ERROR, message: e instanceof Error ? e.message : "Unknown error" },
         });
       } finally {
-        isProcessing = false;
+        if (acquired) isProcessing = false;
       }
     }
 

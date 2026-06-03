@@ -14,6 +14,14 @@ export interface Messages {
   copyHours: string;
   pasteHours: string;
   syncHours: string;
+  syncEverything: string;
+  workingSyncing: string;
+  successSynced: (copied: number, pasted: number) => string;
+  syncNoMalam: (copied: number) => string;
+  errorNoHilanTab: string;
+  errorHilanMonthUnreadable: string;
+  errorMalamMonthUnreadable: string;
+  errorMonthMismatch: string;
   salaryCalculator: string;
   hourlyRate: string;
   calculate: string;
@@ -56,6 +64,9 @@ export interface Messages {
   themeDark: string;
   language: string;
   languageSystem: string;
+  keyboardShortcuts: string;
+  shortcutsHint: string;
+  customizeShortcuts: string;
   dataManagement: string;
   clearAllData: string;
   modalTitle: string;
@@ -84,6 +95,14 @@ export const en = {
   copyHours: "Copy Hours",
   pasteHours: "Paste Hours",
   syncHours: "Sync Hours",
+  syncEverything: "Sync Everything",
+  workingSyncing: "Syncing everything…",
+  successSynced: (copied, pasted) => `Copied ${copied}, pasted ${pasted}.`,
+  syncNoMalam: copied => `Copied ${copied}. Open Malam to paste.`,
+  errorNoHilanTab: "Open your Hilan timesheet first.",
+  errorHilanMonthUnreadable: "Open Hilan on the timesheet view so the month is visible.",
+  errorMalamMonthUnreadable: "Open Malam on the attendance view so the dates are visible.",
+  errorMonthMismatch: "Hilan and Malam are on different months. Line them up and try again.",
   salaryCalculator: "Salary Calculator",
   hourlyRate: "Rate",
   calculate: "Calculate",
@@ -126,6 +145,9 @@ export const en = {
   themeDark: "Dark",
   language: "Language",
   languageSystem: "System",
+  keyboardShortcuts: "Keyboard Shortcuts",
+  shortcutsHint: "Open the shortcuts page to change them.",
+  customizeShortcuts: "Customize in Chrome",
   dataManagement: "Data",
   clearAllData: "Clear All Data",
   modalTitle: "Clear all extension data?",
@@ -154,6 +176,14 @@ export const he = {
   copyHours: "העתק שעות",
   pasteHours: "הדבק שעות",
   syncHours: "סנכרון שעות",
+  syncEverything: "סנכרן הכול",
+  workingSyncing: "מסנכרן הכול…",
+  successSynced: (copied, pasted) => `הועתקו ${copied}, הודבקו ${pasted}.`,
+  syncNoMalam: copied => `הועתקו ${copied}. פתח את מלם כדי להדביק.`,
+  errorNoHilanTab: "פתח קודם את דוח הנוכחות בחילן.",
+  errorHilanMonthUnreadable: "פתח את חילן בתצוגת דוח הנוכחות כדי שהחודש יהיה גלוי.",
+  errorMalamMonthUnreadable: "פתח את מלם בתצוגת הנוכחות כדי שהתאריכים יהיו גלויים.",
+  errorMonthMismatch: "חילן ומלם מציגים חודשים שונים. יישר ביניהם ונסה שוב.",
   salaryCalculator: "מחשבון שכר",
   hourlyRate: "תעריף",
   calculate: "חשב",
@@ -196,6 +226,9 @@ export const he = {
   themeDark: "כהה",
   language: "שפה",
   languageSystem: "מערכת",
+  keyboardShortcuts: "קיצורי מקלדת",
+  shortcutsHint: "פתח את עמוד הקיצורים כדי לשנותם.",
+  customizeShortcuts: "התאמה ב-Chrome",
   dataManagement: "נתונים",
   clearAllData: "נקה את כל הנתונים",
   modalTitle: "למחוק את כל נתוני התוסף?",

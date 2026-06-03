@@ -9,6 +9,10 @@ export const CALC_CONSTANTS = {
   OT_125_START: 9,
   OT_125_END: 11,
   OT_150_START: 11,
+  FRIDAY_NIGHT_START: 16,
+  WEEKDAY_NIGHT_START: 22,
+  WEEKDAY_NIGHT_END: 6,
+  DAY_WRAP_HOUR: 24,
 } as const;
 
 export const DAY_MAP: Record<string, number> = {
@@ -38,16 +42,24 @@ export const calculateNightHours = (entry: string, exit: string, dayOfWeek: numb
   let nightHours = 0;
 
   if (dayOfWeek === 5) {
-    if (entryDec >= 16 || exitDec > 16) {
-      nightHours = Math.max(0, Math.min(exitDec, 24) - Math.max(entryDec, 16));
-      if (exitDec > 24) nightHours += Math.min(exitDec - 24, 6);
+    if (entryDec >= CALC_CONSTANTS.FRIDAY_NIGHT_START || exitDec > CALC_CONSTANTS.FRIDAY_NIGHT_START) {
+      nightHours = Math.max(
+        0,
+        Math.min(exitDec, CALC_CONSTANTS.DAY_WRAP_HOUR) - Math.max(entryDec, CALC_CONSTANTS.FRIDAY_NIGHT_START)
+      );
+      if (exitDec > CALC_CONSTANTS.DAY_WRAP_HOUR)
+        nightHours += Math.min(exitDec - CALC_CONSTANTS.DAY_WRAP_HOUR, CALC_CONSTANTS.WEEKDAY_NIGHT_END);
     }
   } else if (dayOfWeek === 6) {
     nightHours = totalHours;
   } else {
-    if (exitDec > 22) nightHours += Math.min(exitDec, 24) - Math.max(entryDec, 22);
-    if (exitDec > 24) nightHours += Math.min(exitDec - 24, 6);
-    if (entryDec < 6) nightHours += Math.min(6, exitDec) - entryDec;
+    if (exitDec > CALC_CONSTANTS.WEEKDAY_NIGHT_START)
+      nightHours +=
+        Math.min(exitDec, CALC_CONSTANTS.DAY_WRAP_HOUR) - Math.max(entryDec, CALC_CONSTANTS.WEEKDAY_NIGHT_START);
+    if (exitDec > CALC_CONSTANTS.DAY_WRAP_HOUR)
+      nightHours += Math.min(exitDec - CALC_CONSTANTS.DAY_WRAP_HOUR, CALC_CONSTANTS.WEEKDAY_NIGHT_END);
+    if (entryDec < CALC_CONSTANTS.WEEKDAY_NIGHT_END)
+      nightHours += Math.min(CALC_CONSTANTS.WEEKDAY_NIGHT_END, exitDec) - entryDec;
   }
   return Math.min(Math.max(0, nightHours), totalHours);
 };
