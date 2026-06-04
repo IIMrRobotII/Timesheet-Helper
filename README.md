@@ -1,27 +1,27 @@
 # Timesheet Helper
 
-Chrome extension that copies your work hours from Hilan to Malam and estimates the month's pay, all on your own machine.
+Chrome extension that copies your work hours from Hilan to Malam and estimates the month's pay locally.
 
 ![Timesheet Helper icon](public/icon/128.png)
 
-Install from the Chrome Web Store: [Timesheet Helper](https://chromewebstore.google.com/detail/timesheet-helper/paoakhnbjhhefbnpkopaciggopfncnif).
+Install [Timesheet Helper](https://chromewebstore.google.com/detail/timesheet-helper/paoakhnbjhhefbnpkopaciggopfncnif) from the Chrome Web Store.
 
 ## What it does
 
-Filling in Malam by hand means re-typing every entry and exit time you already reported in Hilan. The extension does that copy for you, then estimates what the month pays.
+Filling in Malam by hand means typing the same entry and exit times you already reported in Hilan. The extension copies them for you, then estimates what the month pays.
 
-- Reads entry and exit times from your Hilan timesheet, after auto-clicking the day's time boxes.
-- Pastes those hours into the matching Malam rows, and marks vacation days as vacation.
-- Estimates the month's pay locally from your hours: regular, night, and weekend time, overtime, plus travel, meal, and vacation amounts.
+- Reads entry and exit times from your Hilan timesheet after auto-clicking the day's time boxes.
+- Pastes those hours into the matching Malam rows and marks vacation days as vacation.
+- Estimates the month's pay locally from regular, night, weekend, and overtime hours, plus travel, meal, and vacation amounts.
 - Runs from the popup, from keyboard shortcuts, or as one **Sync Everything** pass across both tabs.
-- Speaks English and Hebrew, with a right-to-left layout for Hebrew, and follows a light, dark, or system theme.
+- Supports English and Hebrew, including right-to-left layout, and follows a light, dark, or system theme.
 
 ## How to use
 
 1. Open your Hilan timesheet at `/Hilannetv2/Attendance/`, click **Auto-Click Time Boxes**, then **Copy Hours**.
 2. Open Malam payroll at `/Salprd5Root/faces/` and click **Paste Hours**.
 
-Paste fills the rows. Nothing gets submitted for you; you review and submit.
+Paste fills the rows. Nothing gets submitted for you. Review it, then submit.
 
 ### Keyboard shortcuts
 
@@ -31,11 +31,11 @@ The three single actions also have shortcuts, each working only on its own page:
 - `Alt+X` auto-clicks the time boxes on Hilan.
 - `Alt+V` pastes on Malam.
 
-Each button shows its current key, and Settings has a "Customize in Chrome" button. Chrome owns the bindings, so you rebind them at `chrome://extensions/shortcuts`; the macOS defaults differ, which is why the buttons show your live keys. On a supported page the toolbar icon flashes the result for a couple of seconds, a green count on success or a red `!` on failure.
+Each button shows its current key. Settings has a "Customize in Chrome" button too. Rebind shortcuts at `chrome://extensions/shortcuts`. Chrome owns them. macOS defaults differ, so the buttons show your live keys. On a supported page, the toolbar icon flashes a green count on success or a red `!` on failure.
 
 ### Sync everything
 
-**Sync Everything** (`Alt+S`) runs the whole flow across your open tabs. It brings Hilan forward to auto-click and copy, then brings Malam forward to paste, and leaves you on Malam to review and submit. If Malam is not open, it still copies from Hilan and flashes an amber count so you know to open Malam. If Hilan and Malam show different months, or Malam is not on the attendance view with readable dates, it stops before clicking anything.
+With both tabs open, **Sync Everything** (`Alt+S`) activates Hilan, auto-clicks and copies, switches to Malam, pastes, and leaves Malam open for review. If Malam is closed, it still copies from Hilan and flashes an amber count. If Hilan and Malam show different months, or Malam is not on an attendance view with dates it can read, it stops before clicking anything.
 
 ## Supported pages
 
@@ -46,17 +46,17 @@ Chrome injects the content script only on these paths, at `document_end`. Everyw
 
 ## Privacy and security
 
-Everything runs on your machine. No servers, no analytics, no network requests. Your data lives in `chrome.storage.local` and never leaves the browser.
+Everything runs on your machine. No servers, no analytics, no network requests. Your data stays in `chrome.storage.local`.
 
 - The extension asks for `storage` and host access to the Hilan and Malam paths above. Nothing else.
-- The content security policy keeps scripts to `'self'`, holds connections to `'self'` so nothing can phone out, drops plugins with `object-src 'none'`, and requires Trusted Types for any script sink. No remote code can run.
-- ESLint blocks the HTML-injection sinks in production code: `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, and `createContextualFragment`, along with `eval` and `new Function`.
+- The content security policy allows scripts and connections only from `'self'`, blocks plugins with `object-src 'none'`, and requires Trusted Types for script sinks.
+- ESLint blocks production code from using HTML-injection sinks such as `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, and `createContextualFragment`, along with `eval` and `new Function`.
 
 Read the full [Privacy Policy](https://iimrrobotii.github.io/Timesheet-Helper/privacy/).
 
 ## Develop
 
-Built with [WXT](https://wxt.dev), [React 19](https://react.dev), [shadcn/ui](https://ui.shadcn.com) on Radix, [Tailwind CSS 4](https://tailwindcss.com), TypeScript, [Vitest](https://vitest.dev), and [Bun](https://bun.sh).
+The stack is [WXT](https://wxt.dev), [React 19](https://react.dev), [shadcn/ui](https://ui.shadcn.com) on Radix, [Tailwind CSS 4](https://tailwindcss.com), TypeScript, [Vitest](https://vitest.dev), and [Bun](https://bun.sh).
 
 ```bash
 bun install
