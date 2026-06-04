@@ -1,71 +1,85 @@
 # Timesheet Helper
 
-Chrome extension that copies work hours from Hilan to Malam and estimates monthly pay on your device.
+Chrome extension that copies your work hours from Hilan to Malam and estimates the month's pay locally.
 
 ![Timesheet Helper icon](public/icon/128.png)
 
-Install from the Chrome Web Store: [Timesheet Helper](https://chromewebstore.google.com/detail/timesheet-helper/paoakhnbjhhefbnpkopaciggopfncnif).
+Install [Timesheet Helper](https://chromewebstore.google.com/detail/timesheet-helper/paoakhnbjhhefbnpkopaciggopfncnif) from the Chrome Web Store.
 
-## Features
+## What it does
 
-- Auto-click Hilan time boxes.
-- Copy entry and exit times from Hilan.
-- Paste copied hours into Malam.
-- Estimate monthly pay locally, including regular hours, night and weekend hours, overtime, travel, meals, and vacation.
-- Carry vacation days across to Malam.
-- Switch between English and Hebrew, with RTL layout for Hebrew.
-- Use light, dark, or system theme.
+Filling in Malam by hand means typing the same entry and exit times you already reported in Hilan. The extension copies them for you, then estimates what the month pays.
 
-## Tech stack
+- Reads entry and exit times from your Hilan timesheet after auto-clicking the day's time boxes.
+- Pastes those hours into the matching Malam rows and marks vacation days as vacation.
+- Estimates the month's pay locally from regular, night, weekend, and overtime hours, plus travel, meal, and vacation amounts.
+- Runs from the popup, from keyboard shortcuts, or as one **Sync Everything** pass across both tabs.
+- Supports English and Hebrew, including right-to-left layout, and follows a light, dark, or system theme.
 
-[WXT](https://wxt.dev), [React 19](https://react.dev), [shadcn/ui](https://ui.shadcn.com) (Radix), [Tailwind CSS 4](https://tailwindcss.com), TypeScript, [Vitest](https://vitest.dev), and [Bun](https://bun.sh).
+## How to use
+
+1. Open your Hilan timesheet at `/Hilannetv2/Attendance/`, click **Auto-Click Time Boxes**, then **Copy Hours**.
+2. Open Malam payroll at `/Salprd5Root/faces/` and click **Paste Hours**.
+
+Paste fills the rows. Nothing gets submitted for you. Review it, then submit.
+
+### Keyboard shortcuts
+
+The three single actions also have shortcuts, each working only on its own page:
+
+- `Alt+C` copies on Hilan.
+- `Alt+X` auto-clicks the time boxes on Hilan.
+- `Alt+V` pastes on Malam.
+
+Each button shows its current key. Settings has a "Customize in Chrome" button too. Rebind shortcuts at `chrome://extensions/shortcuts`. Chrome owns them. macOS defaults differ, so the buttons show your live keys. On a supported page, the toolbar icon shows a blue `…` while it works, then flashes a green count on success or a red `!` on failure.
+
+### Sync everything
+
+With both tabs open, **Sync Everything** (`Alt+S`) activates Hilan, auto-clicks and copies, switches to Malam, pastes, and leaves Malam open for review. If Malam is closed, it still copies from Hilan and flashes an amber count. If Hilan and Malam show different months, or Malam is not on an attendance view with dates it can read, it stops before clicking anything.
+
+## Supported pages
+
+- Hilan: `https://*.hilan.co.il/Hilannetv2/Attendance/` and `.../attendance/`
+- Malam: `https://payroll.malam.com/Salprd5Root/faces/`
+
+Chrome injects the content script only on these paths, at `document_end`. Everywhere else the extension does nothing.
+
+## Privacy and security
+
+Everything runs on your machine. No servers, no analytics, no network requests. Your data stays in `chrome.storage.local`.
+
+- The extension asks for `storage` and host access to the Hilan and Malam paths above. Nothing else.
+- The content security policy allows scripts and connections only from `'self'`, blocks plugins with `object-src 'none'`, and requires Trusted Types for script sinks.
+- ESLint blocks production code from using HTML-injection sinks such as `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, and `createContextualFragment`, along with `eval` and `new Function`.
+
+Read the full [Privacy Policy](https://iimrrobotii.github.io/Timesheet-Helper/privacy/).
 
 ## Develop
 
+The stack is [WXT](https://wxt.dev), [React 19](https://react.dev), [shadcn/ui](https://ui.shadcn.com) on Radix, [Tailwind CSS 4](https://tailwindcss.com), TypeScript, [Vitest](https://vitest.dev), and [Bun](https://bun.sh).
+
 ```bash
 bun install
-bun run dev      # launches Chrome with the extension (HMR)
+bun run dev      # launch Chrome with the extension and HMR
 bun run build    # production build in .output/chrome-mv3
 ```
 
-Load unpacked: open `chrome://extensions/`, enable Developer mode, choose Load unpacked, and select `.output/chrome-mv3`.
+To load the build by hand, open `chrome://extensions/`, turn on Developer mode, choose Load unpacked, and pick `.output/chrome-mv3`.
 
 ```bash
-bun run compile  # wxt prepare + tsc --noEmit
-bun run test     # Vitest watch mode
-bun run test:run # Vitest once for CI
+bun run compile  # wxt prepare, then tsc --noEmit
+bun run test     # Vitest in watch mode
+bun run test:run # Vitest once, for CI
 bun run lint     # ESLint
 bun run format   # Prettier
 ```
 
-## How to use
+## Credits
 
-1. Open your Hilan timesheet (`/Hilannetv2/Attendance/`), click Auto-Click Time Boxes, then Copy Hours.
-2. Open Malam payroll (`/Salprd5Root/faces/`) and click Paste Hours.
-
-## Supported sites
-
-- Hilan: `https://*.hilan.co.il/Hilannetv2/Attendance/` and `https://*.hilan.co.il/Hilannetv2/attendance/`
-- Malam: `https://payroll.malam.com/Salprd5Root/faces/`
-
-## Security and privacy
-
-- Local only. No servers, analytics, or network requests. Data stays in `chrome.storage.local`.
-- Minimal permissions. The extension requests `storage` and host access only for the Hilan and Malam paths listed above.
-- Scoped content scripts. Chrome injects the content script only on supported paths, at `document_end`.
-- Strict CSP. Extension pages use `default-src 'self'`, `script-src 'self'`, and `object-src 'none'`. There is no remote code.
-- Safer DOM rules. Production TypeScript lint forbids HTML injection sinks (`innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, `createContextualFragment`), `eval`, and `new Function`.
-
-Read the full [Privacy Policy](https://iimrrobotii.github.io/Timesheet-Helper/privacy/).
-
-## Report issues
-
-[Open an issue on GitHub](https://github.com/IIMrRobotII/Timesheet-Helper/issues/new).
-
-## Special thanks
-
-- [Roei Sarid](https://github.com/roeisarid1) for the salary calculator inspiration: [original repository](https://github.com/roeisarid1/salary-calculator).
+The salary estimate started from [Roei Sarid](https://github.com/roeisarid1)'s [salary-calculator](https://github.com/roeisarid1/salary-calculator).
 
 ## License
 
 GPL-3.0. See [`LICENSE`](LICENSE).
+
+Found a bug? [Open an issue](https://github.com/IIMrRobotII/Timesheet-Helper/issues/new).

@@ -1,4 +1,4 @@
-import { ExternalLink, Trash2 } from "lucide-react";
+import { ExternalLink, Keyboard, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -27,6 +27,7 @@ export function SettingsView({
   language,
   onLanguageChange,
   onClearData,
+  onOpenShortcuts,
   status,
 }: {
   theme: ThemePref;
@@ -34,6 +35,7 @@ export function SettingsView({
   language: LanguagePref;
   onLanguageChange: (next: LanguagePref) => void;
   onClearData: () => void;
+  onOpenShortcuts: () => void;
   status: Status;
 }) {
   const { t } = useI18n();
@@ -50,6 +52,17 @@ export function SettingsView({
           <span className="text-xs text-muted-foreground">{t.language}</span>
           <LanguageControl value={language} onChange={onLanguageChange} />
         </div>
+      </section>
+
+      <Separator />
+
+      <section className="flex flex-col gap-2">
+        <h2 className="text-xs font-medium text-muted-foreground">{t.keyboardShortcuts}</h2>
+        <p className="text-xs text-muted-foreground">{t.shortcutsHint}</p>
+        <Button variant="outline" size="sm" className="w-full justify-start" onClick={onOpenShortcuts}>
+          <Keyboard />
+          {t.customizeShortcuts}
+        </Button>
       </section>
 
       <Separator />

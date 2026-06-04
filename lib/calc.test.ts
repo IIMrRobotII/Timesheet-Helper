@@ -1,6 +1,22 @@
 import { describe, expect, it } from "vitest";
-import { calculateNightHours, calculateOvertime, calculateSalary, isValidHourlyRate, timeToDecimal } from "./calc";
+import {
+  CALC_CONSTANTS,
+  calculateNightHours,
+  calculateOvertime,
+  calculateSalary,
+  isValidHourlyRate,
+  timeToDecimal,
+} from "./calc";
 import type { ParsedTimesheetRow } from "./types";
+
+describe("CALC_CONSTANTS", () => {
+  it("names the night-window thresholds", () => {
+    expect(CALC_CONSTANTS.FRIDAY_NIGHT_START).toBe(16);
+    expect(CALC_CONSTANTS.WEEKDAY_NIGHT_START).toBe(22);
+    expect(CALC_CONSTANTS.WEEKDAY_NIGHT_END).toBe(6);
+    expect(CALC_CONSTANTS.DAY_WRAP_HOUR).toBe(24);
+  });
+});
 
 describe("timeToDecimal", () => {
   it("converts HH:MM to decimal hours", () => {
