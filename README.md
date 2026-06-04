@@ -31,7 +31,7 @@ The three single actions also have shortcuts, each working only on its own page:
 - `Alt+X` auto-clicks the time boxes on Hilan.
 - `Alt+V` pastes on Malam.
 
-Each button shows its current key. Settings has a "Customize in Chrome" button too. Rebind shortcuts at `chrome://extensions/shortcuts`. Chrome owns them. macOS defaults differ, so the buttons show your live keys. On a supported page, the toolbar icon flashes a green count on success or a red `!` on failure.
+Each button shows its current key. Settings has a "Customize in Chrome" button too. Rebind shortcuts at `chrome://extensions/shortcuts`. Chrome owns them. macOS defaults differ, so the buttons show your live keys. On a supported page, the toolbar icon shows a blue `…` while it works, then flashes a green count on success or a red `!` on failure.
 
 ### Sync everything
 

@@ -9,11 +9,18 @@ const BADGE_DURATION_MS = 2500;
 const SUCCESS_COLOR = "#16a34a";
 const PARTIAL_COLOR = "#d97706";
 const ERROR_COLOR = "#dc2626";
+const LOADING_COLOR = "#2563eb";
+const LOADING_TEXT = "…";
 
 async function flashBadge(text: string, color: string): Promise<void> {
   await chrome.action.setBadgeBackgroundColor({ color });
   await chrome.action.setBadgeText({ text });
   setTimeout(() => void chrome.action.setBadgeText({ text: "" }), BADGE_DURATION_MS);
+}
+
+async function setLoadingBadge(): Promise<void> {
+  await chrome.action.setBadgeBackgroundColor({ color: LOADING_COLOR });
+  await chrome.action.setBadgeText({ text: LOADING_TEXT });
 }
 
 async function activateTab(tabId: number): Promise<void> {
@@ -42,7 +49,7 @@ async function runShortcut(command: string): Promise<void> {
   const url = await activeTabUrl();
   if (!detectSite(url)) return;
   if (!(await isEnabled())) return void flashBadge("!", ERROR_COLOR);
-  await chrome.action.setBadgeText({ text: "" });
+  await setLoadingBadge();
   const action = resolveShortcut(command, url);
   if (!action) return void flashBadge("!", ERROR_COLOR);
   try {
@@ -75,7 +82,7 @@ function badgeForSync(result: FullSyncResult): Promise<void> {
 }
 
 async function fullSyncWithBadge(): Promise<FullSyncResult> {
-  await chrome.action.setBadgeText({ text: "" });
+  await setLoadingBadge();
   const result = await runFullSync();
   await badgeForSync(result);
   return result;
