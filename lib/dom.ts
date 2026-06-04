@@ -14,17 +14,22 @@ import { DAY_MAP, timeToDecimal } from "./calc";
 import { getSettings, setSettings } from "./storage";
 import type { ParsedTimesheetRow, ReportType, TimesheetData } from "./types";
 
-export async function performAutoClick(): Promise<{ clickedCount: number; totalBoxes: number; skippedCount: number }> {
-  const boxes = Array.from(document.querySelectorAll(SELECTORS.HILAN_TIME_BOXES)).filter(
-    (cell): cell is HTMLElement => {
-      if (cell.classList.contains(SELECTORS.HILAN_CLICKED_CLASS)) return false;
-      const title = cell.getAttribute("title");
-      if (title?.includes("חופשה") || cell.textContent?.includes("חופשה")) return true;
-      if (title && isValidTime(title.trim())) return true;
-      const content = cell.querySelector(SELECTORS.HILAN_TIME_CONTENT);
-      return Boolean(content && isValidTime(content.textContent?.trim() ?? ""));
-    }
-  );
+export async function performAutoClick(): Promise<{
+  clickedCount: number;
+  totalBoxes: number;
+  skippedCount: number;
+  alreadyClicked: number;
+}> {
+  const allCells = Array.from(document.querySelectorAll(SELECTORS.HILAN_TIME_BOXES));
+  const alreadyClicked = allCells.filter(cell => cell.classList.contains(SELECTORS.HILAN_CLICKED_CLASS)).length;
+  const boxes = allCells.filter((cell): cell is HTMLElement => {
+    if (cell.classList.contains(SELECTORS.HILAN_CLICKED_CLASS)) return false;
+    const title = cell.getAttribute("title");
+    if (title?.includes("חופשה") || cell.textContent?.includes("חופשה")) return true;
+    if (title && isValidTime(title.trim())) return true;
+    const content = cell.querySelector(SELECTORS.HILAN_TIME_CONTENT);
+    return Boolean(content && isValidTime(content.textContent?.trim() ?? ""));
+  });
   let clickedCount = 0;
   for (const box of boxes) {
     try {
@@ -35,7 +40,7 @@ export async function performAutoClick(): Promise<{ clickedCount: number; totalB
       continue;
     }
   }
-  return { clickedCount, totalBoxes: boxes.length, skippedCount: boxes.length - clickedCount };
+  return { clickedCount, totalBoxes: boxes.length, skippedCount: boxes.length - clickedCount, alreadyClicked };
 }
 
 function buildTimesheetData(): TimesheetData {

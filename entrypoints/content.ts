@@ -43,7 +43,8 @@ export default defineContentScript({
         if (action === "autoClickTimeBoxes") {
           if (currentSite.action !== "copy") return { success: false, error: { code: ERROR_CODES.WRONG_SITE } };
           const result = await performAutoClick();
-          if (result.totalBoxes === 0) return { success: false, error: { code: ERROR_CODES.NO_TIME_BOXES } };
+          if (result.totalBoxes === 0 && result.alreadyClicked === 0)
+            return { success: false, error: { code: ERROR_CODES.NO_TIME_BOXES } };
           await delay(100);
           return { success: true, action, ...result };
         } else if (action === "autoClickAndCopy") {

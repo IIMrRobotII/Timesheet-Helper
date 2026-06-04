@@ -43,6 +43,7 @@ export interface Messages {
   successCopied: (count: number) => string;
   successPasted: (count: number) => string;
   successAutoClick: (clicked: number, total: number) => string;
+  successAlreadyClicked: string;
   successCalculated: string;
   successCleared: string;
   errorExtensionDisabled: string;
@@ -124,6 +125,7 @@ export const en = {
   successCopied: count => `Copied ${count} entries from Hilan.`,
   successPasted: count => `Pasted ${count} entries into Malam.`,
   successAutoClick: (clicked, total) => `Clicked ${clicked} of ${total} time boxes.`,
+  successAlreadyClicked: "All time boxes are already open.",
   successCalculated: "Calculated.",
   successCleared: "All extension data cleared.",
   errorExtensionDisabled: "The extension is off. Turn it on to continue.",
@@ -205,6 +207,7 @@ export const he = {
   successCopied: count => `הועתקו ${count} רשומות מחילן.`,
   successPasted: count => `הודבקו ${count} רשומות למלם.`,
   successAutoClick: (clicked, total) => `נלחצו ${clicked} מתוך ${total} תיבות זמן.`,
+  successAlreadyClicked: "כל תיבות הזמן כבר נלחצו.",
   successCalculated: "חושב.",
   successCleared: "כל נתוני התוסף נמחקו.",
   errorExtensionDisabled: "התוסף כבוי. הפעל אותו כדי להמשיך.",

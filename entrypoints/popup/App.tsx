@@ -148,7 +148,13 @@ export default function App() {
       const response = await sendToActiveTab({ action });
       if (response.success) {
         if (response.action === "autoClickTimeBoxes") {
-          setStatus({ kind: "success", text: t.successAutoClick(response.clickedCount, response.totalBoxes) });
+          setStatus({
+            kind: "success",
+            text:
+              response.totalBoxes === 0 && response.alreadyClicked > 0
+                ? t.successAlreadyClicked
+                : t.successAutoClick(response.clickedCount, response.totalBoxes),
+          });
         } else if (response.action === "copyHours") {
           setStatus({
             kind: "success",

@@ -52,7 +52,14 @@ export interface ExtensionMessage {
 export type ExtensionErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
 
 export type ExtensionResponse =
-  | { success: true; action: "autoClickTimeBoxes"; clickedCount: number; totalBoxes: number; skippedCount: number }
+  | {
+      success: true;
+      action: "autoClickTimeBoxes";
+      clickedCount: number;
+      totalBoxes: number;
+      skippedCount: number;
+      alreadyClicked: number;
+    }
   | { success: true; action: "copyHours" | "autoClickAndCopy"; count: number }
   | ({ success: true; action: "readMonth" } & Period)
   | { success: true; action: "calculateSalary"; calculatorResult: CalculatorResult }
