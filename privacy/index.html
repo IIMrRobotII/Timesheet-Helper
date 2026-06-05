@@ -134,9 +134,11 @@
       <ul>
         <li><code>storage</code> saves the items listed above on your device.</li>
         <li>
-          Host access limited to Hilan attendance pages (<code>https://*.hilan.co.il/Hilannetv2/Attendance/*</code> and
-          <code>https://*.hilan.co.il/Hilannetv2/attendance/*</code>) and Malam payroll pages
-          (<code>https://payroll.malam.com/Salprd5Root/faces/*</code>). The content script runs only on those paths.
+          Host access covers <code>*.hilan.co.il</code> and <code>payroll.malam.com</code>. Chrome grants host access
+          by origin, even though the manifest syntax includes paths. The content script runs only on the Hilan
+          attendance paths (<code>https://*.hilan.co.il/Hilannetv2/Attendance/*</code> and
+          <code>https://*.hilan.co.il/Hilannetv2/attendance/*</code>) and the Malam payroll path
+          (<code>https://payroll.malam.com/Salprd5Root/faces/*</code>).
         </li>
       </ul>
 
