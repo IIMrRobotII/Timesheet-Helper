@@ -40,7 +40,7 @@ With both tabs open, **Sync Everything** (`Alt+S`) activates Hilan, auto-clicks 
 ## Supported pages
 
 - Hilan: `https://*.hilan.co.il/Hilannetv2/Attendance/` and `.../attendance/`
-- Malam: `https://payroll.malam.com/Salprd5Root/faces/`
+- Malam: `https://payroll.malam.com/Salprd5Root/faces/` and `https://portal.malam-payroll.com/Salprd5Root/faces/`
 
 Chrome injects the content script only on these paths, at `document_end`. Everywhere else the extension does nothing.
 
@@ -48,7 +48,7 @@ Chrome injects the content script only on these paths, at `document_end`. Everyw
 
 Everything runs on your machine. No servers, no analytics, no network requests. Your data stays in `chrome.storage.local`.
 
-- The extension asks for `storage` and host access on `*.hilan.co.il` and `payroll.malam.com`. Chrome grants host access by origin. The content script still runs only on the supported paths above.
+- The extension asks for `storage` and host access on `*.hilan.co.il`, `payroll.malam.com`, and `portal.malam-payroll.com`. Chrome grants host access by origin. The content script still runs only on the supported paths above.
 - The content security policy allows scripts and connections only from `'self'`, blocks plugins with `object-src 'none'`, and requires Trusted Types for script sinks.
 - ESLint blocks production code from using HTML-injection sinks such as `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, and `createContextualFragment`, along with `eval` and `new Function`.
 

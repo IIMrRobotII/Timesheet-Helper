@@ -18,6 +18,7 @@ export default defineContentScript({
     "https://*.hilan.co.il/Hilannetv2/Attendance/*",
     "https://*.hilan.co.il/Hilannetv2/attendance/*",
     "https://payroll.malam.com/Salprd5Root/faces/*",
+    "https://portal.malam-payroll.com/Salprd5Root/faces/*",
   ],
   runAt: "document_end",
   main() {
