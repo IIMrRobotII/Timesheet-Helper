@@ -15,6 +15,7 @@ import {
 
 const HILAN_URL = "https://abc.hilan.co.il/Hilannetv2/Attendance/calendar";
 const MALAM_URL = "https://payroll.malam.com/Salprd5Root/faces/timecard";
+const MALAM_PORTAL_URL = "https://portal.malam-payroll.com/Salprd5Root/faces/timesheet";
 
 describe("detectSite", () => {
   it("detects the Hilan attendance page as a copy source", () => {
@@ -29,16 +30,23 @@ describe("detectSite", () => {
     expect(site?.action).toBe("paste");
   });
 
+  it("detects the reported Malam portal timesheet URL as a paste target", () => {
+    const site = detectSite("https://portal.malam-payroll.com/Salprd5Root/faces/timesheet");
+    expect(site?.name).toBe("MALAM");
+    expect(site?.action).toBe("paste");
+  });
+
   it("matches regardless of case", () => {
     expect(detectSite("https://HILAN.CO.IL/Hilannetv2/ATTENDANCE/x")?.name).toBe("HILAN");
   });
 
   it("returns null when the domain matches but the path does not", () => {
     expect(detectSite("https://hilan.co.il/some/other/page")).toBeNull();
+    expect(detectSite("https://portal.malam-payroll.com/other/page")).toBeNull();
   });
 
-  it("does not match domain text on an unrelated host", () => {
-    expect(detectSite("https://evil.test/hilan.co.il/Hilannetv2/Attendance/calendar")).toBeNull();
+  it("does not match a different malam-payroll host", () => {
+    expect(detectSite("https://other.malam-payroll.com/Salprd5Root/faces/timesheet")).toBeNull();
   });
 
   it("does not match attendance path text outside the pathname", () => {
@@ -67,6 +75,7 @@ describe("resolveShortcut", () => {
   it("maps each command to its action on the matching site", () => {
     expect(resolveShortcut("copy-hours", HILAN_URL)).toBe("copyHours");
     expect(resolveShortcut("paste-hours", MALAM_URL)).toBe("copyHours");
+    expect(resolveShortcut("paste-hours", MALAM_PORTAL_URL)).toBe("copyHours");
     expect(resolveShortcut("auto-click", HILAN_URL)).toBe("autoClickTimeBoxes");
   });
 
@@ -88,11 +97,24 @@ describe("pickTabForSite", () => {
     { id: 1, url: "https://www.google.com", active: true },
     { id: 2, url: HILAN_URL, active: false },
     { id: 3, url: MALAM_URL, active: false },
+    { id: 4, url: MALAM_PORTAL_URL, active: false },
   ];
 
   it("finds the Hilan and Malam tabs by URL", () => {
     expect(pickTabForSite(tabs, "HILAN")).toBe(2);
     expect(pickTabForSite(tabs, "MALAM")).toBe(3);
+  });
+
+  it("finds the reported Malam portal timesheet tab as a Malam tab", () => {
+    expect(
+      pickTabForSite(
+        [
+          { id: 1, url: "https://www.google.com", active: true },
+          { id: 8, url: MALAM_PORTAL_URL, active: false },
+        ],
+        "MALAM"
+      )
+    ).toBe(8);
   });
 
   it("prefers an active matching tab over an inactive one", () => {

@@ -8,6 +8,7 @@ const EXPECTED_HOST_PERMISSIONS = [
   "https://*.hilan.co.il/Hilannetv2/Attendance/*",
   "https://*.hilan.co.il/Hilannetv2/attendance/*",
   "https://payroll.malam.com/Salprd5Root/faces/*",
+  "https://portal.malam-payroll.com/Salprd5Root/faces/*",
 ];
 const EXPECTED_STYLE_SRC = ["'self'", "'unsafe-inline'"];
 
@@ -75,6 +76,12 @@ if (!sameSet(manifest.permissions ?? [], EXPECTED_PERMISSIONS))
 if (!sameSet(manifest.host_permissions ?? [], EXPECTED_HOST_PERMISSIONS))
   fail(
     `host_permissions drifted from the scoped Hilan/Malam patterns (got: ${JSON.stringify(manifest.host_permissions ?? [])})`
+  );
+
+const contentScriptMatches = (manifest.content_scripts ?? []).flatMap(script => script.matches ?? []);
+if (!sameSet(contentScriptMatches, EXPECTED_HOST_PERMISSIONS))
+  fail(
+    `content_scripts.matches drifted from the scoped Hilan/Malam patterns (got: ${JSON.stringify(contentScriptMatches)})`
   );
 
 if (failures.length) {

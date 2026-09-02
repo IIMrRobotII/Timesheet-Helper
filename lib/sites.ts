@@ -2,12 +2,12 @@ import type { ExtensionAction } from "./types";
 
 export const SITES = {
   HILAN: {
-    domain: "hilan.co.il",
+    domains: ["hilan.co.il"],
     paths: ["/Hilannetv2/Attendance/", "/Hilannetv2/attendance/"],
     action: "copy",
   },
   MALAM: {
-    domain: "payroll.malam.com",
+    domains: ["payroll.malam.com", "portal.malam-payroll.com"],
     paths: ["/Salprd5Root/faces/"],
     action: "paste",
   },
@@ -17,7 +17,7 @@ export type SiteName = keyof typeof SITES;
 
 export interface DetectedSite {
   name: SiteName;
-  domain: string;
+  domains: readonly string[];
   paths: readonly string[];
   action: "copy" | "paste";
 }
@@ -83,8 +83,11 @@ export const detectSite = (url: string): DetectedSite | null => {
   const hostname = parsed.hostname.toLowerCase();
   const pathname = parsed.pathname.toLowerCase();
   for (const [name, site] of Object.entries(SITES) as [SiteName, (typeof SITES)[SiteName]][]) {
-    if (matchesHost(hostname, site.domain) && site.paths.some(p => pathname.startsWith(p.toLowerCase()))) {
-      return { name, domain: site.domain, paths: site.paths, action: site.action };
+    if (
+      site.domains.some(domain => matchesHost(hostname, domain)) &&
+      site.paths.some(p => pathname.startsWith(p.toLowerCase()))
+    ) {
+      return { name, domains: site.domains, paths: site.paths, action: site.action };
     }
   }
   return null;

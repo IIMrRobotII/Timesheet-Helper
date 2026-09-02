@@ -138,6 +138,28 @@ describe("runFullSync", () => {
     ]);
   });
 
+  it("syncs when Malam is on the reported portal timesheet URL", async () => {
+    const portalTab = { id: 9, url: "https://portal.malam-payroll.com/Salprd5Root/faces/timesheet" };
+    const activated: number[] = [];
+
+    const result = await runFullSync(
+      ports({
+        listTabs: async () => [hilanTab, portalTab],
+        activateTab: async tabId => {
+          activated.push(tabId);
+        },
+        sendToTab: async (_tabId, message) => {
+          if (message.action === "readMonth") return { success: true, action: "readMonth", month: 5, year: 2026 };
+          if (message.action === "autoClickAndCopy") return { success: true, action: "autoClickAndCopy", count: 7 };
+          return { success: true, action: "copyHours", count: 7 };
+        },
+      })
+    );
+
+    expect(result).toEqual({ status: "synced", copied: 7, pasted: 7 });
+    expect(activated).toEqual([hilanTab.id, portalTab.id]);
+  });
+
   it("copies Hilan data and returns a partial result when no Malam tab is open", async () => {
     const activated: number[] = [];
 
